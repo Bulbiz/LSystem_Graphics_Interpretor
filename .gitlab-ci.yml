@@ -1,7 +1,6 @@
-image: dunecommunity/debian-full
+image: ocaml/opam2
 
 before_script:
-  - apt-get install dune
   - cd projet
 
 build:
