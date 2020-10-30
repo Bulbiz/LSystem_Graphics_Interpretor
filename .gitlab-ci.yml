@@ -1,4 +1,4 @@
-image: duneci/base
+image: ubuntu
 
 before_script:
   - cd projet
