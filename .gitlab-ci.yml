@@ -1,11 +1,14 @@
-image: duneci/dune
+image: duneci/base
+
+before_script:
+  - cd projet
 
 build:
   stage: build
   script:
-    - cd projet && make lib main
+    - make lib main
 
 test:
   stage: test
   script:
-    - cd projet && make
+    - make
