@@ -1,5 +1,4 @@
-[![pipeline status](!https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/tsh/badges/master/pipeline.svg)
-
+[![pipeline status](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/badges/master/pipeline.svg)](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/commits/master)
 
 # Projet PF5 2020 : L-systèmes
 
