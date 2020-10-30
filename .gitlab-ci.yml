@@ -1,4 +1,4 @@
-image: ocaml/opam2
+image: emilerolley/opam2-dune
 
 before_script:
   - cd projet
