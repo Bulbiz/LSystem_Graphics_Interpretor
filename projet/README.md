@@ -9,6 +9,8 @@ Voir [INSTALL.md](../INSTALL.md)
   - ocaml évidemment
   - dune et make sont fortement conseillés
   - bibliothèque graphics si elle ne vient pas déjà avec ocaml
+  - [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
+(`opam install ounit2`)
 
 ## Compilation et lancement
 
