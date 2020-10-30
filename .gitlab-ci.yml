@@ -1,7 +1,6 @@
-image: ubuntu
+image: dunecommunity/debian-full
 
 before_script:
-  - apt install make dune opam
   - cd projet
 
 build:
