@@ -1,6 +1,7 @@
 image: dunecommunity/debian-full
 
 before_script:
+  - apt-get install dune
   - cd projet
 
 build:
