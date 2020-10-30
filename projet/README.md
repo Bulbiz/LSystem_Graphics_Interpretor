@@ -1,5 +1,7 @@
-Projet PF5 2020 : L-systèmes
-============================
+[![pipeline status](!https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/tsh/badges/master/pipeline.svg)
+
+
+# Projet PF5 2020 : L-systèmes
 
 ## Prérequis à installer
 
