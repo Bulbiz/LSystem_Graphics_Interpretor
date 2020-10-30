@@ -12,7 +12,10 @@ type 's system = {
   interp : 's -> Turtle.command list
 }
 
-(** Put here any type and function implementations concerning systems *)
+(** Put here any type and function interfaces concerning systems *)
 
-let f_do_nothing =
-  print_string "To implement.\n"
+val f_do_nothing : unit
+
+val return_0 : int
+
+val return_str : string

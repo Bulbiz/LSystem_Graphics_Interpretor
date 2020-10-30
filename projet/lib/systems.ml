@@ -12,6 +12,11 @@ type 's system = {
   interp : 's -> Turtle.command list
 }
 
-(** Put here any type and function interfaces concerning systems *)
+(** Put here any type and function implementations concerning systems *)
 
-val f_do_nothing : unit
+let f_do_nothing =
+  print_string "TODO.\n"
+
+let return_0 = 0
+
+let return_str = "Test string"
