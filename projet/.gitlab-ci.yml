@@ -1,0 +1,11 @@
+image: duneci/dune
+
+build:
+  stage: build
+  script:
+    - make lib main
+
+test:
+  stage: test
+  script:
+    - make
