@@ -1,6 +1,7 @@
 image: ubuntu
 
 before_script:
+  - apt install make dune opam
   - cd projet
 
 build:
