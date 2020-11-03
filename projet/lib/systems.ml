@@ -22,9 +22,17 @@ let return_0 = 0
 let return_str = "Test string"
 
 let update (l:'s system) = 
-  match l.axiom with
-  |Symb s -> l.rules s
-  |Seq (q) -> (match q with
-    | (Symb x) :: [] -> l.rules x
-    | _ -> l.axiom)
-  |_ -> l.axiom
+  let rec update_aux (rules:'s rewrite_rules) (word:'s word)  =
+    match word with
+    |Symb s -> rules s
+    |Branch (s) -> Branch (update_aux rules s)
+    |Seq (q) -> update_sequence rules q (*Seq(List.map (update_aux rules) q)*)
+
+  and update_sequence (rules:'s rewrite_rules) (sequence:'s word list)  =
+    match sequence with
+    | [] -> failwith "Shouldn't happen"
+    | [s] -> update_aux rules s
+    | x :: q -> Seq [update_aux rules x ; update_sequence rules q]
+  in
+
+  update_aux l.rules l.axiom
