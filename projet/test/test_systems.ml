@@ -33,14 +33,14 @@ let test2 : symbol system =
     
 let systems_suite =
     "SystemsTestSuite" >::: [
-        "Systems Update should return Seq[Symb A,Symb A,Symb A]" >:: (fun _ ->
+        "Test1: Update should return Seq[Symb A,Symb A,Symb A]" >:: (fun _ ->
             (*test 1 for update*)
             let testUpdate1 = update test1 in
             let expectedUpdate1 = Seq [Symb A;Symb A;Symb A] in
             assert_equal testUpdate1 expectedUpdate1;
         );
 
-        "Systems Update should return Seq[Symb A,Symb B,Symb A]" >:: (fun _ ->
+        "Test2 Update should return Seq [Seq[Symb A;Symb B];Symb A]" >:: (fun _ ->
             (*test 2 for update*)
             let testUpdate2 = update test2 in
             let expectedUpdate2 = Seq [Seq[Symb A;Symb B];Symb A] in
