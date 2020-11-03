@@ -20,3 +20,11 @@ let f_do_nothing =
 let return_0 = 0
 
 let return_str = "Test string"
+
+let update (l:'s system) = 
+  match l.axiom with
+  |Symb s -> l.rules s
+  |Seq (q) -> (match q with
+    | (Symb x) :: [] -> l.rules x
+    | _ -> l.axiom)
+  |_ -> l.axiom

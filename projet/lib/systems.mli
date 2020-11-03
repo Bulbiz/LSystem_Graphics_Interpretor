@@ -19,3 +19,5 @@ val f_do_nothing : unit
 val return_0 : int
 
 val return_str : string
+
+val update :('s system) -> ('s word)
