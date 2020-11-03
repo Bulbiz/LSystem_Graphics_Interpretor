@@ -12,10 +12,4 @@ type 's system = {
   interp : 's -> Turtle.command list
 }
 
-(** Put here any type and function interfaces concerning systems *)
-
-val f_do_nothing : unit
-
-val return_0 : int
-
-val return_str : string
+val create_system_from_file: string -> char system

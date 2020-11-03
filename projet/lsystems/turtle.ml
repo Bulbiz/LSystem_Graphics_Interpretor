@@ -1,4 +1,3 @@
-
 type command =
 | Line of int
 | Move of int

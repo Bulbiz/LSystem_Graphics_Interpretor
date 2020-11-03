@@ -12,11 +12,9 @@ type 's system = {
   interp : 's -> Turtle.command list
 }
 
-(** Put here any type and function implementations concerning systems *)
-
-let f_do_nothing =
-  print_string "TODO.\n"
-
-let return_0 = 0
-
-let return_str = "Test string"
+let create_system_from_file (_: string) =
+  {
+    axiom  = Symb 'A';
+    rules  = (fun a -> Symb a);
+    interp = (fun _ -> [Line 0])
+  };;
