@@ -36,3 +36,11 @@ let update (l:'s system) =
   in
 
   update_aux l.rules l.axiom
+
+  let next_state (rules:'s rewrite_rules) (current_state:'s word) =
+    match rules with
+    |_->( match current_state with
+      |Symb 'A' -> Seq [Symb 'A';Symb 'A';Symb 'A']
+      |Seq [Symb 'A';Symb 'B'] -> Seq [Branch (Seq[Symb 'A';Symb 'B']);Symb 'A'] 
+      | _ -> failwith ("oof") 
+    )
