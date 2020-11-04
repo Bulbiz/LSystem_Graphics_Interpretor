@@ -2,32 +2,31 @@ open OUnit2
 open Lsystems
 open Systems
 
-type symbol = A|B|C|D 
-let test1 : symbol system = 
+let test1 : char system = 
     {
-        axiom = Seq [Symb A];
+        axiom = Seq [Symb 'A'];
         rules = (function
-        | A -> Seq [Symb A;Symb A;Symb A]
+        | 'A' -> Seq [Symb 'A';Symb 'A';Symb 'A']
         | s -> Symb s
     );
 
     interp = (function
-    | A -> [Line 30]
+    | 'A' -> [Line 30]
     | _ -> [Turn 0])
     }
 
-let test2 : symbol system = 
+let test2 : char system = 
     {
-        axiom = Seq [Symb A;Symb B];
+        axiom = Seq [Symb 'A';Symb 'B'];
         rules = (function
-        | A -> Seq [Symb A;Symb B]
-        | B -> Symb A
+        | 'A' -> Seq [Symb 'A';Symb 'B']
+        | 'B' -> Symb 'A'
         | s -> Symb s
     );
     
     interp = (function
-    | A -> [Line 30]
-    | B -> [Turn 60]
+    | 'A' -> [Line 30]
+    | 'B' -> [Turn 60]
     | _ -> [Turn 0])
     }    
     
@@ -35,16 +34,16 @@ let systems_suite =
     "SystemsTestSuite" >::: [
         "Test1: Update should return Seq[Symb A,Symb A,Symb A]" >:: (fun _ ->
             (*test 1 for update*)
-            let testUpdate1 = update test1 in
-            let expectedUpdate1 = Seq [Symb A;Symb A;Symb A] in
-            assert_equal testUpdate1 expectedUpdate1;
+            let test_update1 = update test1 in
+            let expected_update1 = Seq [Symb 'A';Symb 'A';Symb 'A'] in
+            assert_equal test_update1 expected_update1;
         );
 
-        "Test2 Update should return Seq [Seq[Symb A;Symb B];Symb A]" >:: (fun _ ->
+        "Test2 Update should return Seq [Symb A; Symb B ; Symb A]" >:: (fun _ ->
             (*test 2 for update*)
-            let testUpdate2 = update test2 in
-            let expectedUpdate2 = Seq [Seq[Symb A;Symb B];Symb A] in
-            assert_equal testUpdate2 expectedUpdate2
+            let test_update2 = update test2 in
+            let expected_update2 = Seq [Seq [Symb 'A'; Symb 'B']; Symb 'A'] in
+            assert_equal test_update2 expected_update2
         )
     ]
 
