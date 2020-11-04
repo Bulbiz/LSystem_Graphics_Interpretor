@@ -1,75 +1,34 @@
 open OUnit2
 open Lsystems
 open Systems
-(*
-let test1 : char system = 
-    {
-        axiom = Seq [Symb 'A'];
-        rules = (function
-        | 'A' -> Seq [Symb 'A';Symb 'A';Symb 'A']
-        | s -> Symb s
-    );
 
-    interp = (function
-    | 'A' -> [Line 30]
-    | _ -> [Turn 0])
-    }
-
-let test2 : char system = 
-    {
-        axiom = Seq [Symb 'A';Symb 'B'];
-        rules = (function
-        | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
-        | 'B' -> Symb 'A'
-        | s -> Symb s
-    );
-    
-    interp = (function
-    | 'A' -> [Line 30]
-    | 'B' -> [Turn 60]
-    | _ -> [Turn 0])
-    }    
-    *)
 let systems_suite =
     "SystemsTestSuite" >::: [
         "TestSymb: Update should return Seq[Symb A,Symb A,Symb A]" >:: (fun _ ->
-            let testSeq : char system = 
-            {
-                axiom = Symb 'A';
-                rules = (function
+            let rules_symb : char rewrite_rules = (function
                 | 'A' -> Seq [Symb 'A';Symb 'A';Symb 'A']
-                | s -> Symb s
-            );
-        
-                interp = (function
-                | 'A' -> [Line 30]
-                | _ -> [Turn 0])
-            }in
-            (*test 1 for update*)
-            let test_next_state1 = next_state testSeq.rules testSeq.axiom in
-            let expected_next_state1 = Seq [Symb 'A';Symb 'A';Symb 'A'] in
-            assert_equal test_next_state1  expected_next_state1 ;
+                | s -> Symb s)
+            in 
+            let axiom_symb : char word = Symb 'A' in
+            (*test Symb for next_state*)
+            let test_symb = next_state rules_symb axiom_symb in
+            let expected_symb = Seq [Symb 'A';Symb 'A';Symb 'A'] in
+            assert_equal test_symb  expected_symb ;
         );
 
+
         "TestBranch: Update should return Seq [Branch (Seq[Symb 'A';Symb 'B']);Symb 'A']" >:: (fun _ ->
-            let testBranch : char system = 
-            {
-                axiom = Seq [Symb 'A';Symb 'B'];
-                rules = (function
+            let rules_branch_seq : char rewrite_rules = (function
                 | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
                 | 'B' -> Symb 'A'
-                | s -> Symb s
-            );
-            
-                interp = (function
-                | 'A' -> [Line 30]
-                | 'B' -> [Turn 60]
-                | _ -> [Turn 0])
-            }  in
-            (*test 2 for update*)
-            let test_next_state2 = next_state testBranch.rules testBranch.axiom in
-            let expected_next_state2 = Seq [Branch (Seq[Symb 'A';Symb 'B']);Symb 'A'] in
-            assert_equal test_next_state2 expected_next_state2 
+                | s -> Symb s) 
+            in 
+            let axiom_branch_seq : char word = Branch(Seq [Symb 'A';Symb 'B']) in
+
+            (*test Branch and Seq for next_state*)
+            let test_branch_seq = next_state rules_branch_seq axiom_branch_seq in
+            let expected_branch_seq = Branch(Seq [Branch (Seq[Symb 'A';Symb 'B']); Symb 'A']) in
+            assert_equal test_branch_seq expected_branch_seq 
         )
     ]
 

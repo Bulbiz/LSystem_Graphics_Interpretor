@@ -41,6 +41,6 @@ let update (l:'s system) =
     match rules with
     |_->( match current_state with
       |Symb 'A' -> Seq [Symb 'A';Symb 'A';Symb 'A']
-      |Seq [Symb 'A';Symb 'B'] -> Seq [Branch (Seq[Symb 'A';Symb 'B']);Symb 'A'] 
+      |Branch(Seq [Symb 'A';Symb 'B']) -> Branch(Seq [Branch (Seq[Symb 'A';Symb 'B']);Symb 'A'])
       | _ -> failwith ("oof") 
     )
