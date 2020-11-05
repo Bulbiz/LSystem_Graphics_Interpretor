@@ -83,7 +83,10 @@ let word_append (w1 : 's word) (w2 : 's word) =
                | Branch b ->
                  curr_branch := !curr_branch + 1;
                  if !curr_branch = nb_branches
-                 then Branch (word_append_according_depth b w2 (depth + 1))
+                    (* Last branch of the current word Seq found. *)
+                 then
+                   Branch (word_append_according_depth b w2 (depth + 1))
+                   (* Not the last branch. *)
                  else Branch b)
              word_list))
       else (* In the last 'opened' branch. *)
