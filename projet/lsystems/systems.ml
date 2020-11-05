@@ -68,9 +68,12 @@ let word_append (w1 : 's word) (w2 : 's word) =
     match w1 with
     (* The current word contains only one [Symb] *)
     | Symb s -> Seq [ Symb s; w2 ]
+    | Branch b -> Branch b
     | Seq word_list ->
-      if !current_word_depth <> depth
-      then (
+      if !current_word_depth = depth
+      then (* In the last 'opened' branch. *)
+        Seq (List.append word_list [ w2 ])
+      else (
         (* Not in the last 'opened' branch. *)
         let nb_branches = get_nb_branches_in word_list in
         let curr_branch = ref 0 in
@@ -78,8 +81,6 @@ let word_append (w1 : 's word) (w2 : 's word) =
         Seq
           (List.map
              (function
-               | Symb s -> Symb s
-               | Seq word_list -> Seq word_list
                | Branch b ->
                  curr_branch := !curr_branch + 1;
                  if !curr_branch = nb_branches
@@ -87,11 +88,9 @@ let word_append (w1 : 's word) (w2 : 's word) =
                  then
                    Branch (word_append_according_depth b w2 (depth + 1))
                    (* Not the last branch. *)
-                 else Branch b)
+                 else Branch b
+               | word -> word)
              word_list))
-      else (* In the last 'opened' branch. *)
-        Seq (List.append word_list [ w2 ])
-    | Branch b -> Branch b
   in
   if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
 ;;
