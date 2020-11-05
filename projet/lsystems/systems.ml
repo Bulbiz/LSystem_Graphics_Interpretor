@@ -13,6 +13,23 @@ type 's system =
 
 (** Parser (not pur functionnal) *)
 
+type parse_state =
+  | Axiom
+  | Rules
+  | Interp
+  | Done
+
+let update_parse_state = function
+  | Axiom -> Rules
+  | Rules -> Interp
+  | Interp | Done -> Done
+;;
+
+exception Invalid_word
+
+(* Empty word representation. *)
+let empty_word = Seq []
+
 let read_line ci : string option =
   try
     let x = input_line ci in
@@ -20,12 +37,6 @@ let read_line ci : string option =
   with
   | End_of_file -> None
 ;;
-
-type parse_state =
-  | Axiom
-  | Rules
-  | Interp
-  | Done
 
 let rec print_char_word = function
   | Symb s -> print_char s
@@ -39,77 +50,75 @@ let rec print_char_word = function
     print_string "]"
 ;;
 
-let update_parse_state = function
-  | Axiom -> Rules
-  | Rules -> Interp
-  | Interp | Done -> Done
-;;
-
-exception NotValidWord
-
-let empty_word = Seq []
 let current_word_depth = ref 0
 
+let get_nb_branches_in (word_list : 's word list) : int =
+  let nb_branches = ref 0 in
+  List.iter
+    (fun w ->
+      match w with
+      | Branch _ -> nb_branches := !nb_branches + 1
+      | _ -> ())
+    word_list;
+  !nb_branches
+;;
+
 let word_append (w1 : 's word) (w2 : 's word) =
-  let rec word_append_accordin_depth w1 w2 depth =
+  let rec word_append_according_depth w1 w2 depth =
     match w1 with
     (* The current word contains only one [Symb] *)
     | Symb s -> Seq [ Symb s; w2 ]
-    (* The current word contains a sequence of sub [word] *)
-    | Seq l ->
+    | Seq word_list ->
       if !current_word_depth <> depth
       then (
-        (* The current sequence contains a [Branch] but it *)
-        let nb_branches = ref 0 in
-        List.iter
-          (fun w ->
-            match w with
-            | Branch _ -> nb_branches := !nb_branches + 1
-            | _ -> ())
-          l;
+        (* Not in the last 'opened' branch. *)
+        let nb_branches = get_nb_branches_in word_list in
         let curr_branch = ref 0 in
+        (* Finds the last 'opened' branch recursively. *)
         Seq
           (List.map
              (function
                | Symb s -> Symb s
-               | Seq l -> Seq l
+               | Seq word_list -> Seq word_list
                | Branch b ->
                  curr_branch := !curr_branch + 1;
-                 if !curr_branch = !nb_branches
-                 then Branch (word_append_accordin_depth b w2 (depth + 1))
+                 if !curr_branch = nb_branches
+                 then Branch (word_append_according_depth b w2 (depth + 1))
                  else Branch b)
-             l))
-      else Seq (List.append l [ w2 ])
+             word_list))
+      else (* In the last 'opened' branch. *)
+        Seq (List.append word_list [ w2 ])
     | Branch b -> Branch b
   in
-  if empty_word <> w2 then word_append_accordin_depth w1 w2 0 else w1
+  if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
+;;
+
+let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
+  word_ref
+    := word_append
+         !word_ref
+         (match symb with
+         (* Enterring in a new branch. *)
+         | '[' -> Branch empty_word
+         (* Exiting of the current branch. *)
+         | ']' -> if 0 = !current_word_depth then raise Invalid_word else empty_word
+         (* Simple char symbol. *)
+         | symb -> Symb symb);
+  match symb with
+  | '[' -> current_word_depth := !current_word_depth + 1
+  | ']' -> current_word_depth := !current_word_depth - 1
+  | _ -> ()
 ;;
 
 let create_char_word_from_str str =
-  (* If [str] contains only one char *)
   if 1 = String.length str
-  then Symb str.[0]
+  then Symb str.[0] (* If [str] contains only one char. *)
   else (
     current_word_depth := 0;
-    let word = ref empty_word in
-    String.iter
-      (fun c ->
-        word
-          := word_append
-               !word
-               (match c with
-               (* Enterring in a new branch. *)
-               | '[' -> Branch empty_word
-               (* Exiting of the current branch. *)
-               | ']' -> if 0 = !current_word_depth then raise NotValidWord else empty_word
-               (* Simple char symbol. *)
-               | c -> Symb c);
-        match c with
-        | '[' -> current_word_depth := !current_word_depth + 1
-        | ']' -> current_word_depth := !current_word_depth - 1
-        | _ -> ())
-      str;
-    !word)
+    (* Uses a [char word ref] in order able to modify its value through [List.iter]. *)
+    let word_ref = ref empty_word in
+    String.iter (fun symb -> word_append_char_from word_ref symb) str;
+    !word_ref)
 ;;
 
 let create_char_rules_from_str _ = function
