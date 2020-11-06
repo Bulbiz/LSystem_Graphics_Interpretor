@@ -12,6 +12,8 @@ type 's system =
   ; interp : 's -> Turtle.command list
   }
 
+exception Invalid_word
+
 (** [word_append w1 w2] appends [w2] to [w1] according this rules :
       If [w1] is a Symb,
         then creates a [Seq] with [w1] followed by [w2].

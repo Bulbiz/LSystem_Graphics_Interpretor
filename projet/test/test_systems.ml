@@ -9,17 +9,34 @@ let assert_for_each_symbol s_list expected_rules actual_rules =
 
 let systems_suite =
   "SystemsTestSuite"
-  >::: [ ("Systems.create_char_word_from_str with one char"
+  >::: [ ("Systems.create_char_word_from_str with one char."
          >:: fun _ -> assert_equal (Symb 'A') (create_char_word_from_str "A"))
-       ; ("Systems.create_char_word_from_str with a normal word string"
+       ; ("Systems.create_char_word_from_str with a normal word string."
          >:: fun _ ->
          assert_equal (Seq [ Symb 'A'; Symb 'B' ]) (create_char_word_from_str "AB"))
-       ; ("Systems.create_char_word_from_str with a root branch based word"
+       ; ("Systems.create_char_word_from_str with a root branch based word."
          >:: fun _ ->
          assert_equal
            (Seq [ Branch (Seq [ Symb 'A'; Symb 'B' ]) ])
            (create_char_word_from_str "[AB]"))
-       ; ("Systems.create_char_word_from_str with a normal branched string word"
+       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
+           ']' as argument."
+         >:: fun _ -> assert_raises Invalid_word (fun () -> create_char_word_from_str "]")
+         )
+       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
+           '[' as argument."
+         >:: fun _ -> assert_raises Invalid_word (fun () -> create_char_word_from_str "[")
+         )
+       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
+           too many closing brackets."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () -> create_char_word_from_str "[AB]A[VC]][A]")
+         )
+       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
+           enclosed branches."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () -> create_char_word_from_str "[AB]A[VC[A]"))
+       ; ("Systems.create_char_word_from_str with a normal branched string word."
          >:: fun _ ->
          let expected_word =
            Seq
@@ -32,7 +49,7 @@ let systems_suite =
          in
          let actual_word = create_char_word_from_str "B[+A][-A]BA" in
          assert_equal expected_word actual_word)
-       ; ("Systems.create_char_word_from_str with a double branched string word"
+       ; ("Systems.create_char_word_from_str with a double branched string word."
          >:: fun _ ->
          let expected_word =
            Seq
@@ -46,7 +63,7 @@ let systems_suite =
          let actual_word = create_char_word_from_str "B[+[BA]A][-A]BA" in
          assert_equal expected_word actual_word)
        ; ("Systems.create_char_word_from_str with a hardly recursively branched string \
-           word"
+           word."
          >:: fun _ ->
          let expected_word =
            Seq
@@ -74,7 +91,7 @@ let systems_suite =
            create_char_word_from_str "B[+[BA]A][-[+[$A]A]A]BA[-[+[$A]A]X]"
          in
          assert_equal expected_word actual_word)
-       ; ("Systems.create_rules_from_str with a simple string word"
+       ; ("Systems.create_rules_from_str with a simple string word."
          >:: fun _ ->
          let expected_rules = function
            | 'B' -> Seq [ Symb 'B'; Symb 'B' ]

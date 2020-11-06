@@ -50,8 +50,6 @@ let rec print_char_word = function
     print_string "]"
 ;;
 
-let current_word_depth = ref 0
-
 let get_nb_branches_in (word_list : 's word list) : int =
   let nb_branches = ref 0 in
   List.iter
@@ -63,35 +61,38 @@ let get_nb_branches_in (word_list : 's word list) : int =
   !nb_branches
 ;;
 
+let current_word_depth = ref 0
+
+let rec word_append_according_depth (w1 : 's word) (w2 : 's word) (depth : int) =
+  match w1 with
+  (* The current word contains only one [Symb] *)
+  | Symb s -> Seq [ Symb s; w2 ]
+  | Branch b -> Branch b (* Case never reached. *)
+  | Seq word_list ->
+    if !current_word_depth = depth
+    then (* In the last 'opened' branch. *)
+      Seq (List.append word_list [ w2 ])
+    else (
+      (* Not in the last 'opened' branch. *)
+      let nb_branches = get_nb_branches_in word_list in
+      let curr_branch = ref 0 in
+      (* Finds the last 'opened' branch recursively. *)
+      Seq
+        (List.map
+           (function
+             | Branch b ->
+               curr_branch := !curr_branch + 1;
+               if !curr_branch = nb_branches
+                  (* Last branch of the current word Seq found. *)
+               then
+                 Branch (word_append_according_depth b w2 (depth + 1))
+                 (* Not the last branch. *)
+               else Branch b
+             | word -> word)
+           word_list))
+;;
+
 let word_append (w1 : 's word) (w2 : 's word) =
-  let rec word_append_according_depth w1 w2 depth =
-    match w1 with
-    (* The current word contains only one [Symb] *)
-    | Symb s -> Seq [ Symb s; w2 ]
-    | Branch b -> Branch b
-    | Seq word_list ->
-      if !current_word_depth = depth
-      then (* In the last 'opened' branch. *)
-        Seq (List.append word_list [ w2 ])
-      else (
-        (* Not in the last 'opened' branch. *)
-        let nb_branches = get_nb_branches_in word_list in
-        let curr_branch = ref 0 in
-        (* Finds the last 'opened' branch recursively. *)
-        Seq
-          (List.map
-             (function
-               | Branch b ->
-                 curr_branch := !curr_branch + 1;
-                 if !curr_branch = nb_branches
-                    (* Last branch of the current word Seq found. *)
-                 then
-                   Branch (word_append_according_depth b w2 (depth + 1))
-                   (* Not the last branch. *)
-                 else Branch b
-               | word -> word)
-             word_list))
-  in
   if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
 ;;
 
@@ -114,13 +115,20 @@ let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
 
 let create_char_word_from_str str =
   if 1 = String.length str
-  then Symb str.[0] (* If [str] contains only one char. *)
+  then (
+    (* If [str] contains only one char. *)
+    match str.[0] with
+    (* It's not a valid word. *)
+    | '[' | ']' -> raise Invalid_word
+    (* Returns the associated symbol. *)
+    | c -> Symb c)
   else (
     current_word_depth := 0;
     (* Uses a [char word ref] in order able to modify its value through [List.iter]. *)
     let word_ref = ref empty_word in
     String.iter (fun symb -> word_append_char_from word_ref symb) str;
-    !word_ref)
+    (* If a branch isn't closed. *)
+    if !current_word_depth <> 0 then raise Invalid_word else !word_ref)
 ;;
 
 let create_char_rules_from_str _ = function
