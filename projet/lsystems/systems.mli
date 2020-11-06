@@ -31,11 +31,11 @@ val word_append : 's word -> 's word -> 's word
     @raise Invalid_word on errors. *)
 val create_char_word_from_str : string -> char word
 
-(** Create a [char word] according to a given string. *)
+(** Creates a [char rewrite_rules] according to a given string. *)
 val create_char_rules_from_str : string -> char -> char word
 
-(** Create a [char word] according to a given string. *)
+(** Creates a [char system] according to a given string. *)
 val create_system_from_file : string -> char system
 
-(** Print a [char word] with Seq represented by '|'. *)
+(** Prints a [char word] with Seq represented by '|'. *)
 val print_char_word : char word -> unit

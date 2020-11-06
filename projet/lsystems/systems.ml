@@ -84,10 +84,8 @@ let rec word_append_according_depth (w1 : 's word) (w2 : 's word) (depth : int) 
                curr_branch := !curr_branch + 1;
                if !curr_branch = nb_branches
                   (* Last branch of the current word Seq found. *)
-               then
-                 Branch (word_append_according_depth b w2 (depth + 1))
-                 (* Not the last branch. *)
-               else Branch b
+               then Branch (word_append_according_depth b w2 (depth + 1))
+               else Branch b (* Not the last branch. *)
              | word -> word)
            word_list))
 ;;
@@ -145,6 +143,7 @@ let create_char_rules_from_str _ = function
 (*   | List.hd splited_line -> create_char_word_from_str (List.nth 1 splited_line)) *)
 (* ;; *)
 
+(* TODO *)
 let create_system_from_file (file_name : string) =
   let axiom_word = ref (Seq []) in
   (* let rules = ref (fun _ -> Seq []) in *)
