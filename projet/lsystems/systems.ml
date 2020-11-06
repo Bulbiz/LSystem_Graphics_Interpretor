@@ -160,7 +160,7 @@ let add_new_char_rule_from_str (other_rules : char rewrite_rules) (str : string)
 
 let create_char_rules_from_str_list str_list =
   (* Uses a ref in order to iterate and modified through the [str_list].
-     And initializes it with the basic rule. *)
+    Initializes it with the basic rule. *)
   let rules_ref = ref (fun s -> Symb s) in
   List.iter
     (fun str ->
