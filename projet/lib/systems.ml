@@ -23,7 +23,7 @@ let return_str = "Test string"
 
 (* Get the next generation from current_state by applying the rules to each Symb*)
 let next_state (rules:'s rewrite_rules) (current_state:'s word) = 
-  let rec update_aux (rules:'s rewrite_rules) (word:'s word)  =
+  let rec update_word (rules:'s rewrite_rules) (word:'s word)  =
     match word with
     |Symb s -> rules s
     |Branch (s) -> Branch (update_aux rules s)
