@@ -20,5 +20,6 @@ val return_0 : int
 
 val return_str : string
 
+(* Get the next generation from current_state by applying the rules to each Symb*)
 val next_state :('s  rewrite_rules) -> ('s word) -> ('s word)
 
