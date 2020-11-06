@@ -20,7 +20,5 @@ val return_0 : int
 
 val return_str : string
 
-val update :('s system) -> ('s word)
-
-val next_state :(char  rewrite_rules) -> (char word) -> (char word)
+val next_state :('s  rewrite_rules) -> ('s word) -> ('s word)
 
