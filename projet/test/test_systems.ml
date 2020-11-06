@@ -17,7 +17,7 @@ let systems_suite =
         );
 
 
-        "Systems.next_state should return the right word with a system that contains branches." >:: (fun _ ->
+        "Systems.next_state should return the right word with a system that contains a seq inside a branch." >:: (fun _ ->
             let rules_branch_seq = (function
                 | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
                 | 'B' -> Symb 'A'
@@ -28,6 +28,21 @@ let systems_suite =
             (*test Branch and Seq for next_state*)
             let actual_word = next_state rules_branch_seq axiom_branch_seq in
             let expected_word = Branch(Seq [Branch (Seq[Symb 'A';Symb 'B']); Symb 'A']) in
+            assert_equal expected_word actual_word
+        );
+
+
+        "Systems.next_state should return the right word with a system that contains a branches inside a seq." >:: (fun _ ->
+            let rules_seq_branch = (function
+                | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
+                | 'B' -> Symb 'A'
+                | s -> Symb s) 
+            in 
+            let axiom_seq_branch : char word = Seq [Branch(Seq[Symb 'A';Symb 'B']); Symb 'B'] in
+
+            (*test Branch and Seq for next_state*)
+            let actual_word = next_state rules_seq_branch axiom_seq_branch in
+            let expected_word = Seq[Branch(Seq [Branch (Seq[Symb 'A';Symb 'B']); Symb 'A']); Symb 'A'] in
             assert_equal expected_word actual_word
         )
     ]
