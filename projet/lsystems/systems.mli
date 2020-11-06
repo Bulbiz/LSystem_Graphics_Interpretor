@@ -14,13 +14,13 @@ type 's system =
 
 exception Invalid_word
 
-(** [word_append w1 w2] appends [w2] to [w1] according this rules :
-      If [w1] is a Symb,
-        then creates a [Seq] with [w1] followed by [w2].
-      Else if [w1] contains at least one 'opened' branch,
+(** [word_append current_word w2] appends [w2] to [current_word] according this rules :
+      If [current_word] is a Symb,
+        then creates a [Seq] with [current_word] followed by [w2].
+      Else if [current_word] contains at least one 'opened' branch,
         then appends recursively [w2] to its last 'opened' branch
       Else,
-        appends [w2] to the [w1 Seq list].
+        appends [w2] to the [current_word Seq list].
 
     A branch is 'opened' if '[' has been read and not ']'.
 *)

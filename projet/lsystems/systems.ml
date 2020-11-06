@@ -63,8 +63,8 @@ let get_nb_branches_in (word_list : 's word list) : int =
 
 let current_word_depth = ref 0
 
-let rec word_append_according_depth (w1 : 's word) (w2 : 's word) (depth : int) =
-  match w1 with
+let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (depth : int) =
+  match current_word with
   (* The current word contains only one [Symb] *)
   | Symb s -> Seq [ Symb s; w2 ]
   | Branch b -> Branch b (* Case never reached. *)
