@@ -172,15 +172,6 @@ let create_char_rules_from_str_list str_list =
   !rules_ref
 ;;
 
-(* let get_rules_from_line line = *)
-(*   let splited_line = String.split_on_char ' ' line in *)
-(*   if 2 <> List.length splited_line *)
-(*   then raise NotValidRules *)
-(*   else *)
-(*     (function -> *)
-(*   | List.hd splited_line -> create_char_word_from_str (List.nth 1 splited_line)) *)
-(* ;; *)
-
 (* TODO *)
 let create_system_from_file (file_name : string) =
   let axiom_word = ref (Seq []) in
