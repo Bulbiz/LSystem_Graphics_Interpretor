@@ -26,6 +26,7 @@ let update_parse_state = function
 ;;
 
 exception Invalid_word
+exception Invalid_rule
 
 (* Empty word representation. *)
 let empty_word = Seq []
@@ -129,9 +130,46 @@ let create_char_word_from_str str =
     if !current_word_depth <> 0 then raise Invalid_word else !word_ref)
 ;;
 
-let create_char_rules_from_str _ = function
-  | 'B' -> Seq [ Symb 'B'; Symb 'B' ]
-  | s -> Symb s
+(* A valid rule string is of the form : <char><space><word> *)
+let is_a_valid_str_rule str =
+  (* Minimal valid rule is <char><space><char> (len = 3) *)
+  if 3 > String.length str
+  then false
+  else (
+    let str_list = String.split_on_char ' ' str in
+    (* Should have at least two str <> of ' ' *)
+    if 2 > List.length str_list
+    then false
+    else (
+      (* First string should be a char => len = 1 *)
+      let hd = List.hd str_list in
+      1 = String.length hd))
+;;
+
+let add_new_char_rule_from_str (other_rules : char rewrite_rules) (str : string) =
+  let str_list = String.split_on_char ' ' str in
+  (* Gets the new rule arg symbol. *)
+  let new_rule_symb = (List.hd str_list).[0] in
+  (* Gets the new rule char word. *)
+  let new_rule_char_word = create_char_word_from_str (List.nth str_list 1) in
+  (* Returns the new rules. *)
+  function
+  | s when s = new_rule_symb -> new_rule_char_word
+  | s -> other_rules s
+;;
+
+let create_char_rules_from_str_list str_list =
+  (* Uses a ref in order to iterate and modified through the [str_list].
+     And initializes it with the basic rule. *)
+  let rules_ref = ref (fun s -> Symb s) in
+  List.iter
+    (fun str ->
+      if is_a_valid_str_rule str
+         (* For each valid str in [str_list] append its corresponding rules. *)
+      then rules_ref := add_new_char_rule_from_str !rules_ref str
+      else raise Invalid_rule)
+    str_list;
+  !rules_ref
 ;;
 
 (* let get_rules_from_line line = *)

@@ -91,37 +91,67 @@ let systems_suite =
            create_char_word_from_str "B[+[BA]A][-[+[$A]A]A]BA[-[+[$A]A]X]"
          in
          assert_equal expected_word actual_word)
-       ; ("Systems.create_rules_from_str with a simple string word."
+       ; ("Systems.create_char_rules_from_str_list with a simple string word."
          >:: fun _ ->
          let expected_rules = function
            | 'B' -> Seq [ Symb 'B'; Symb 'B' ]
            | s -> Symb s
          in
-         let actual_rules = create_char_rules_from_str "B BB" in
+         let actual_rules = create_char_rules_from_str_list [ "B BB" ] in
          assert_for_each_symbol [ 'B'; '+' ] expected_rules actual_rules)
-         (* ; ("Systems.create_system_from_file with br3.sys should create a valid char \ *)
-       (*     system." *)
-         (*   >:: fun _ -> *)
-         (*   let system = create_system_from_file "../../../test/resources/br3.sys" in *)
-         (*   (* Verify system.axiom. *) *)
-         (*   let expected_axiom = Symb 'A' in *)
-         (*   assert_equal expected_axiom system.axiom; *)
-         (*   (* Verify system.rules. *) *)
-         (*   let expected_rules = function *)
-         (*     | 'A' -> *)
-         (*     | 'B' -> Seq [ Symb 'B'; Symb 'B' ] *)
-         (*     | s -> Symb s *)
-         (*   in *)
-         (*   assert_for_each_symbol [ 'A'; 'B' ] expected_rules system.rules *)
-         (*   (* (* Verify system.interp. *) *) *)
-         (*   (* let expected_interp = function *) *)
-         (*   (*   | 'A' | 'B' -> [ Line 5 ] *) *)
-         (*   (*   | '+' -> [ Turn 25 ] *) *)
-         (*   (*   | '-' -> [ Turn (-25) ] *) *)
-         (*   (*   | _ -> [ default_command ] *) *)
-         (*   (* in *) *)
-         (*   (* assert_for_each_symbol [ 'A'; 'B'; '+'; '-' ] expected_interp system.interp *) *)
-         (*   ) *)
+       ; ("Systems.create_char_rules_from_str_list with two branched string words."
+         >:: fun _ ->
+         let expected_rules = function
+           | 'B' -> Seq [ Symb 'B'; Symb 'B' ]
+           | 'C' -> Seq [ Branch (Seq [ Symb 'B'; Symb 'B' ]); Symb '+' ]
+           | s -> Symb s
+         in
+         let actual_rules = create_char_rules_from_str_list [ "B BB"; "C [BB]+" ] in
+         assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_rules actual_rules)
+       ; ("Systems.create_char_rules_from_str_list with two branched string words."
+         >:: fun _ ->
+         let expected_rules = function
+           | 'B' -> Seq [ Branch (Seq [ Symb 'B'; Symb 'B' ]); Symb '+'; Symb '-' ]
+           | 'C' -> Seq [ Branch (Seq [ Symb 'B'; Symb 'B' ]); Symb '+' ]
+           | s -> Symb s
+         in
+         let actual_rules =
+           create_char_rules_from_str_list [ "B BB"; "C [BB]+"; "B [BB]+-" ]
+         in
+         assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_rules actual_rules)
+       ; ("Systems.create_char_rules_from_str_list should raises an exception with an \
+           empty string."
+         >:: fun _ ->
+         assert_raises Invalid_rule (fun () -> create_char_rules_from_str_list [ "" ]))
+       ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
+           string that not contains the rewrited word."
+         >:: fun _ ->
+         assert_raises Invalid_rule (fun () -> create_char_rules_from_str_list [ "C " ]))
+       ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
+           string that not begin with a single char."
+         >:: fun _ ->
+         assert_raises Invalid_rule (fun () ->
+             create_char_rules_from_str_list [ "CDFD SFAFA" ]))
+       ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
+           string that contains a not valid word."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () ->
+             create_char_rules_from_str_list [ "C [asdf][" ]))
+       ; ("Systems.create_system_from_file with br3.sys should create a valid char \
+           system."
+         >:: fun _ ->
+         skip_if true "TODO : create_system_from_file with br3.sys";
+         let system = create_system_from_file "../../../test/resources/br3.sys" in
+         (* Verify system.axiom. *)
+         let expected_axiom = Symb 'A' in
+         assert_equal expected_axiom system.axiom;
+         (* Verify system.rules. *)
+         let expected_rules = function
+           | 'A' -> Symb 'A'
+           | 'B' -> Seq [ Symb 'B'; Symb 'B' ]
+           | s -> Symb s
+         in
+         assert_for_each_symbol [ 'A'; 'B' ] expected_rules system.rules)
        ]
 ;;
 
