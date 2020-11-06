@@ -14,12 +14,11 @@ let systems_suite =
        ; ("Systems.create_char_word_from_str with a normal word string"
          >:: fun _ ->
          assert_equal (Seq [ Symb 'A'; Symb 'B' ]) (create_char_word_from_str "AB"))
-         (* ; ("Systems.create_char_word_from_str with a root branch based word" *)
-         (*   >:: fun _ -> *)
-         (*   (* TODO. *) *)
-         (*   (* assert_equal *) *)
-         (*   (*   (Branch (Seq [ Symb 'A'; Symb 'B' ])) *) *)
-         (*   (*   (create_char_word_from_str "[AB]") *)) *)
+       ; ("Systems.create_char_word_from_str with a root branch based word"
+         >:: fun _ ->
+         assert_equal
+           (Seq [ Branch (Seq [ Symb 'A'; Symb 'B' ]) ])
+           (create_char_word_from_str "[AB]"))
        ; ("Systems.create_char_word_from_str with a normal branched string word"
          >:: fun _ ->
          let expected_word =
