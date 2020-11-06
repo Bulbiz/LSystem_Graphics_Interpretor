@@ -44,7 +44,21 @@ let systems_suite =
             let actual_word = next_state rules_seq_branch axiom_seq_branch in
             let expected_word = Seq[Branch(Seq [Branch (Seq[Symb 'A';Symb 'B']); Symb 'A']); Symb 'A'] in
             assert_equal expected_word actual_word
-        )
+        );
+
+        "Systems.next_state should return the right word empty." >:: (fun _ ->
+            let rules_seq_branch = (function
+                | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
+                | 'B' -> Symb 'A'
+                | s -> Symb s) 
+            in 
+            let axiom_seq_branch : char word = Seq [] in
+
+            (*test Branch and Seq for next_state*)
+            let actual_word = next_state rules_seq_branch axiom_seq_branch in
+            let expected_word = Seq[] in
+            assert_equal expected_word actual_word
+        );
     ]
 
 let () = run_test_tt_main systems_suite
