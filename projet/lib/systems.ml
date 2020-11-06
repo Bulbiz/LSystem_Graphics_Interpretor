@@ -21,14 +21,15 @@ let return_0 = 0
 
 let return_str = "Test string"
 
-
+(* Get the next generation from current_state by applying the rules to each Symb*)
 let next_state (rules:'s rewrite_rules) (current_state:'s word) = 
   let rec update_aux (rules:'s rewrite_rules) (word:'s word)  =
     match word with
     |Symb s -> rules s
     |Branch (s) -> Branch (update_aux rules s)
     |Seq (q) -> Seq(update_sequence rules q)
-
+  
+    (* Return a list of updated word *)
   and update_sequence (rules:'s rewrite_rules) (sequence:'s word list)  =
     match sequence with
     | [] -> []
