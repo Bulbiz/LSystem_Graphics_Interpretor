@@ -2,7 +2,7 @@ open OUnit2
 open Lsystems.Systems
 open Lsystems.Turtle
 
-let default_interp = Turn 0
+let default_command = Turn 0
 
 let assert_for_each_symbol s_list expected_rules actual_rules =
   List.iter (fun s -> assert_equal (expected_rules s) (actual_rules s)) s_list
@@ -183,29 +183,66 @@ let systems_suite =
             Systems.create_char_interp_from_str_list tests related.
 
         *)
-       ; ("Systems.create_char_interp_from_str_list with a valid string."
+       ; ("Systems.create_char_interp_from_str_list with a valid string command."
          >:: fun _ ->
-         todo "todo";
          let expected_interp = function
            | 'B' -> [ Line 5 ]
-           | _ -> [ default_interp ]
+           | _ -> [ default_command ]
          in
          let actual_interp = create_char_interp_from_str_list [ "B L5" ] in
          assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_interp actual_interp)
-       ; ("Systems.create_char_interp_from_str_list with a valid list of string."
+       ; ("Systems.create_char_interp_from_str_list with a valid string command."
          >:: fun _ ->
-         todo "todo";
          let expected_interp = function
            | 'A' -> [ Line 5 ]
            | 'B' -> [ Line 5 ]
            | '+' -> [ Turn 25 ]
            | '-' -> [ Turn (-25) ]
-           | _ -> [ default_interp ]
+           | _ -> [ default_command ]
          in
          let actual_interp =
            create_char_interp_from_str_list [ "A L5"; "B L5"; "+ T25"; "- T-25" ]
          in
+         assert_for_each_symbol [ 'A'; 'B'; 'C'; '+' ] expected_interp actual_interp)
+       ; ("Systems.create_char_interp_from_str_list with a multiple valid string \
+           commands."
+         >:: fun _ ->
+         let expected_interp = function
+           | 'B' -> [ Line 5; Line (-10); Move 104 ]
+           | _ -> [ default_command ]
+         in
+         let actual_interp = create_char_interp_from_str_list [ "B L5 L-10 M104" ] in
          assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_interp actual_interp)
+       ; ("Systems.create_char_interp_from_str_list with multiple valid string commands."
+         >:: fun _ ->
+         let expected_interp = function
+           | 'A' -> [ Line 5; Turn (-30) ]
+           | 'B' -> [ Line 5 ]
+           | '+' -> [ Turn 25 ]
+           | '-' -> [ Turn (-25); Line 5; Move (-100) ]
+           | _ -> [ default_command ]
+         in
+         let actual_interp =
+           create_char_interp_from_str_list
+             [ "A L5 T-30"; "B L5"; "+ T25"; "- T-25 L5 M-100" ]
+         in
+         assert_for_each_symbol [ 'A'; 'B'; 'C'; '+'; '-' ] expected_interp actual_interp
+         )
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a \
+           string starting with an invalid command init."
+         >:: fun _ ->
+         assert_raises Invalid_interp (fun () ->
+             create_char_interp_from_str_list [ "A L5 T-30"; " L5" ]))
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a a \
+           string has invalid value."
+         >:: fun _ ->
+         assert_raises Invalid_interp (fun () ->
+             create_char_interp_from_str_list [ "A L5 T-s0"; "B L5" ]))
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a a \
+           string has no value."
+         >:: fun _ ->
+         assert_raises Invalid_interp (fun () ->
+             create_char_interp_from_str_list [ "A "; "B L5" ]))
        ; ("Systems.create_system_from_file with br3.sys should create a valid char \
            system."
          >:: fun _ ->

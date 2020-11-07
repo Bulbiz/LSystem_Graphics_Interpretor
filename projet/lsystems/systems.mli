@@ -57,7 +57,7 @@ val create_command_from_str : string -> Turtle.command
 
     If a symbol have more than one interpretation, the last one is used.
 *)
-val create_char_interp_from_str_list : string list -> 'a -> Turtle.command list
+val create_char_interp_from_str_list : string list -> char -> Turtle.command list
 
 (** Creates a [char system] according to a given string. *)
 val create_system_from_file : string -> char system

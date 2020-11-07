@@ -150,7 +150,7 @@ let is_a_valid_str_rule str =
       1 = String.length hd))
 ;;
 
-let add_new_char_rule_from_str (other_rules : char rewrite_rules) (str : string) =
+let create_new_char_rules (other_rules : char rewrite_rules) (str : string) =
   let str_list = String.split_on_char ' ' str in
   (* Gets the new rule arg symbol. *)
   let new_rule_symb = (List.hd str_list).[0] in
@@ -170,13 +170,11 @@ let create_char_rules_from_str_list str_list =
     (fun str ->
       if is_a_valid_str_rule str
          (* For each valid str in [str_list] append its corresponding rules. *)
-      then rules_ref := add_new_char_rule_from_str !rules_ref str
+      then rules_ref := create_new_char_rules !rules_ref str
       else raise Invalid_rule)
     str_list;
   !rules_ref
 ;;
-
-let default_interp = Turn 0
 
 (* A valid string interpretation is of the form : <char>' '<cmd>[' '<cmd>]. *)
 let is_a_valid_str_interp str =
@@ -211,18 +209,40 @@ let create_command_from_str str =
   | _ -> raise Invalid_command
 ;;
 
-let add_new_char_interp_from_str interp _ = interp
+(** @return a new interpretation with ...
+    @raise Invalid_interp for an invalid input string.
+*)
+let create_new_char_interp (interp : char -> command list) (str : string)
+    : char -> command list
+  =
+  let command_list = ref [] in
+  (* [commands_str] = str[2:] (removing the first char and space.)*)
+  let commands_str = String.sub str 2 (String.length str - 2) in
+  let commands_str_list = String.split_on_char ' ' commands_str in
+  List.iter
+    (fun str ->
+      try command_list := !command_list @ [ create_command_from_str str ] with
+      (* NOTE: maybe it should be refactor with options. *)
+      | Failure _ | Invalid_argument _ | Invalid_command -> raise Invalid_interp)
+    commands_str_list;
+  function
+  | s when s = str.[0] -> !command_list
+  | s -> interp s
+;;
+
+let default_command = Turn 0
 
 let create_char_interp_from_str_list (str_list : string list) =
   (* Uses a ref in order to iterate and modified through the [str_list].
     Initializes it with the default_interp. *)
-  let interp_ref = ref (fun _ -> [ default_interp ]) in
+  let interp_ref = ref (fun _ -> [ default_command ]) in
   List.iter
     (fun str ->
       if is_a_valid_str_interp str
-      then interp_ref := add_new_char_interp_from_str !interp_ref str
+      then interp_ref := create_new_char_interp !interp_ref str
       else raise Invalid_interp)
     str_list;
+  (* Returns the interpretation. *)
   !interp_ref
 ;;
 
