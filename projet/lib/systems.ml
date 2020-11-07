@@ -43,8 +43,10 @@ let next_state (rules:'s rewrite_rules) (current_state:'s word) =
 
 (* FIXME : Have to be replaced by the axiom of the L System we get through the parser *)
 let axiom_symb = Symb 'A'
+(* current_state is the variable that store the current state of the LSystem*)
 let current_state = ref axiom_symb 
 
+(* update_state will update the current_state with his next generation according to the system *)
 let update_state (system : char system) =
   current_state := next_state system.rules (!current_state);
   ();;
