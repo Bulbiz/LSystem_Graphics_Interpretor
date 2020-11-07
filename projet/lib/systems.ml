@@ -56,4 +56,4 @@ let current_state = ref system.axiom
 (* update_state will update the current_state with his next generation according to the system *)
 let update_state () =
   current_state := next_state system.rules (!current_state);
-  ();;
+  ()
