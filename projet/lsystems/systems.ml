@@ -202,6 +202,7 @@ let create_command_from_str str =
     (* value = int_of_string (str[1:]) *)
     | false -> int_of_string svalue
   in
+  (* Returns the corresponding command. *)
   match first_char with
   | 'L' -> Line value
   | 'M' -> Move value
@@ -221,10 +222,12 @@ let create_new_char_interp (interp : char -> command list) (str : string)
   let commands_str_list = String.split_on_char ' ' commands_str in
   List.iter
     (fun str ->
+      (* Try to add a new char command if the command is valid. *)
       try command_list := !command_list @ [ create_command_from_str str ] with
       (* NOTE: maybe it should be refactor with options. *)
       | Failure _ | Invalid_argument _ | Invalid_command -> raise Invalid_interp)
     commands_str_list;
+  (* Returns the new interpretation. *)
   function
   | s when s = str.[0] -> !command_list
   | s -> interp s
@@ -234,7 +237,7 @@ let default_command = Turn 0
 
 let create_char_interp_from_str_list (str_list : string list) =
   (* Uses a ref in order to iterate and modified through the [str_list].
-    Initializes it with the default_interp. *)
+    Initializes it with the default case. *)
   let interp_ref = ref (fun _ -> [ default_command ]) in
   List.iter
     (fun str ->
