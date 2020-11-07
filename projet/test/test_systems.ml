@@ -1,15 +1,21 @@
 open OUnit2
 open Lsystems.Systems
+open Lsystems.Turtle
 
-(* open Lsystems.Turtle *)
+let default_interp = Turn 0
 
 let assert_for_each_symbol s_list expected_rules actual_rules =
   List.iter (fun s -> assert_equal (expected_rules s) (actual_rules s)) s_list
 ;;
 
 let systems_suite =
-  "SystemsTestSuite"
-  >::: [ ("Systems.create_char_word_from_str with one char."
+  "Systems suite"
+  >::: [ (*
+
+            Systems.create_char_word_from_str tests related.
+
+        *)
+         ("Systems.create_char_word_from_str with one char."
          >:: fun _ -> assert_equal (Symb 'A') (create_char_word_from_str "A"))
        ; ("Systems.create_char_word_from_str with a normal word string."
          >:: fun _ ->
@@ -91,6 +97,11 @@ let systems_suite =
            create_char_word_from_str "B[+[BA]A][-[+[$A]A]A]BA[-[+[$A]A]X]"
          in
          assert_equal expected_word actual_word)
+         (*
+
+            Systems.create_char_rules_from_str_list tests related.
+
+        *)
        ; ("Systems.create_char_rules_from_str_list with a simple string word."
          >:: fun _ ->
          let expected_rules = function
@@ -137,6 +148,64 @@ let systems_suite =
          >:: fun _ ->
          assert_raises Invalid_word (fun () ->
              create_char_rules_from_str_list [ "C [asdf][" ]))
+       ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
+           string that contains a not valid word."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () ->
+             create_char_rules_from_str_list [ "C [asdf][" ]))
+         (*
+
+            Systems.create_command_from_str tests related.
+
+        *)
+       ; ("Systems.create_command_from_str with a valid string with a positive figure."
+         >:: fun _ -> assert_equal (Line 5) (create_command_from_str "L5"))
+       ; ("Systems.create_command_from_str with a valid string with a negative figure."
+         >:: fun _ -> assert_equal (Line (-5)) (create_command_from_str "L-5"))
+       ; ("Systems.create_command_from_str with a valid string with a negative number."
+         >:: fun _ -> assert_equal (Move (-543)) (create_command_from_str "M-543"))
+       ; ("Systems.create_command_from_str should reaise an Invalid_command with a \
+           string starting with an invalid command init."
+         >:: fun _ ->
+         assert_raises Invalid_command (fun () -> create_command_from_str "C4"))
+       ; ("Systems.create_command_from_str should reaise an Invalid_argument 'index out \
+           of bounds' with a string with no value."
+         >:: fun _ ->
+         assert_raises (Invalid_argument "index out of bounds") (fun () ->
+             create_command_from_str "C"))
+       ; ("Systems.create_command_from_str 'int_of_string' should fail with a string \
+           with an invalid value."
+         >:: fun _ ->
+         assert_raises (Failure "int_of_string") (fun () -> create_command_from_str "C2@")
+         )
+         (*
+
+            Systems.create_char_interp_from_str_list tests related.
+
+        *)
+       ; ("Systems.create_char_interp_from_str_list with a valid string."
+         >:: fun _ ->
+         todo "todo";
+         let expected_interp = function
+           | 'B' -> [ Line 5 ]
+           | _ -> [ default_interp ]
+         in
+         let actual_interp = create_char_interp_from_str_list [ "B L5" ] in
+         assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_interp actual_interp)
+       ; ("Systems.create_char_interp_from_str_list with a valid list of string."
+         >:: fun _ ->
+         todo "todo";
+         let expected_interp = function
+           | 'A' -> [ Line 5 ]
+           | 'B' -> [ Line 5 ]
+           | '+' -> [ Turn 25 ]
+           | '-' -> [ Turn (-25) ]
+           | _ -> [ default_interp ]
+         in
+         let actual_interp =
+           create_char_interp_from_str_list [ "A L5"; "B L5"; "+ T25"; "- T-25" ]
+         in
+         assert_for_each_symbol [ 'B'; 'C'; '+' ] expected_interp actual_interp)
        ; ("Systems.create_system_from_file with br3.sys should create a valid char \
            system."
          >:: fun _ ->

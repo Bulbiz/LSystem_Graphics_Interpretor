@@ -1,3 +1,5 @@
+open Turtle
+
 type 's word =
   | Symb of 's
   | Seq of 's word list
@@ -27,6 +29,8 @@ let update_parse_state = function
 
 exception Invalid_word
 exception Invalid_rule
+exception Invalid_interp
+exception Invalid_command
 
 (* Empty word representation. *)
 let empty_word = Seq []
@@ -130,9 +134,9 @@ let create_char_word_from_str str =
     if !current_word_depth <> 0 then raise Invalid_word else !word_ref)
 ;;
 
-(* A valid rule string is of the form : <char><space><word> *)
+(* A valid string rule is of the form : <char>' '<word> *)
 let is_a_valid_str_rule str =
-  (* Minimal valid rule is <char><space><char> (len = 3) *)
+  (* Minimal valid rule is <char>' '<char> (len = 3) *)
   if 3 > String.length str
   then false
   else (
@@ -170,6 +174,56 @@ let create_char_rules_from_str_list str_list =
       else raise Invalid_rule)
     str_list;
   !rules_ref
+;;
+
+let default_interp = Turn 0
+
+(* A valid string interpretation is of the form : <char>' '<cmd>[' '<cmd>]. *)
+let is_a_valid_str_interp str =
+  if 4 > String.length str
+  then false
+  else (
+    let str_list = String.split_on_char ' ' str in
+    match str_list with
+    | [] -> false
+    | hd :: tlist ->
+      (* The first string should contains only one char
+         and all others strings should contains at least two chars.*)
+      1 = String.length hd && List.for_all (fun s -> 1 < String.length s) tlist)
+;;
+
+let create_command_from_str str =
+  let first_char = str.[0] in
+  (* Get str[1:] *)
+  let svalue = String.sub str 1 (String.length str - 1) in
+  let signed = '-' == svalue.[0] in
+  let value =
+    match signed with
+    (* value = -int_of_string (str[2:]) *)
+    | true -> -1 * int_of_string (String.sub str 2 (String.length str - 2))
+    (* value = int_of_string (str[1:]) *)
+    | false -> int_of_string svalue
+  in
+  match first_char with
+  | 'L' -> Line value
+  | 'M' -> Move value
+  | 'T' -> Turn value
+  | _ -> raise Invalid_command
+;;
+
+let add_new_char_interp_from_str interp _ = interp
+
+let create_char_interp_from_str_list (str_list : string list) =
+  (* Uses a ref in order to iterate and modified through the [str_list].
+    Initializes it with the default_interp. *)
+  let interp_ref = ref (fun _ -> [ default_interp ]) in
+  List.iter
+    (fun str ->
+      if is_a_valid_str_interp str
+      then interp_ref := add_new_char_interp_from_str !interp_ref str
+      else raise Invalid_interp)
+    str_list;
+  !interp_ref
 ;;
 
 (* TODO *)

@@ -14,6 +14,8 @@ type 's system =
 
 exception Invalid_word
 exception Invalid_rule
+exception Invalid_interp
+exception Invalid_command
 
 (** [word_append current_word w2] appends [w2] to [current_word] according this rules :
       If [current_word] is a Symb,
@@ -33,11 +35,29 @@ val word_append : 's word -> 's word -> 's word
 val create_char_word_from_str : string -> char word
 
 (** Creates a [char rewrite_rules] according to a given string list.
-    @raise Invalid_word if a word is not valid and Invalid_rule if a rule is not valid.
+    @raise Invalid_word if a word is not valid
+    @raise Invalid_rule if a rule is not valid.
 
-    If a symbol have more than one rule, the last is used.
+    If a symbol have more than one rule, the last one is used.
 *)
 val create_char_rules_from_str_list : string list -> char -> char word
+
+(** [create_command_from_str str]
+    @return the corresponding Turtle.command from [str].
+    @raise Invalid_command if [str.[0]] doesn't correspond to an command initial.
+    @Invalid_argument('index out of bounds') if [str] len < 2.
+    @Failure('int_of_string') if the value isn't a number.
+*)
+val create_command_from_str : string -> Turtle.command
+
+(** [create_char_interp_from_str_list str_list]
+    @return a char interpretation of the string list.
+    @raise Invalid_word if a word is not valid
+    @raise Invalid_interp if a rule is not valid.
+
+    If a symbol have more than one interpretation, the last one is used.
+*)
+val create_char_interp_from_str_list : string list -> 'a -> Turtle.command list
 
 (** Creates a [char system] according to a given string. *)
 val create_system_from_file : string -> char system
