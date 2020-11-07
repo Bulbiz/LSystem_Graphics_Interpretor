@@ -228,6 +228,21 @@ let systems_suite =
          in
          assert_for_each_symbol [ 'A'; 'B'; 'C'; '+'; '-' ] expected_interp actual_interp
          )
+       ; ("Systems.create_char_interp_from_str_list with duplicated symbols."
+         >:: fun _ ->
+         let expected_interp = function
+           | 'A' -> [ Line 5; Turn (-30) ]
+           | 'B' -> [ Turn 2; Line (-20) ]
+           | '+' -> [ Turn 25 ]
+           | '-' -> [ Turn (-25); Line 5; Move (-100) ]
+           | _ -> [ default_command ]
+         in
+         let actual_interp =
+           create_char_interp_from_str_list
+             [ "A L5 T-30"; "B L5"; "+ T25"; "- T-25 L5 M-100"; "B T2 L-20" ]
+         in
+         assert_for_each_symbol [ 'A'; 'B'; 'C'; '+'; '-' ] expected_interp actual_interp
+         )
        ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a \
            string starting with an invalid command init."
          >:: fun _ ->
