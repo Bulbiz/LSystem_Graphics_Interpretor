@@ -21,6 +21,7 @@ let return_0 = 0
 
 let return_str = "Test string"
 
+
 (* Get the next generation from current_state by applying the rules to each Symb*)
 let next_state (rules:'s rewrite_rules) (current_state:'s word) = 
   let rec update_word (rules:'s rewrite_rules) (word:'s word)  =
@@ -37,3 +38,13 @@ let next_state (rules:'s rewrite_rules) (current_state:'s word) =
     | w :: rest -> update_word rules w :: update_sequence rules rest
   in
   update_word rules current_state
+
+
+
+(* FIXME : Have to be replaced by the axiom of the L System we get through the parser *)
+let axiom_symb = Symb 'A'
+let current_state = ref axiom_symb 
+
+let update_state (system : char system) =
+  current_state := next_state system.rules (!current_state);
+  ();;
