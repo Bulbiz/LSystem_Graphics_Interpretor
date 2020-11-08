@@ -28,14 +28,12 @@ let current_state = ref system.axiom
 
 let get_current_state () = !current_state
 
-let next_state (rules) (current_state) = 
-  let rec update_word (rules:'s rewrite_rules) (word:'s word)  =
-    match word with
-    |Symb s -> rules s
-    |Branch (s) -> Branch (update_word rules s)
-    |Seq word_list -> Seq (List.map (update_word rules) word_list)
-  in
-  update_word rules current_state
+let rec next_state (rules) (current_state) = 
+  match current_state with
+  |Symb s -> rules s
+  |Branch w -> Branch (next_state rules w)
+  |Seq word_list -> Seq (List.map (next_state rules) word_list)
+
 
 let update_state () =
   current_state := next_state system.rules (!current_state);

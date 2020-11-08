@@ -14,6 +14,11 @@ type 's system = {
 
 (** Put here any type and function interfaces concerning systems *)
 
+(** [get_current_state]
+    @return the [current_state]
+*)
+val get_current_state : (unit) -> char word
+
 (** [next_state rules current_state]
     @return the next state of [current_state] according to the [rules]
 *)
@@ -23,8 +28,3 @@ val next_state :('s  rewrite_rules) -> ('s word) -> ('s word)
     update the global current_state
 *)
 val update_state: (unit) -> (unit)
-
-(** [get_current_state]
-    @return the [current_state]
-*)
-val get_current_state : (unit) -> char word
