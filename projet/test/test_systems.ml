@@ -23,7 +23,7 @@ let systems_suite =
                 | 'B' -> Symb 'A'
                 | s -> Symb s) 
             in 
-            let axiom_branch_seq : char word = Branch(Seq [Symb 'A';Symb 'B']) in
+            let axiom_branch_seq = Branch(Seq [Symb 'A';Symb 'B']) in
 
             (*test Branch and Seq for next_state*)
             let actual_word = next_state rules_branch_seq axiom_branch_seq in
@@ -38,7 +38,7 @@ let systems_suite =
                 | 'B' -> Symb 'A'
                 | s -> Symb s) 
             in 
-            let axiom_seq_branch : char word = Seq [Branch(Seq[Symb 'A';Symb 'B']); Symb 'B'] in
+            let axiom_seq_branch = Seq [Branch(Seq[Symb 'A';Symb 'B']); Symb 'B'] in
 
             (*test Branch and Seq for next_state*)
             let actual_word = next_state rules_seq_branch axiom_seq_branch in
@@ -52,7 +52,7 @@ let systems_suite =
                 | 'B' -> Symb 'A'
                 | s -> Symb s) 
             in 
-            let axiom_seq_branch : char word = Seq [] in
+            let axiom_seq_branch = Seq [] in
 
             (*test Branch and Seq for next_state*)
             let actual_word = next_state rules_seq_branch axiom_seq_branch in
