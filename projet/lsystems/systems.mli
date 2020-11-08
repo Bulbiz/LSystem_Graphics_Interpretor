@@ -44,14 +44,19 @@ val create_char_rules_from_str_list : string list -> char -> char word
 
 (** [create_command_from_str str]
     @return the corresponding Turtle.command from [str].
+
     @raise Invalid_command if [str.[0]] doesn't correspond to an command initial.
-    @Invalid_argument('index out of bounds') if [str] len < 2.
-    @Failure('int_of_string') if the value isn't a number.
+    @raise Invalid_argument('index out of bounds') if [str] len < 2.
+    @raise Failure('int_of_string') if the value isn't a number.
 *)
 val create_command_from_str : string -> Turtle.command
 
+(** Models interpretation default values. *)
+val default_interp : char -> Turtle.command list
+
 (** [create_char_interp_from_str_list str_list]
     @return a char interpretation of the string list.
+
     @raise Invalid_word if a word is not valid
     @raise Invalid_interp if a rule is not valid.
 
@@ -59,7 +64,13 @@ val create_command_from_str : string -> Turtle.command
 *)
 val create_char_interp_from_str_list : string list -> char -> Turtle.command list
 
-(** Creates a [char system] according to a given string. *)
+(** [create_char_system_from_file file_name]
+    @return the char system corresponding to a given file.
+
+    @raise Invalid_word    if a string representation of a word is invalid.
+    @raise Invalid_command if a string representation of a command is invalid.
+    @raise Invalid_interp  if a string representation of an interpretation is invalid.
+*)
 val create_system_from_file : string -> char system
 
 (** Prints a [char word] with Seq represented by '|'. *)

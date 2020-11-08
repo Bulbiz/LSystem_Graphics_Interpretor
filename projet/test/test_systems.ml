@@ -2,8 +2,6 @@ open OUnit2
 open Lsystems.Systems
 open Lsystems.Turtle
 
-let default_command = Turn 0
-
 let assert_for_each_symbol s_list expected_rules actual_rules =
   List.iter (fun s -> assert_equal (expected_rules s) (actual_rules s)) s_list
 ;;
@@ -243,6 +241,23 @@ let systems_suite =
          in
          assert_for_each_symbol [ 'A'; 'B'; 'C'; '+'; '-' ] expected_interp actual_interp
          )
+       ; ("Systems.create_char_interp_from_str_list with brackets."
+         >:: fun _ ->
+         let expected_interp = function
+           | 'A' -> [ Line 5; Turn (-30) ]
+           | '+' -> [ Turn 25 ]
+           | '-' -> [ Turn (-25); Line 5; Move (-100) ]
+           | '[' -> [ Store ]
+           | ']' -> [ Restore ]
+           | _ -> [ default_command ]
+         in
+         let actual_interp =
+           create_char_interp_from_str_list [ "A L5 T-30"; "+ T25"; "- T-25 L5 M-100" ]
+         in
+         assert_for_each_symbol
+           [ 'A'; 'C'; '+'; '-'; '['; ']' ]
+           expected_interp
+           actual_interp)
        ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a \
            string starting with an invalid command init."
          >:: fun _ ->
@@ -258,21 +273,126 @@ let systems_suite =
          >:: fun _ ->
          assert_raises Invalid_interp (fun () ->
              create_char_interp_from_str_list [ "A "; "B L5" ]))
-       ; ("Systems.create_system_from_file with br3.sys should create a valid char \
-           system."
+         (*
+
+            Systems.create_char_system_from_file tests related.
+
+        *)
+       ; ("Systems.create_system_from_file with br3.sys should create a valid \
+           corresponding char system."
          >:: fun _ ->
-         skip_if true "TODO : create_system_from_file with br3.sys";
          let system = create_system_from_file "../../../test/resources/br3.sys" in
          (* Verify system.axiom. *)
          let expected_axiom = Symb 'A' in
          assert_equal expected_axiom system.axiom;
          (* Verify system.rules. *)
          let expected_rules = function
-           | 'A' -> Symb 'A'
+           | 'A' ->
+             Seq
+               [ Symb 'B'
+               ; Branch (Seq [ Symb '+'; Symb 'A' ])
+               ; Branch (Seq [ Symb '-'; Symb 'A' ])
+               ; Symb 'B'
+               ; Symb 'A'
+               ]
            | 'B' -> Seq [ Symb 'B'; Symb 'B' ]
            | s -> Symb s
          in
-         assert_for_each_symbol [ 'A'; 'B' ] expected_rules system.rules)
+         assert_for_each_symbol [ 'A'; 'B' ] expected_rules system.rules;
+         (* Verify system.interp. *)
+         let expected_interp = function
+           | 'A' -> [ Line 5 ]
+           | 'B' -> [ Line 5 ]
+           | '+' -> [ Turn 25 ]
+           | '-' -> [ Turn (-25) ]
+           | _ -> [ default_command ]
+         in
+         assert_for_each_symbol [ 'A'; 'B'; '+'; '-' ] expected_interp system.interp)
+       ; ("Systems.create_system_from_file with htree.sys should create a valid char \
+           system."
+         >:: fun _ ->
+         let system = create_system_from_file "../../../test/resources/htree.sys" in
+         (* Verify system.axiom. *)
+         let expected_axiom = Symb 'A' in
+         assert_equal expected_axiom system.axiom;
+         (* Verify system.rules. *)
+         let expected_rules = function
+           | 'A' ->
+             Seq [ Symb 'B'; Branch (Seq [ Symb '+'; Symb 'A' ]); Symb '-'; Symb 'A' ]
+           | 'B' -> Seq [ Symb 'C'; Symb 'C' ]
+           | 'C' -> Symb 'B'
+           | s -> Symb s
+         in
+         assert_for_each_symbol [ 'A'; 'B'; 'C' ] expected_rules system.rules;
+         (* Verify system.interp. *)
+         let expected_interp = function
+           | 'A' -> [ Line 10 ]
+           | 'B' -> [ Line 14 ]
+           | 'C' -> [ Line 10 ]
+           | '+' -> [ Turn 90 ]
+           | '-' -> [ Turn (-90) ]
+           | _ -> [ default_command ]
+         in
+         assert_for_each_symbol [ 'A'; 'B'; 'C'; '+'; '-' ] expected_interp system.interp
+         )
+       ; ("Systems.create_system_from_file with snow.sys should create a valid char \
+           system."
+         >:: fun _ ->
+         let system = create_system_from_file "../../../test/resources/snow.sys" in
+         (* Verify system.axiom. *)
+         let expected_axiom =
+           Seq [ Symb 'A'; Symb '+'; Symb '+'; Symb 'A'; Symb '+'; Symb '+'; Symb 'A' ]
+         in
+         assert_equal expected_axiom system.axiom;
+         (* Verify system.rules. *)
+         let expected_rules = function
+           | 'A' ->
+             Seq
+               [ Symb 'A'
+               ; Symb '-'
+               ; Symb 'A'
+               ; Symb '+'
+               ; Symb '+'
+               ; Symb 'A'
+               ; Symb '-'
+               ; Symb 'A'
+               ]
+           | s -> Symb s
+         in
+         assert_for_each_symbol [ 'A'; '+'; '-' ] expected_rules system.rules;
+         (* Verify system.interp. *)
+         let expected_interp = function
+           | 'A' -> [ Line 30 ]
+           | '+' -> [ Turn 60 ]
+           | '-' -> [ Turn (-60) ]
+           | _ -> [ default_command ]
+         in
+         assert_for_each_symbol [ 'A'; '+'; '-' ] expected_interp system.interp)
+       ; ("Systems.create_system_from_file with invalid-axiom.sys should raise an \
+           Invalid_word exception."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () ->
+             create_system_from_file "../../../test/resources/invalid-axiom.sys"))
+       ; ("Systems.create_system_from_file with invalid-rules.sys should raise an \
+           Invalid_rule exception."
+         >:: fun _ ->
+         assert_raises Invalid_rule (fun () ->
+             create_system_from_file "../../../test/resources/invalid-rules.sys"))
+       ; ("Systems.create_system_from_file with invalid-rules-2.sys should raise an \
+           Invalid_word exception."
+         >:: fun _ ->
+         assert_raises Invalid_word (fun () ->
+             create_system_from_file "../../../test/resources/invalid-rules-2.sys"))
+       ; ("Systems.create_system_from_file with invalid-interp.sys should raise an \
+           Invalid_interp exception."
+         >:: fun _ ->
+         assert_raises Invalid_interp (fun () ->
+             create_system_from_file "../../../test/resources/invalid-interp.sys"))
+       ; ("Systems.create_system_from_file with invalid-command.sys should raise an \
+           Invalid_interp exception."
+         >:: fun _ ->
+         assert_raises Invalid_interp (fun () ->
+             create_system_from_file "../../../test/resources/invalid-command.sys"))
        ]
 ;;
 

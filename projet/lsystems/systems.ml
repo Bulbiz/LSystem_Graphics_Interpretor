@@ -13,20 +13,6 @@ type 's system =
   ; interp : 's -> Turtle.command list
   }
 
-(** Parser (not pur functionnal) *)
-
-type parse_state =
-  | Axiom
-  | Rules
-  | Interp
-  | Done
-
-let update_parse_state = function
-  | Axiom -> Rules
-  | Rules -> Interp
-  | Interp | Done -> Done
-;;
-
 exception Invalid_word
 exception Invalid_rule
 exception Invalid_interp
@@ -34,6 +20,13 @@ exception Invalid_command
 
 (* Empty word representation. *)
 let empty_word = Seq []
+
+let default_interp = function
+  | '[' -> [ Store ]
+  | ']' -> [ Restore ]
+  (* do nothing. *)
+  | _ -> [ Turn 0 ]
+;;
 
 let read_line ci : string option =
   try
@@ -233,12 +226,10 @@ let create_new_char_interp (interp : char -> command list) (str : string)
   | s -> interp s
 ;;
 
-let default_command = Turn 0
-
 let create_char_interp_from_str_list (str_list : string list) =
   (* Uses a ref in order to iterate and modified through the [str_list].
     Initializes it with the default case. *)
-  let interp_ref = ref (fun _ -> [ default_command ]) in
+  let interp_ref = ref default_interp in
   List.iter
     (fun str ->
       if is_a_valid_str_interp str
@@ -249,40 +240,64 @@ let create_char_interp_from_str_list (str_list : string list) =
   !interp_ref
 ;;
 
-(* TODO *)
+type parse_state =
+  | Creating_axiom
+  | Reading_rules
+  | Creating_rules
+  | Reading_interp
+  | Done
+
+let update_parse_state = function
+  | Creating_axiom -> Reading_rules
+  | Reading_rules -> Creating_rules
+  | Creating_rules -> Reading_interp
+  | Reading_interp -> Done
+  | Done -> Done
+;;
+
 let create_system_from_file (file_name : string) =
-  let axiom_word = ref (Seq []) in
-  (* let rules = ref (fun _ -> Seq []) in *)
-  let current_parse_state = ref Axiom in
+  (* Initializes references with default values. *)
+  let axiom_word_ref = ref empty_word in
+  let char_rules_ref = ref (fun s -> Symb s) in
+  let char_interp_ref = ref default_interp in
+  (* Initializes the current parse state. *)
+  let current_parse_state_ref = ref Creating_axiom in
+  (* Opens the wanted file. *)
   let ci = open_in file_name in
-  let line = ref (read_line ci) in
-  while None <> !line && Done <> !current_parse_state do
-    match !line with
+  let line_ref = ref (read_line ci) in
+  let line_list_ref = ref [] in
+  while None <> !line_ref && Done <> !current_parse_state_ref do
+    match !line_ref with
     | None -> ()
     | Some l ->
       let curr_line = String.trim l in
-      (* If it's an empty line, changes the current parse state. *)
+      (* If it's an empty line, updates the current parse state. *)
       if 0 = String.length curr_line
-      then
-        current_parse_state := update_parse_state !current_parse_state
-        (* If it's a commented line *)
+      then current_parse_state_ref := update_parse_state !current_parse_state_ref
       else if '#' <> curr_line.[0]
       then (
-        match !current_parse_state with
-        | Axiom ->
-          print_string "\nAxiom = ";
-          axiom_word := create_char_word_from_str curr_line
-        | Rules -> print_string "\nRules = "
-        (* if 3 <= String.length curr_line *)
-        (* then rules := get_rules_from_line curr_line *)
-        (* else raise NotValidRules *)
-        | Interp ->
-          print_string "\nInterp = ";
-          print_string curr_line
-        | Done -> print_string "\nDone.");
-      line := read_line ci
+        (* If it is not a commented line,
+           updates references according to the current parse state. *)
+        match !current_parse_state_ref with
+        | Creating_axiom -> axiom_word_ref := create_char_word_from_str curr_line
+        (* During the [Reading_rules] and [Reading_interp],
+           just appends the current line to [line_list_ref]. *)
+        | Reading_rules | Reading_interp ->
+          line_list_ref := !line_list_ref @ [ curr_line ]
+        (* During the [Creating_rules],
+           creates the char rules according the [line_list_ref] and reset [line_list_ref]. *)
+        | Creating_rules ->
+          char_rules_ref := create_char_rules_from_str_list !line_list_ref;
+          line_list_ref := [ curr_line ];
+          current_parse_state_ref := Reading_interp
+        | _ -> ());
+      (* Reads a new line.*)
+      line_ref := read_line ci
   done;
-  print_string "Finish.\n";
+  (* All files lines were readed. *)
   close_in ci;
-  { axiom = !axiom_word; rules = (fun s -> Symb s); interp = (fun _ -> [ Line 5 ]) }
+  (* Creates char interpretations. *)
+  char_interp_ref := create_char_interp_from_str_list !line_list_ref;
+  (* Returns the char system. *)
+  { axiom = !axiom_word_ref; rules = !char_rules_ref; interp = !char_interp_ref }
 ;;
