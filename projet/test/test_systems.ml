@@ -47,15 +47,15 @@ let systems_suite =
         );
 
         "Systems.next_state should return the right word empty." >:: (fun _ ->
-            let rules_seq_branch = (function
+            let rules_empty = (function
                 | 'A' -> Branch (Seq[Symb 'A';Symb 'B'])
                 | 'B' -> Symb 'A'
                 | s -> Symb s) 
             in 
-            let axiom_seq_branch = Seq [] in
+            let axiom_empty = Seq [] in
 
-            (*test Branch and Seq for next_state*)
-            let actual_word = next_state rules_seq_branch axiom_seq_branch in
+            (*test Empty word for next_state*)
+            let actual_word = next_state rules_empty axiom_empty in
             let expected_word = Seq[] in
             assert_equal expected_word actual_word
         );
