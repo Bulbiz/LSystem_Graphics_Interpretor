@@ -6,16 +6,21 @@ type 's word =
 
 type 's rewrite_rules = 's -> 's word
 
-type 's system = {
-  axiom : 's word;
-  rules : 's rewrite_rules;
-  interp : 's -> Turtle.command list
-}
+type 's system =
+  { axiom : 's word
+  ; rules : 's rewrite_rules
+  ; interp : 's -> Turtle.command list
+  }
 
-(** Put here any type and function interfaces concerning systems *)
+(** [get_current_state]
+    @return the [current_state]
+*)
+val get_current_state : unit -> char word
 
-val f_do_nothing : unit
+(** [next_state rules current_state] applies [rules] for each [current_state] symbols.
+    @return the resulting state.
+*)
+val next_state : 's rewrite_rules -> 's word -> 's word
 
-val return_0 : int
-
-val return_str : string
+(** [update_state] updates the global [current_state] with [next_state]. *)
+val update_state : unit -> unit
