@@ -18,8 +18,7 @@ let cmdline_options = [
 let extra_arg_action = fun s -> failwith ("Argument inconnu :"^s)
 
 let main () =
-    Arg.parse cmdline_options extra_arg_action usage;
-  Systems.f_do_nothing
+    Arg.parse cmdline_options extra_arg_action usage
 
 (** On ne lance ce main que dans le cas d'un programme autonome
     (c'est-à-dire que l'on est pas dans un "toplevel" ocaml interactif).

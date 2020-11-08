@@ -1,0 +1,12 @@
+# Second test file for invalid rule
+## Axiome:
+A++AA
+
+## Regles:
+A A-A++A-A
+B A-A]+A-A
+
+## Interpretations
+A L30
++ T60
+- T-60

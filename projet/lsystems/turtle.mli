@@ -6,11 +6,11 @@ type command =
   | Store            (** save the current position of the turtle *)
   | Restore          (** restore the last saved position not yet restored *)
 
-  (** Position and angle of the turtle *)
+(** Position and angle of the turtle *)
 type position = {
   x: float;        (** position x *)
   y: float;        (** position y *)
   a: int;          (** angle of the direction *)
 }
 
-(** Put here any type and function signatures concerning turtle *)
+val default_command : command
