@@ -371,27 +371,47 @@ let systems_suite =
        ; ("Systems.create_system_from_file with invalid-axiom.sys should raise an \
            Invalid_word exception."
          >:: fun _ ->
-         assert_raises Invalid_word (fun () ->
-             create_system_from_file "../../../test/resources/invalid-axiom.sys"))
+         assert_raises
+           (Invalid_system
+              "[ERROR in '../../../test/resources/invalid-axiom.sys' at line 3] : \
+               'A++A[A' is an invalid word.")
+           (fun () -> create_system_from_file "../../../test/resources/invalid-axiom.sys")
+         )
        ; ("Systems.create_system_from_file with invalid-rules.sys should raise an \
            Invalid_rule exception."
          >:: fun _ ->
-         assert_raises Invalid_rule (fun () ->
-             create_system_from_file "../../../test/resources/invalid-rules.sys"))
+         assert_raises
+           (Invalid_system
+              "[ERROR in '../../../test/resources/invalid-rules.sys' at line 5] : There \
+               is (at least) one invalid rewritting rule.")
+           (fun () -> create_system_from_file "../../../test/resources/invalid-rules.sys")
+         )
        ; ("Systems.create_system_from_file with invalid-rules-2.sys should raise an \
            Invalid_word exception."
          >:: fun _ ->
-         assert_raises Invalid_word (fun () ->
+         assert_raises
+           (Invalid_system
+              "[ERROR in '../../../test/resources/invalid-rules-2.sys' at line 5] : In \
+               rules there is an invalid word.")
+           (fun () ->
              create_system_from_file "../../../test/resources/invalid-rules-2.sys"))
        ; ("Systems.create_system_from_file with invalid-interp.sys should raise an \
            Invalid_interp exception."
          >:: fun _ ->
-         assert_raises Invalid_interp (fun () ->
+         assert_raises
+           (Invalid_system
+              "[ERROR in '../../../test/resources/invalid-interp.sys' at line 9] : There \
+               is (at least) one invalid interpretation.")
+           (fun () ->
              create_system_from_file "../../../test/resources/invalid-interp.sys"))
        ; ("Systems.create_system_from_file with invalid-command.sys should raise an \
            Invalid_interp exception."
          >:: fun _ ->
-         assert_raises Invalid_interp (fun () ->
+         assert_raises
+           (Invalid_system
+              "[ERROR in '../../../test/resources/invalid-command.sys' at line 9] : \
+               There is (at least) one invalid interpretation.")
+           (fun () ->
              create_system_from_file "../../../test/resources/invalid-command.sys"))
        ; (*
 

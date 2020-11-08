@@ -17,6 +17,7 @@ exception Invalid_word
 exception Invalid_rule
 exception Invalid_interp
 exception Invalid_command
+exception Invalid_system of string
 
 (* Empty word representation. *)
 let empty_word = Seq []
@@ -262,6 +263,41 @@ let read_line ci : string option =
   | End_of_file -> None
 ;;
 
+let exceptions_to_string = function
+  | Invalid_word -> "is an invalid word."
+  | Invalid_rule -> "There is (at least) one invalid rewritting rule."
+  | Invalid_interp -> "There is (at least) one invalid interpretation."
+  | _ -> "There is an unknow error."
+;;
+
+let create_invalid_system_exception
+    (e : exn)
+    (file_name : string)
+    (nb_line : int)
+    (msg : string option)
+  =
+  let msg =
+    match msg with
+    | Some s -> s
+    | None -> ""
+  in
+  let e_msg =
+    String.concat
+      ""
+      [ "[ERROR in '"
+      ; file_name
+      ; "' at line "
+      ; string_of_int nb_line
+      ; "] :"
+      ; msg
+      ; " "
+      ; exceptions_to_string e
+      ]
+  in
+  Invalid_system e_msg
+;;
+
+(* NOTE: should be factorizable. *)
 let create_system_from_file (file_name : string) =
   (* Initializes references with default values. *)
   let axiom_word_ref = ref empty_word in
@@ -271,6 +307,10 @@ let create_system_from_file (file_name : string) =
   let current_parse_state_ref = ref Creating_axiom in
   (* Opens the wanted file. *)
   let ci = open_in file_name in
+  (* Inits ref used for errors messages. *)
+  let curr_nb_line_ref = ref 1 in
+  let rules_nb_line_ref = ref (-1) in
+  let interp_nb_line_ref = ref (-1) in
   let line_ref = ref (read_line ci) in
   let line_list_ref = ref [] in
   while None <> !line_ref && Done <> !current_parse_state_ref do
@@ -278,15 +318,30 @@ let create_system_from_file (file_name : string) =
     | None -> ()
     | Some l ->
       let curr_line = String.trim l in
-      (* If it's an empty line, updates the current parse state. *)
+      (* If it's an empty line *)
       if 0 = String.length curr_line
-      then current_parse_state_ref := update_parse_state !current_parse_state_ref
+      then (
+        (* updates the current parse state *)
+        current_parse_state_ref := update_parse_state !current_parse_state_ref;
+        (* and the line numbers for errors msg. *)
+        if -1 = !rules_nb_line_ref
+        then rules_nb_line_ref := !curr_nb_line_ref + 1
+        else if -1 = !interp_nb_line_ref
+        then interp_nb_line_ref := !curr_nb_line_ref + 1)
       else if '#' <> curr_line.[0]
       then (
-        (* If it is not a commented line,
+        (* Else if it is not a commented line,
            updates references according to the current parse state. *)
         match !current_parse_state_ref with
-        | Creating_axiom -> axiom_word_ref := create_char_word_from_str curr_line
+        | Creating_axiom ->
+          (try axiom_word_ref := create_char_word_from_str curr_line with
+          | e ->
+            raise
+              (create_invalid_system_exception
+                 e
+                 file_name
+                 !curr_nb_line_ref
+                 (Some (String.concat curr_line [ " '"; "'" ]))))
         (* During the [Reading_rules] and [Reading_interp],
            just appends the current line to [line_list_ref]. *)
         | Reading_rules | Reading_interp ->
@@ -294,17 +349,28 @@ let create_system_from_file (file_name : string) =
         (* During the [Creating_rules],
            creates the char rules according the [line_list_ref] and reset [line_list_ref]. *)
         | Creating_rules ->
-          char_rules_ref := create_char_rules_from_str_list !line_list_ref;
+          (try char_rules_ref := create_char_rules_from_str_list !line_list_ref with
+          | Invalid_word ->
+            raise
+              (create_invalid_system_exception
+                 Invalid_word
+                 file_name
+                 !rules_nb_line_ref
+                 (Some " In rules there"))
+          | e ->
+            raise (create_invalid_system_exception e file_name !rules_nb_line_ref None));
           line_list_ref := [ curr_line ];
           current_parse_state_ref := Reading_interp
         | _ -> ());
       (* Reads a new line.*)
-      line_ref := read_line ci
+      line_ref := read_line ci;
+      curr_nb_line_ref := !curr_nb_line_ref + 1
   done;
   (* All files lines were readed. *)
   close_in ci;
   (* Creates char interpretations. *)
-  char_interp_ref := create_char_interp_from_str_list !line_list_ref;
+  (try char_interp_ref := create_char_interp_from_str_list !line_list_ref with
+  | e -> raise (create_invalid_system_exception e file_name !interp_nb_line_ref None));
   (* Returns the char system. *)
   { axiom = !axiom_word_ref; rules = !char_rules_ref; interp = !char_interp_ref }
 ;;
