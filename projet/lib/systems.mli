@@ -23,3 +23,8 @@ val next_state :('s  rewrite_rules) -> ('s word) -> ('s word)
     update the global current_state
 *)
 val update_state: (unit) -> (unit)
+
+(** [get_current_state]
+    @return the [current_state]
+*)
+val get_current_state : (unit) -> char word

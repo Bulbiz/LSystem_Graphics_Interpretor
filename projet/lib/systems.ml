@@ -26,6 +26,8 @@ let system : char system= {
 (* current_state is the variable that store the current state of the LSystem*)
 let current_state = ref system.axiom 
 
+let get_current_state () = !current_state
+
 let next_state (rules) (current_state) = 
   let rec update_word (rules:'s rewrite_rules) (word:'s word)  =
     match word with
@@ -35,7 +37,6 @@ let next_state (rules) (current_state) =
   in
   update_word rules current_state
 
-(* update_state will update the current_state with his next generation according to the system *)
 let update_state () =
   current_state := next_state system.rules (!current_state);
   ()
