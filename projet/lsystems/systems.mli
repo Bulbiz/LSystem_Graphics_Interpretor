@@ -17,6 +17,11 @@ exception Invalid_rule
 exception Invalid_interp
 exception Invalid_command
 
+(** [next_state rules current_state] applies [rules] for each [current_state] symbols.
+    @return the resulting state.
+*)
+val next_state : 's rewrite_rules -> 's word -> 's word
+
 (** [word_append current_word w2] appends [w2] to [current_word] according this rules :
       If [current_word] is a Symb,
         then creates a [Seq] with [current_word] followed by [w2].

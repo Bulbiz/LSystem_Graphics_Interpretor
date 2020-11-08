@@ -28,14 +28,6 @@ let default_interp = function
   | _ -> [ Turn 0 ]
 ;;
 
-let read_line ci : string option =
-  try
-    let x = input_line ci in
-    Some x
-  with
-  | End_of_file -> None
-;;
-
 let rec print_char_word = function
   | Symb s -> print_char s
   | Seq l ->
@@ -46,6 +38,13 @@ let rec print_char_word = function
     print_string "[";
     print_char_word b;
     print_string "]"
+;;
+
+let rec next_state rules current_state =
+  match current_state with
+  | Symb s -> rules s
+  | Branch w -> Branch (next_state rules w)
+  | Seq word_list -> Seq (List.map (next_state rules) word_list)
 ;;
 
 let get_nb_branches_in (word_list : 's word list) : int =
@@ -253,6 +252,14 @@ let update_parse_state = function
   | Creating_rules -> Reading_interp
   | Reading_interp -> Done
   | Done -> Done
+;;
+
+let read_line ci : string option =
+  try
+    let x = input_line ci in
+    Some x
+  with
+  | End_of_file -> None
 ;;
 
 let create_system_from_file (file_name : string) =
