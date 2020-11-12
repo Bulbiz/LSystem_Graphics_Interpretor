@@ -14,3 +14,6 @@ type position = {
 }
 
 val default_command : command
+
+val interpret_command : command -> unit
+
