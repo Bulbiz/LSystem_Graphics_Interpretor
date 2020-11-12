@@ -282,17 +282,14 @@ let create_invalid_system_exception
     | None -> ""
   in
   let e_msg =
-    String.concat
-      ""
-      [ "[ERROR in '"
-      ; file_name
-      ; "' at line "
-      ; string_of_int nb_line
-      ; "] :"
-      ; msg
-      ; " "
-      ; exceptions_to_string e
-      ]
+    "[ERROR in '"
+    ^ file_name
+    ^ "' at line "
+    ^ string_of_int nb_line
+    ^ "] :"
+    ^ msg
+    ^ " "
+    ^ exceptions_to_string e
   in
   Invalid_system e_msg
 ;;
@@ -341,7 +338,7 @@ let create_system_from_file (file_name : string) =
                  e
                  file_name
                  !curr_nb_line_ref
-                 (Some (String.concat curr_line [ " '"; "'" ]))))
+                 (Some (" '" ^ curr_line ^ "'"))))
         (* During the [Reading_rules] and [Reading_interp],
            just appends the current line to [line_list_ref]. *)
         | Reading_rules | Reading_interp ->
