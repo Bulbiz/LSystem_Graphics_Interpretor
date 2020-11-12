@@ -15,15 +15,38 @@ type position = {
 
 let default_command = Turn 0
 
-(*
+
 let initial_position = {x = 0.; y = 0.; a = 0;}
 let current_position = ref initial_position
-*)
-let truc = ref 0
 
-let interpret_line i = truc := i; ();;
-let interpret_move i = truc := i; ();;
-let interpret_turn i = truc := i; ();;
+let update_current_position i a =
+  let angle = float_of_int (!current_position).a in
+  let longueur = float_of_int i in
+
+  let new_x = (!current_position).x +. cos(angle) *. longueur in 
+  let new_y = (!current_position).x +. sin(angle) *. longueur in 
+  let new_a = (!current_position).a + a in 
+  
+  current_position := {
+    x = new_x;
+    y = new_y;
+    a = new_a;
+  }
+
+
+let interpret_line i = 
+  update_current_position i 0 (*;
+  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)*)
+
+
+let interpret_move i =
+  update_current_position i 0(*;
+  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)*)
+
+let interpret_turn a = 
+  update_current_position 0 a
+
+
 let interpret_store = ();;
 let interpret_restore = ();;
 
@@ -31,6 +54,6 @@ let interpret_command command =
   match command with
   |Line i -> interpret_line i
   |Move i -> interpret_move i 
-  |Turn i -> interpret_turn i
+  |Turn a -> interpret_turn a
   |Store -> interpret_store
   |Restore -> interpret_restore
