@@ -30,7 +30,7 @@ let rec interpret_word interpreter word =
     begin
       Turtle.interpret_command Store;
       interpret_word interpreter w;
-      Turtle.interpret_command Restore;
+      Turtle.interpret_command Restore
     end
   | Seq word_list -> List.iter (interpret_word interpreter) word_list
 
