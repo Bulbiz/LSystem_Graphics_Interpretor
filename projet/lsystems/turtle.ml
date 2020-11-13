@@ -1,4 +1,4 @@
-(*open Graphics*)
+open Graphics
 
 type command =
   | Line of int
@@ -35,13 +35,13 @@ let update_current_position i a =
 
 
 let interpret_line i = 
-  update_current_position i 0 (*;
-  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)*)
+  update_current_position i 0 ;
+  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 
 
 let interpret_move i =
-  update_current_position i 0(*;
-  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)*)
+  update_current_position i 0;
+  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 
 let interpret_turn a = 
   update_current_position 0 a
