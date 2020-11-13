@@ -48,7 +48,6 @@ let interpret_move i =
 let interpret_turn a = 
   update_current_position 0 a
 
-
 let interpret_store = 
   Stack.push (!current_position) storage
 
