@@ -53,7 +53,10 @@ let interpret_store =
   Stack.push (!current_position) storage
 
 let interpret_restore = 
-  current_position := Stack.pop storage
+  if Stack.is_empty storage then 
+    failwith "Impossible de charger la position"
+  else
+    current_position := Stack.pop storage
 
 let interpret_command command = 
   match command with
