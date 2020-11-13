@@ -18,9 +18,9 @@ exception Invalid_interp
 exception Invalid_command
 exception Invalid_system of string
 
-
+(** [interpret_word interpreter word] interpret the word for graphical view
+*)
 val interpret_word : ('s -> Turtle.command list) -> 's word -> unit
-
 
 (** [next_state rules current_state] applies [rules] for each [current_state] symbols.
     @return the resulting state.

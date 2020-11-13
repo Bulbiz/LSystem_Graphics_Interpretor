@@ -15,5 +15,9 @@ type position = {
 
 val default_command : command
 
+(** [interpret_command command] simply execute the command.
+    The command are :
+    Move, Line, Turn, Store, Restore
+*)
 val interpret_command : command -> unit
 
