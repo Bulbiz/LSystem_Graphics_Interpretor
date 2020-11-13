@@ -18,6 +18,8 @@ let default_command = Turn 0
 
 let initial_position = {x = 0.; y = 0.; a = 0;}
 let current_position = ref initial_position
+let storage = Stack.create ()
+
 
 let update_current_position i a =
   let angle = float_of_int (!current_position).a in
@@ -47,8 +49,11 @@ let interpret_turn a =
   update_current_position 0 a
 
 
-let interpret_store = ();;
-let interpret_restore = ();;
+let interpret_store = 
+  Stack.push (!current_position) storage
+
+let interpret_restore = 
+  current_position := Stack.pop storage
 
 let interpret_command command = 
   match command with
