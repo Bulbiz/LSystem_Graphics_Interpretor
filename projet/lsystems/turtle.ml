@@ -34,28 +34,32 @@ let update_current_position i a =
     y = new_y;
     a = new_a;
   }
-
+;;
 
 let interpret_line i = 
   update_current_position i 0 ;
   lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
-
+;;
 
 let interpret_move i =
   update_current_position i 0;
   moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+;;
 
 let interpret_turn a = 
   update_current_position 0 a
+;;
 
 let interpret_store = 
   Stack.push (!current_position) storage
+;;
 
 let interpret_restore = 
   if Stack.is_empty storage then 
     failwith "Impossible de charger la position"
   else
     current_position := Stack.pop storage
+;;
 
 let interpret_command command = 
   match command with
@@ -64,3 +68,4 @@ let interpret_command command =
   |Turn a -> interpret_turn a
   |Store -> interpret_store
   |Restore -> interpret_restore
+;;

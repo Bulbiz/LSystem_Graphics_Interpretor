@@ -33,7 +33,7 @@ let rec interpret_word interpreter word =
       Turtle.interpret_command Restore
     end
   | Seq word_list -> List.iter (interpret_word interpreter) word_list
-
+;;
 
 
 let default_interp = function
