@@ -27,11 +27,9 @@ let rec interpret_word interpreter word =
   match word with
   | Symb s -> List.iter Turtle.interpret_command (interpreter s)
   | Branch w -> 
-    begin
-      Turtle.interpret_command Store;
-      interpret_word interpreter w;
-      Turtle.interpret_command Restore
-    end
+    Turtle.interpret_command Store;
+    interpret_word interpreter w;
+    Turtle.interpret_command Restore
   | Seq word_list -> List.iter (interpret_word interpreter) word_list
 ;;
 
