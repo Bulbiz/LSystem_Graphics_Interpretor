@@ -22,10 +22,13 @@ exception Invalid_system of string
 *)
 val interpret_word : ('s -> Turtle.command list) -> 's word -> unit
 
-(** [next_state rules current_state] applies [rules] for each [current_state] symbols.
+(* Empty word representation. *)
+val empty_word : 's word
+
+(** [apply_rules rules current_state] applies [rules] for each [current_state] symbols.
     @return the resulting state.
 *)
-val next_state : 's rewrite_rules -> 's word -> 's word
+val apply_rules : 's rewrite_rules -> 's word -> 's word
 
 (** [word_append current_word w2] appends [w2] to [current_word] according this rules :
       If [current_word] is a Symb,

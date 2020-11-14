@@ -53,11 +53,11 @@ let rec print_char_word = function
     print_string "]"
 ;;
 
-let rec next_state rules current_state =
+let rec apply_rules rules current_state =
   match current_state with
   | Symb s -> rules s
-  | Branch w -> Branch (next_state rules w)
-  | Seq word_list -> Seq (List.map (next_state rules) word_list)
+  | Branch w -> Branch (apply_rules rules w)
+  | Seq word_list -> Seq (List.map (apply_rules rules) word_list)
 ;;
 
 let get_nb_branches_in (word_list : 's word list) : int =
