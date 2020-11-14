@@ -58,7 +58,8 @@ let interpret_restore =
   if Stack.is_empty storage then 
     failwith "Impossible de charger la position"
   else
-    current_position := Stack.pop storage
+    current_position := Stack.pop storage;
+    moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 ;;
 
 let interpret_command command = 
