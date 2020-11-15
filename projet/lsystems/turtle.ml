@@ -1,5 +1,4 @@
 open Graphics
-open Printf
 type command =
   | Line of int
   | Move of int
@@ -81,24 +80,19 @@ let interpret_command command =
   match command with
   |Line i -> 
       update_current_position i 0 ;
-      lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-      printf "LINE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+      lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
   |Move i -> 
       update_current_position i 0;
-      moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-      printf "MOVE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+      moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
   |Turn a -> 
-      update_current_position 0 a;
-      printf "TURN: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+      update_current_position 0 a
   |Store -> 
-      printf "STORE\n";
       Stack.push (!current_position) storage
   |Restore -> 
       if Stack.is_empty storage then 
         failwith "Impossible de charger la position"
       else
         current_position := Stack.pop storage;
-        moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-        printf "RESTORE: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+        moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 ;;
 
