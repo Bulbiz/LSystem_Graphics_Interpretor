@@ -19,9 +19,10 @@ let initial_position = {x = 0.; y = 0.; a = 0;}
 let current_position = ref initial_position
 let storage = Stack.create ()
 
+let convert_degree_to_radian angle = angle *. (Float.pi /. 180.)
 
 let update_current_position i a =
-  let angle = float_of_int (!current_position).a in
+  let angle = convert_degree_to_radian (float_of_int (!current_position).a) in
   let longueur = float_of_int i in
 
   let new_x = (!current_position).x +. cos(angle) *. longueur in 
