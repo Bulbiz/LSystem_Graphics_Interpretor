@@ -1,5 +1,4 @@
 open Graphics
-open Printf
 type command =
   | Line of int
   | Move of int
