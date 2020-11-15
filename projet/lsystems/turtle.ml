@@ -1,5 +1,5 @@
 open Graphics
-
+open Printf
 type command =
   | Line of int
   | Move of int
@@ -26,7 +26,7 @@ let update_current_position i a =
   let longueur = float_of_int i in
 
   let new_x = (!current_position).x +. cos(angle) *. longueur in 
-  let new_y = (!current_position).x +. sin(angle) *. longueur in 
+  let new_y = (!current_position).y +. sin(angle) *. longueur in 
   let new_a = (!current_position).a + a in 
   
   current_position := {
@@ -35,22 +35,26 @@ let update_current_position i a =
     a = new_a;
   }
 ;;
-
+(********A SUPPRIMER ***************
 let interpret_line i = 
   update_current_position i 0 ;
-  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+  printf "LINE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
 ;;
 
 let interpret_move i =
   update_current_position i 0;
-  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+  printf "MOVE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
 ;;
 
 let interpret_turn a = 
-  update_current_position 0 a
+  update_current_position 0 a;
+  printf "TURN: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
 ;;
 
 let interpret_store = 
+  printf "STORE\n";
   Stack.push (!current_position) storage
 ;;
 
@@ -59,7 +63,8 @@ let interpret_restore =
     failwith "Impossible de charger la position"
   else
     current_position := Stack.pop storage;
-    moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+    moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+    printf "RESTORE: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
 ;;
 
 let interpret_command command = 
@@ -70,3 +75,30 @@ let interpret_command command =
   |Store -> interpret_store
   |Restore -> interpret_restore
 ;;
+*)
+
+let interpret_command command = 
+  match command with
+  |Line i -> 
+      update_current_position i 0 ;
+      lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+      printf "LINE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+  |Move i -> 
+      update_current_position i 0;
+      moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+      printf "MOVE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+  |Turn a -> 
+      update_current_position 0 a;
+      printf "TURN: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+  |Store -> 
+      printf "STORE\n";
+      Stack.push (!current_position) storage
+  |Restore -> 
+      if Stack.is_empty storage then 
+        failwith "Impossible de charger la position"
+      else
+        current_position := Stack.pop storage;
+        moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
+        printf "RESTORE: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
+;;
+
