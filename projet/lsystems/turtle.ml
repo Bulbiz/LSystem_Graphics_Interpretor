@@ -1,4 +1,5 @@
 open Graphics
+open Printf
 type command =
   | Line of int
   | Move of int
@@ -34,65 +35,28 @@ let update_current_position i a =
     a = new_a;
   }
 ;;
-(********A SUPPRIMER ***************
+
 let interpret_line i = 
   update_current_position i 0 ;
-  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-  printf "LINE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
-;;
+  lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 
-let interpret_move i =
+let interpret_move i = 
   update_current_position i 0;
-  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-  printf "MOVE : X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
-;;
+  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 
-let interpret_turn a = 
-  update_current_position 0 a;
-  printf "TURN: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
-;;
-
-let interpret_store = 
-  printf "STORE\n";
-  Stack.push (!current_position) storage
-;;
-
-let interpret_restore = 
-  if Stack.is_empty storage then 
-    failwith "Impossible de charger la position"
-  else
-    current_position := Stack.pop storage;
-    moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y);
-    printf "RESTORE: X : %f ; Y : %f ; A : %i\n" (!current_position).x (!current_position).y (!current_position).a
-;;
+let interpret_turn a = update_current_position 0 a
 
 let interpret_command command = 
   match command with
   |Line i -> interpret_line i
-  |Move i -> interpret_move i 
+  |Move i -> interpret_move i
   |Turn a -> interpret_turn a
-  |Store -> interpret_store
-  |Restore -> interpret_restore
-;;
-*)
-
-let interpret_command command = 
-  match command with
-  |Line i -> 
-      update_current_position i 0 ;
-      lineto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
-  |Move i -> 
-      update_current_position i 0;
-      moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
-  |Turn a -> 
-      update_current_position 0 a
-  |Store -> 
-      Stack.push (!current_position) storage
+  |Store -> Stack.push (!current_position) storage
   |Restore -> 
-      if Stack.is_empty storage then 
-        failwith "Impossible de charger la position"
-      else
-        current_position := Stack.pop storage;
-        moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+    if Stack.is_empty storage then 
+      failwith "Impossible de charger la position"
+    else
+      current_position := Stack.pop storage;
+      moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
 ;;
 
