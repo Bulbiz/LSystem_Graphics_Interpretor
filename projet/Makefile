@@ -13,9 +13,11 @@ main:
 run_test:
 	dune runtest
 
-byte: lib
+byte: lsystems
 	cd main
 	dune build main.bc
 
 clean:
 	dune clean
+
+
