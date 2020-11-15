@@ -1,3 +1,5 @@
 (library
   (name lsystems)
-  (modules (:standard)))
+  (modules (:standard))
+  (libraries graphics))
+

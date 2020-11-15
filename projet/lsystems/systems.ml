@@ -22,6 +22,18 @@ exception Invalid_system of string
 (* Empty word representation. *)
 let empty_word = Seq []
 
+
+let rec interpret_word interpreter word =
+  match word with
+  | Symb s -> List.iter Turtle.interpret_command (interpreter s)
+  | Branch w -> 
+    Turtle.interpret_command Store;
+    interpret_word interpreter w;
+    Turtle.interpret_command Restore
+  | Seq word_list -> List.iter (interpret_word interpreter) word_list
+;;
+
+
 let default_interp = function
   | '[' -> [ Store ]
   | ']' -> [ Restore ]

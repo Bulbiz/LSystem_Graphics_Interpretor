@@ -18,6 +18,10 @@ exception Invalid_interp
 exception Invalid_command
 exception Invalid_system of string
 
+(** [interpret_word interpreter word] interpret the word for graphical view
+*)
+val interpret_word : ('s -> Turtle.command list) -> 's word -> unit
+
 (* Empty word representation. *)
 val empty_word : 's word
 
