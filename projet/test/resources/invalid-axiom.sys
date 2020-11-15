@@ -1,0 +1,11 @@
+# Test file for invalid axiom
+## Axiome:
+A++A[A
+
+## Regles:
+A A-A++A-A
+
+## Interpretations
+A L30
++ T60
+- T-60

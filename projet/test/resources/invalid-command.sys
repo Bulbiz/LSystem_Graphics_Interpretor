@@ -1,0 +1,12 @@
+# Test file for invalid command
+## Axiome:
+A++AA
+
+## Regles:
+A A-A++A-A
+B A-A+A-A
+
+## Interpretations
+A L30
+B T@
+- T-60

@@ -1,9 +1,9 @@
 .PHONY: all clean
 
-all: lib main run_test
+all: lsystems main run_test
 
-lib:
-	cd lib
+lsystems:
+	cd lsystems
 	dune build
 
 main:
@@ -13,9 +13,11 @@ main:
 run_test:
 	dune runtest
 
-byte: lib
+byte: lsystems
 	cd main
 	dune build main.bc
 
 clean:
 	dune clean
+
+
