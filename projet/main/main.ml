@@ -9,8 +9,8 @@ let color_is_set_ref = ref false
 let verbose_ref = ref false
 let src_file_ref = ref ""
 let dest_file_ref = ref ""
-let width_ref = ref 400
-let height_ref = ref 400
+let width_ref = ref 700
+let height_ref = ref 700
 
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
@@ -88,6 +88,7 @@ let save_image () =
   if !verbose_ref then printf "[INFO] : Image saved to '%s'\n" !dest_file_ref
 ;;
 
+(* Applies system's rules to the current word and returns it. *)
 let update_current_word current_step_nb =
   if !verbose_ref
   then (
@@ -97,17 +98,25 @@ let update_current_word current_step_nb =
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
 ;;
 
-let interpret_current_word ()=
-  modify_initial_position ((float_of_int !width_ref) /. 2.) ((float_of_int !height_ref) /. 2.) 0;
-  set_line_width 5;
-  interpret_word !systems_ref.interp !current_word_ref
+(* Resets init pos and apply system's interpretations to the current word. *)
+let interpret_current_word () =
+  clear_graph ();
+  modify_initial_position
+    (float_of_int !width_ref /. 2.)
+    (float_of_int !height_ref /. 10.)
+    90;
+  set_line_width 2;
+  interpret_word !systems_ref.interp !current_word_ref;
+  (* Dicreases the scalling ratio. *)
+  if 0.1 < !scale_coef_ref then scale_coef_ref := !scale_coef_ref *. 0.335
+;;
 
 let main () =
   Arg.parse (Arg.align cmdline_options) extra_arg_action usage_msg;
   if is_valid_args ()
   then (
     if !verbose_ref then print_current_state ();
-    (* Try to creates a char system from `src_file_ref`. *)
+    (* Tries to creates a char system from `src_file_ref`. *)
     try
       systems_ref := create_system_from_file !src_file_ref;
       if !verbose_ref then print_endline "[INFO] : L-System created";
@@ -117,10 +126,7 @@ let main () =
       for i = 0 to !nb_step_ref do
         update_current_word i;
         Unix.sleep 1;
-        (* TODO: updates the graph. *)
-        (*let x = i * 20 in*)
         interpret_current_word ();
-        (*fill_rect x x 20 20;*)
         synchronize ()
       done;
       wait_next_event ();
