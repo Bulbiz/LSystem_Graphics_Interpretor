@@ -11,6 +11,7 @@ Voir [INSTALL.md](../INSTALL.md)
   - bibliothèque graphics si elle ne vient pas déjà avec ocaml
   - [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
 (`opam install ounit2`)
+  - [bimage](https://github.com/zshipko/ocaml-bimage) pour la sauvegarde des images.
 
 ## Compilation et lancement
 
@@ -22,7 +23,7 @@ Par défaut, `make` est seulement utilisé pour abréger les commandes `dune` (v
   - `make byte` compilera si besoin en bytecode, utile pour faire
     tourner votre code dans un toplevel OCaml, voir `lsystems.top`.
 
-  - `make clean` pour effacer le répertoire provisoire `_build` 
+  - `make clean` pour effacer le répertoire provisoire `_build`
     produit par `dune` lors de ses compilations.
 
 Enfin pour lancer votre programme: `./run arg1 arg2 ...`
