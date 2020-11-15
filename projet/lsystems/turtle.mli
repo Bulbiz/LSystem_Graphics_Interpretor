@@ -15,6 +15,11 @@ type position = {
 
 val default_command : command
 
+(** [modify_initial_position] modify the position where the Lsystem 
+    start in the graphical representation
+*)
+val modify_initial_position : float -> float -> int -> unit
+
 (** [interpret_command command] simply execute the command.
     The command are :
     Move, Line, Turn, Store, Restore

@@ -2,6 +2,7 @@ open Printf
 open Bimage
 open Graphics
 open Lsystems.Systems
+open Lsystems.Turtle
 
 let nb_step_ref = ref (-1)
 let color_is_set_ref = ref false
@@ -96,6 +97,11 @@ let update_current_word current_step_nb =
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
 ;;
 
+let interpret_current_word ()=
+  modify_initial_position ((float_of_int !width_ref) /. 2.) ((float_of_int !height_ref) /. 2.) 0;
+  set_line_width 5;
+  interpret_word !systems_ref.interp !current_word_ref
+
 let main () =
   Arg.parse (Arg.align cmdline_options) extra_arg_action usage_msg;
   if is_valid_args ()
@@ -112,8 +118,9 @@ let main () =
         update_current_word i;
         Unix.sleep 1;
         (* TODO: updates the graph. *)
-        let x = i * 20 in
-        fill_rect x x 20 20;
+        (*let x = i * 20 in*)
+        interpret_current_word ();
+        (*fill_rect x x 20 20;*)
         synchronize ()
       done;
       wait_next_event ();

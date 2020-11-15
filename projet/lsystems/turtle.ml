@@ -19,6 +19,14 @@ let initial_position = {x = 0.; y = 0.; a = 0;}
 let current_position = ref initial_position
 let storage = Stack.create ()
 
+let modify_initial_position initial_x initial_y initial_a = 
+  current_position := {
+    x = initial_x;
+    y = initial_y;
+    a = initial_a;
+  };
+  moveto (int_of_float (!current_position).x) (int_of_float (!current_position).y)
+
 let convert_degree_to_radian angle = angle *. (Float.pi /. 180.)
 
 let update_current_position i a =
