@@ -138,21 +138,23 @@ let reset_initial_position () =
     90
 ;;
 
-(* Finds the right scaling ratio to fit the entire draw in the window. *)
+(* Finds the right scaling ratio to fit the entire draw in the window.
+   TODO: Isn't clean, indeed
+    - starting pos isn't modified so the draw doesn't fit the maximum window size.
+    - margin left aren't working all times...
+   *)
 let calc_scaling_coef () =
   let max_height = float_of_int (size_x ()) -. margin in
   let max_width = float_of_int (size_y ()) -. margin in
-  printf "left = %f\n" draw_boundary.left;
   while
     draw_boundary.top > max_height
     || draw_boundary.bottom < margin
     || draw_boundary.right > max_width
     || draw_boundary.left < margin
   do
-    printf "left = %f\n" draw_boundary.left;
     reset_draw_boundary ();
     reset_initial_position ();
-    scale_coef_ref := !scale_coef_ref *. 0.75;
+    scale_coef_ref := !scale_coef_ref *. 0.8;
     interpret_word !systems_ref.interp !current_word_ref false
   done
 ;;
