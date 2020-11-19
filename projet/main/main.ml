@@ -4,13 +4,16 @@ open Graphics
 open Lsystems.Systems
 open Lsystems.Turtle
 
+(** Parameters. *)
+
 let nb_step_ref = ref (-1)
 let color_is_set_ref = ref false
 let verbose_ref = ref false
 let src_file_ref = ref ""
 let dest_file_ref = ref ""
-let width_ref = ref 700
-let height_ref = ref 700
+let init_xpos_ref = ref 0.5
+let init_ypos_ref = ref 0.10
+let margin = 15.
 
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
@@ -20,7 +23,7 @@ let current_word_ref = ref empty_word
 
 (* Usages message. *)
 let usage_msg =
-  "Usage: \n ./run.sh -n nb_step -f sys_file [-c] [-o output] [--verbose]\n\n"
+  "Usage: \n ./run.sh -n nb_step -f sys_file [ options ]\n\n"
   ^ "Needed: \n"
   ^ " -f    \tInput file where is described the L-System\n"
   ^ " -n    \tThe number of interpretation steps\n\n"
@@ -33,11 +36,37 @@ let set_max_step max_step = nb_step_ref := max_step
 let set_output_file dest_file = dest_file_ref := dest_file
 let set_input_file input_file = src_file_ref := input_file
 
+let set_init_pos = function
+  | "center" -> init_ypos_ref := 0.5
+  | "center-left" ->
+    init_ypos_ref := 0.5;
+    init_xpos_ref := 0.15
+  | "center-right" ->
+    init_ypos_ref := 0.5;
+    init_xpos_ref := 0.75
+  | "bottom-left" -> init_xpos_ref := 0.15
+  | "bottom-right" -> init_xpos_ref := 0.75
+  | "top" -> init_ypos_ref := 0.8
+  | "top-left" ->
+    init_xpos_ref := 0.15;
+    init_ypos_ref := 0.8
+  | "top-right" ->
+    init_xpos_ref := 0.75;
+    init_ypos_ref := 0.8
+  | "bottom" -> ()
+  | s -> raise (Arg.Bad ("[ERROR] : '" ^ s ^ "' is not a valid starting position."))
+;;
+
 let cmdline_options =
   [ "-c", Arg.Unit set_color, "\tRender with colors"
   ; ( "-o"
     , Arg.String set_output_file
     , "\tThe output file where final image will be saved to" )
+  ; ( "--start-pos"
+    , Arg.String set_init_pos
+    , "\tThe starting position accepted values :\n\
+       \t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
+       top-left, top-right (default: bottom)\n" )
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-n", Arg.Int set_max_step, ""
   ; "-f", Arg.String set_input_file, ""
@@ -71,16 +100,20 @@ let print_current_state () =
 let wait_next_event () = ignore (wait_next_event [ Button_down; Key_pressed ])
 
 let init_graph () =
-  " " ^ string_of_int !width_ref ^ "x" ^ string_of_int !height_ref |> open_graph;
+  " " ^ string_of_int 700 ^ "x" ^ string_of_int 700 |> open_graph;
+  Graphics.set_color (rgb 150 150 150);
+  set_line_width 1;
   wait_next_event ()
 ;;
 
 (* Save the actual graph content into an png at [dest_file_ref]. *)
 let save_image () =
+  let height = size_y () in
+  let width = size_x () in
   (* Gets the corresponding 3D matrix. *)
-  let img_matrix = get_image 0 0 !width_ref !height_ref |> dump_image in
+  let img_matrix = get_image 0 0 width height |> dump_image in
   (* Creates an empty image. *)
-  let img = Image.create u8 gray !width_ref !height_ref in
+  let img = Image.create u8 gray width height in
   (* Fills the image with the content of [img_matrix]. *)
   Image.for_each (fun x y _ -> Image.set img x y 0 img_matrix.(y).(x)) img;
   (* Save the current [img] to the [dest_file_ref]. *)
@@ -98,17 +131,41 @@ let update_current_word current_step_nb =
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
 ;;
 
+let reset_initial_position () =
+  modify_initial_position
+    (float_of_int (size_x ()) *. !init_xpos_ref)
+    (float_of_int (size_y ()) *. !init_ypos_ref)
+    90
+;;
+
+(* Finds the right scaling ratio to fit the entire draw in the window.
+   TODO: Isn't clean, indeed
+    - starting pos isn't modified so the draw doesn't fit the maximum window size.
+    - margin left aren't working all times...
+   *)
+let calc_scaling_coef () =
+  let max_height = float_of_int (size_x ()) -. margin in
+  let max_width = float_of_int (size_y ()) -. margin in
+  while
+    draw_boundary.top > max_height
+    || draw_boundary.bottom < margin
+    || draw_boundary.right > max_width
+    || draw_boundary.left < margin
+  do
+    reset_draw_boundary ();
+    reset_initial_position ();
+    scale_coef_ref := !scale_coef_ref *. 0.8;
+    interpret_word !systems_ref.interp !current_word_ref false
+  done
+;;
+
 (* Resets init pos and apply system's interpretations to the current word. *)
 let interpret_current_word () =
   clear_graph ();
-  modify_initial_position
-    (float_of_int !width_ref /. 2.)
-    (float_of_int !height_ref /. 10.)
-    90;
-  set_line_width 2;
-  interpret_word !systems_ref.interp !current_word_ref;
-  (* Dicreases the scalling ratio. *)
-  if 0.1 < !scale_coef_ref then scale_coef_ref := !scale_coef_ref *. 0.335
+  interpret_word !systems_ref.interp !current_word_ref false;
+  calc_scaling_coef ();
+  reset_initial_position ();
+  interpret_word !systems_ref.interp !current_word_ref true
 ;;
 
 let main () =
@@ -124,10 +181,10 @@ let main () =
       (* Creates a graph. *)
       init_graph ();
       for i = 0 to !nb_step_ref do
-        update_current_word i;
-        Unix.sleep 1;
         interpret_current_word ();
-        synchronize ()
+        synchronize ();
+        update_current_word i;
+        Unix.sleep 1
       done;
       wait_next_event ();
       if "" <> !dest_file_ref then save_image ()

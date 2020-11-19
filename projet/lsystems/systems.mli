@@ -18,12 +18,16 @@ exception Invalid_interp
 exception Invalid_command
 exception Invalid_system of string
 
-(** [interpret_word interpreter word] interpret the word for graphical view
-*)
-val interpret_word : ('s -> Turtle.command list) -> 's word -> unit
-
 (* Empty word representation. *)
 val empty_word : 's word
+
+(** Models interpretation default values. *)
+val default_interp : char -> Turtle.command list
+
+(** [interpret_word interpreter word draw] interprets the word for graphical view
+    and if [draw = true] draw lines else just moves.
+*)
+val interpret_word : ('s -> Turtle.command list) -> 's word -> bool -> unit
 
 (** [apply_rules rules current_state] applies [rules] for each [current_state] symbols.
     @return the resulting state.
@@ -66,9 +70,6 @@ val create_char_rules_from_str_list : string list -> char -> char word
 *)
 val create_command_from_str : string -> Turtle.command
 
-(** Models interpretation default values. *)
-val default_interp : char -> Turtle.command list
-
 (** [create_char_interp_from_str_list str_list]
     @return a char interpretation of the string list.
 
@@ -86,5 +87,5 @@ val create_char_interp_from_str_list : string list -> char -> Turtle.command lis
 *)
 val create_system_from_file : string -> char system
 
-(** Prints a [char word] with Seq represented by '|'. *)
+(** Prints a [char word]. *)
 val print_char_word : char word -> unit

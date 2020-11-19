@@ -22,17 +22,15 @@ exception Invalid_system of string
 (* Empty word representation. *)
 let empty_word = Seq []
 
-
-let rec interpret_word interpreter word =
+let rec interpret_word interpreter word draw =
   match word with
-  | Symb s -> List.iter Turtle.interpret_command (interpreter s)
-  | Branch w -> 
-    Turtle.interpret_command Store;
-    interpret_word interpreter w;
-    Turtle.interpret_command Restore
-  | Seq word_list -> List.iter (interpret_word interpreter) word_list
+  | Symb s -> List.iter (fun cmd -> interpret_command cmd draw) (interpreter s)
+  | Branch w ->
+    interpret_command Store draw;
+    interpret_word interpreter w draw;
+    Turtle.interpret_command Restore draw
+  | Seq word_list -> List.iter (fun w -> interpret_word interpreter w draw) word_list
 ;;
-
 
 let default_interp = function
   | '[' -> [ Store ]
@@ -43,10 +41,7 @@ let default_interp = function
 
 let rec print_char_word = function
   | Symb s -> print_char s
-  | Seq l ->
-    print_string "|";
-    List.iter (fun w -> print_char_word w) l;
-    print_string "|"
+  | Seq l -> List.iter (fun w -> print_char_word w) l
   | Branch b ->
     print_string "[";
     print_char_word b;
