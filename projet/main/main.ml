@@ -6,7 +6,6 @@ open Lsystems.Turtle
 
 (** Parameters. *)
 
-let nb_step_ref = ref (-1)
 let color_is_set_ref = ref false
 let verbose_ref = ref false
 let src_file_ref = ref ""
@@ -20,19 +19,18 @@ let systems_ref =
 ;;
 
 let current_word_ref = ref empty_word
+let current_depth = ref 1
 
 (* Usages message. *)
 let usage_msg =
-  "Usage: \n ./run.sh -n nb_step -f sys_file [ options ]\n\n"
+  "Usage: \n ./run.sh -f sys_file [ options ]\n\n"
   ^ "Needed: \n"
-  ^ " -f    \tInput file where is described the L-System\n"
-  ^ " -n    \tThe number of interpretation steps\n\n"
+  ^ " -f    \tInput file where is described the L-System\n\n"
   ^ "Options:"
 ;;
 
 let set_color () = color_is_set_ref := true
 let set_verbose () = verbose_ref := true
-let set_max_step max_step = nb_step_ref := max_step
 let set_output_file dest_file = dest_file_ref := dest_file
 let set_input_file input_file = src_file_ref := input_file
 
@@ -68,7 +66,6 @@ let cmdline_options =
        \t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
        top-left, top-right (default: bottom)\n" )
   ; "--verbose", Arg.Unit set_verbose, ""
-  ; "-n", Arg.Int set_max_step, ""
   ; "-f", Arg.String set_input_file, ""
   ]
 ;;
@@ -77,33 +74,24 @@ let extra_arg_action s = failwith ("Invalid option : " ^ s)
 
 (* Verifies that all needed argument are provided. *)
 let is_valid_args () =
-  if -1 = !nb_step_ref
-  then
-    print_endline
-      "[ERROR in arguments] : The number of step needs to be specified. (--help for more \
-       informations)";
   if "" = !src_file_ref
   then
     print_endline
       "[ERROR in arguments] : The source file needs to be specified. (--help for more \
        informations)";
-  -1 <> !nb_step_ref && "" <> !src_file_ref
+  "" <> !src_file_ref
 ;;
 
 let print_current_state () =
   printf "[INFO] : Color       = '%b'\n" !color_is_set_ref;
   printf "[INFO] : Src file    = '%s'\n" !src_file_ref;
-  printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref;
-  printf "[INFO] : Nb of steps = %d\n" !nb_step_ref
+  printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref
 ;;
-
-let wait_next_event () = ignore (wait_next_event [ Button_down; Key_pressed ])
 
 let init_graph () =
   " " ^ string_of_int 700 ^ "x" ^ string_of_int 700 |> open_graph;
   Graphics.set_color (rgb 150 150 150);
-  set_line_width 1;
-  wait_next_event ()
+  set_line_width 1
 ;;
 
 (* Save the actual graph content into an png at [dest_file_ref]. *)
@@ -118,6 +106,7 @@ let save_image () =
   Image.for_each (fun x y _ -> Image.set img x y 0 img_matrix.(y).(x)) img;
   (* Save the current [img] to the [dest_file_ref]. *)
   Bimage_unix.Magick.write !dest_file_ref img;
+  (* TODO: find a way to be printed before wating for the next event. *)
   if !verbose_ref then printf "[INFO] : Image saved to '%s'\n" !dest_file_ref
 ;;
 
@@ -168,6 +157,44 @@ let interpret_current_word () =
   interpret_word !systems_ref.interp !current_word_ref true
 ;;
 
+let reset_current_word () = current_word_ref := !systems_ref.axiom
+let reset_scale_coef () = scale_coef_ref := 35.
+
+let calculate_depth n =
+  if n >= 0
+  then (
+    reset_current_word ();
+    reset_scale_coef ();
+    for i = 0 to n do
+      update_current_word i
+    done;
+    interpret_current_word ();
+    synchronize ();
+    current_depth := n)
+;;
+
+let calculate_next_depth () =
+  current_depth := !current_depth + 1;
+  update_current_word !current_depth;
+  interpret_current_word ();
+  synchronize ()
+;;
+
+let rec user_action () =
+  let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
+  match user_input.key with
+  | 'a' | 'l' | 'j' ->
+    calculate_next_depth ();
+    user_action ()
+  | 'r' | 'h' | 'k' ->
+    calculate_depth (!current_depth - 1);
+    user_action ()
+  | 's' ->
+    if "" <> !dest_file_ref then save_image ();
+    user_action ()
+  | _ -> ()
+;;
+
 let main () =
   Arg.parse (Arg.align cmdline_options) extra_arg_action usage_msg;
   if is_valid_args ()
@@ -177,17 +204,12 @@ let main () =
     try
       systems_ref := create_system_from_file !src_file_ref;
       if !verbose_ref then print_endline "[INFO] : L-System created";
-      current_word_ref := !systems_ref.axiom;
+      reset_current_word ();
       (* Creates a graph. *)
       init_graph ();
-      for i = 0 to !nb_step_ref do
-        interpret_current_word ();
-        synchronize ();
-        update_current_word i;
-        Unix.sleep 1
-      done;
-      wait_next_event ();
-      if "" <> !dest_file_ref then save_image ()
+      calculate_next_depth ();
+      (* Wait the user input *)
+      user_action ()
     with
     | Invalid_system msg -> print_endline msg
     | Sys_error msg -> print_endline ("[ERROR] " ^ msg))
