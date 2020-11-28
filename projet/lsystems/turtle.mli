@@ -41,3 +41,6 @@ val modify_initial_position : float -> float -> int -> unit
     action in the graph.
 *)
 val interpret_command : command -> bool -> unit
+
+(** [set_shifting] set the max value for the aleatory shifting for the interpretation *)
+val set_shifting : int -> unit

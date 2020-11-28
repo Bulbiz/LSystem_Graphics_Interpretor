@@ -178,6 +178,9 @@ let main () =
       systems_ref := create_system_from_file !src_file_ref;
       if !verbose_ref then print_endline "[INFO] : L-System created";
       current_word_ref := !systems_ref.axiom;
+      (* Set up the random shifting *)
+      Random.self_init ();
+      set_shifting 10;
       (* Creates a graph. *)
       init_graph ();
       for i = 0 to !nb_step_ref do
