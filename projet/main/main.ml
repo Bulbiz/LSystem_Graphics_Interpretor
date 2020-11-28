@@ -72,7 +72,7 @@ let cmdline_options =
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-n", Arg.Int set_max_step, ""
   ; "-f", Arg.String set_input_file, ""
-  ; "-s", Arg.Int set_shift_value, ""
+  ; "-s", Arg.Int set_shift_value, "\tValue for the aleatory shifting in the interpretation"
   ]
 ;;
 
