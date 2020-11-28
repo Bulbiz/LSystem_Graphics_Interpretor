@@ -13,7 +13,7 @@ let dest_file_ref = ref ""
 let init_xpos_ref = ref 0.5
 let init_ypos_ref = ref 0.10
 let margin = 15.
-let shift_ref = ref 1.0
+let shift_ref = ref 0.0
 
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
@@ -84,12 +84,12 @@ let is_valid_args () =
     print_endline
       "[ERROR in arguments] : The source file needs to be specified. (--help for more \
        informations)";
-  if 0.0 >= !shift_ref
+  if 0.0 > !shift_ref
   then
     print_endline
-      "[ERROR in arguments] : The shift have to be above or equals to 1. (--help for \
-       more informations)";
-  "" <> !src_file_ref && 0.0 < !shift_ref
+      "[ERROR in arguments] : The shifting value has to be positive. (--help for more \
+       informations)";
+  "" <> !src_file_ref && 0.0 <= !shift_ref
 ;;
 
 let print_current_state () =
