@@ -185,6 +185,8 @@ let calculate_depth n =
 ;;
 
 let calculate_next_depth () =
+  current_depth := !current_depth + 1;
+  reset_scale_coef ();
   update_current_word !current_depth;
   interpret_current_word ();
   synchronize ()
@@ -196,7 +198,6 @@ let rec user_action () =
   match user_input.key with
   | 'a' | 'l' | 'j' ->
     calculate_next_depth ();
-    current_depth := !current_depth + 1;
     user_action ()
   | 'r' | 'h' | 'k' ->
     calculate_depth (!current_depth - 1);
