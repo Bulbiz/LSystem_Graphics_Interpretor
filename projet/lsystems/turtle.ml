@@ -31,11 +31,8 @@ let set_shifting shift_value = shift := shift_value
 
 let get_shift () =
   let shift_value = Random.float !shift in
-  Printf.printf "shift_value = %f\n" shift_value;
-  shift_value
+  if Random.bool () then -1. *. shift_value else shift_value
 ;;
-
-(* if Random.bool () then shift_value else -shift_value *)
 
 let reset_draw_boundary () =
   draw_boundary.top <- 0.;
