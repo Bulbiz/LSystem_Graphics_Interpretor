@@ -100,10 +100,12 @@ let interpret_move len =
 
 let interpret_turn a = update_state 0. a
 
-let interpret_command command depth draw =
-  current_color.r
-    <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  set_color (rgb (255 - current_color.r) current_color.g current_color.b);
+let interpret_command command depth colored draw =
+  if colored
+  then (
+    current_color.r
+      <- current_color.r * (depth / (int_of_float !scale_coef_ref + 60)) mod 255;
+    set_color (rgb (255 - current_color.r) current_color.g current_color.b));
   match command with
   | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
   | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)

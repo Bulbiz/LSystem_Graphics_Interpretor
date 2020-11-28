@@ -153,19 +153,19 @@ let calc_scaling_coef () =
     reset_draw_boundary ();
     reset_initial_position ();
     scale_coef_ref := !scale_coef_ref *. 0.8;
-    interpret_word !systems_ref.interp !current_word_ref false
+    interpret_word !systems_ref.interp !current_word_ref false false
   done
 ;;
 
 (* Resets init pos and apply system's interpretations to the current word. *)
 let interpret_current_word () =
   clear_graph ();
-  interpret_word !systems_ref.interp !current_word_ref false;
+  interpret_word !systems_ref.interp !current_word_ref false false;
   calc_scaling_coef ();
   reset_initial_position ();
   reset_current_depth ();
   reset_color ();
-  interpret_word !systems_ref.interp !current_word_ref true
+  interpret_word !systems_ref.interp !current_word_ref !color_is_set_ref true
 ;;
 
 let reset_current_word () = current_word_ref := !systems_ref.axiom
