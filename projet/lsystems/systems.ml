@@ -21,15 +21,24 @@ exception Invalid_system of string
 
 (* Empty word representation. *)
 let empty_word = Seq []
+let current_depth = ref 100
+let reset_current_depth () = current_depth := 100
 
-let rec interpret_word interpreter word draw =
+let rec interpret_word interpreter word colored draw =
+  if colored then reset_color ();
   match word with
-  | Symb s -> List.iter (fun cmd -> interpret_command cmd draw) (interpreter s)
+  | Symb s ->
+    List.iter
+      (fun cmd -> interpret_command cmd !current_depth colored draw)
+      (interpreter s)
   | Branch w ->
-    interpret_command Store draw;
-    interpret_word interpreter w draw;
-    Turtle.interpret_command Restore draw
-  | Seq word_list -> List.iter (fun w -> interpret_word interpreter w draw) word_list
+    current_depth := !current_depth + 100;
+    interpret_command Store !current_depth colored draw;
+    interpret_word interpreter w colored draw;
+    Turtle.interpret_command Restore !current_depth colored draw;
+    current_depth := !current_depth - 100
+  | Seq word_list ->
+    List.iter (fun w -> interpret_word interpreter w colored draw) word_list
 ;;
 
 let default_interp = function

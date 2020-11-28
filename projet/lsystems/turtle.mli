@@ -37,10 +37,12 @@ val scale_coef_ref : float ref
 *)
 val modify_initial_position : float -> float -> int -> unit
 
-(** [interpret_command command draw] interprets a command with the corresponding turtle
+(** [interpret_command command depth draw] interprets a command with the corresponding turtle
     action in the graph.
 *)
-val interpret_command : command -> bool -> unit
+val interpret_command : command -> int -> bool -> bool -> unit
 
 (** [set_shifting shift_value] set the max value for the aleatory shifting for the interpretation *)
 val set_shifting : float -> unit
+
+val reset_color : unit -> unit

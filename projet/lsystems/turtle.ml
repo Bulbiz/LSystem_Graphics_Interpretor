@@ -20,6 +20,12 @@ type draw_boundary =
   ; mutable left : float
   }
 
+type color_rgb =
+  { mutable r : int
+  ; mutable g : int
+  ; mutable b : int
+  }
+
 let scale_coef_ref = ref 35.
 let default_command = Turn 0
 let initial_position = { x = 0.; y = 0.; a = 0 }
@@ -28,6 +34,7 @@ let current_position = ref initial_position
 let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
+let current_color = { r = 10; g = 30; b = 30 }
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -39,6 +46,12 @@ let reset_draw_boundary () =
   draw_boundary.right <- 0.;
   draw_boundary.bottom <- 0.;
   draw_boundary.left <- 0.
+;;
+
+let reset_color () =
+  current_color.r <- 10;
+  current_color.g <- 10;
+  current_color.b <- 10
 ;;
 
 let modify_initial_position initial_x initial_y initial_a =
@@ -87,7 +100,12 @@ let interpret_move len =
 
 let interpret_turn a = update_state 0. a
 
-let interpret_command command draw =
+let interpret_command command depth colored draw =
+  if colored
+  then (
+    current_color.r
+      <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+    set_color (rgb (255 - current_color.r) current_color.g current_color.b));
   match command with
   | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
   | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)
