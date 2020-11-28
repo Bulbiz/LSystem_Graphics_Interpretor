@@ -20,7 +20,7 @@ let systems_ref =
 ;;
 
 let current_word_ref = ref empty_word
-let current_depth = ref (-1)
+let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
@@ -139,7 +139,6 @@ let reset_initial_position () =
 
 (* Finds the right scaling ratio to fit the entire draw in the window.
    TODO: Isn't clean, indeed
-    - starting pos isn't modified so the draw doesn't fit the maximum window size.
     - margin left aren't working all times...
    *)
 let calc_scaling_coef () =
@@ -177,7 +176,7 @@ let calculate_depth n =
   then (
     reset_current_word ();
     reset_scale_coef ();
-    for i = 0 to n do
+    for i = 0 to n - 1 do
       update_current_word i
     done;
     interpret_current_word ();
@@ -186,17 +185,18 @@ let calculate_depth n =
 ;;
 
 let calculate_next_depth () =
-  current_depth := !current_depth + 1;
   update_current_word !current_depth;
   interpret_current_word ();
   synchronize ()
 ;;
 
 let rec user_action () =
+  if !verbose_ref then Printf.printf "current_depth = %d\n" !current_depth;
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
     calculate_next_depth ();
+    current_depth := !current_depth + 1;
     user_action ()
   | 'r' | 'h' | 'k' ->
     calculate_depth (!current_depth - 1);
@@ -223,7 +223,7 @@ let main () =
       set_shifting !shift_ref;
       (* Creates a graph. *)
       init_graph ();
-      calculate_next_depth ();
+      interpret_current_word ();
       (* Wait the user input *)
       user_action ()
     with
