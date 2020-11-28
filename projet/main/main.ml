@@ -20,7 +20,7 @@ let systems_ref =
 ;;
 
 let current_word_ref = ref empty_word
-let current_depth = ref 1
+let current_depth = ref (-1)
 
 (* Usages message. *)
 let usage_msg =
@@ -164,6 +164,8 @@ let interpret_current_word () =
   interpret_word !systems_ref.interp !current_word_ref false;
   calc_scaling_coef ();
   reset_initial_position ();
+  reset_current_depth ();
+  reset_color ();
   interpret_word !systems_ref.interp !current_word_ref true
 ;;
 
