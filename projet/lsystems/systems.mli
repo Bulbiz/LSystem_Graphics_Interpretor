@@ -27,7 +27,7 @@ val default_interp : char -> Turtle.command list
 (** [interpret_word interpreter word draw] interprets the word for graphical view
     and if [draw = true] draw lines else just moves.
 *)
-val interpret_word : ('s -> Turtle.command list) -> 's word -> bool -> unit
+val interpret_word : ('s -> Turtle.command list) -> 's word -> bool -> bool -> unit
 
 (** [apply_rules rules current_state] applies [rules] for each [current_state] symbols.
     @return the resulting state.
@@ -89,3 +89,5 @@ val create_system_from_file : string -> char system
 
 (** Prints a [char word]. *)
 val print_char_word : char word -> unit
+
+val reset_current_depth : unit -> unit

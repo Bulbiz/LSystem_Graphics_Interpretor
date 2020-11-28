@@ -13,14 +13,14 @@ let dest_file_ref = ref ""
 let init_xpos_ref = ref 0.5
 let init_ypos_ref = ref 0.10
 let margin = 15.
-let shift_ref = ref 1.0
+let shift_ref = ref 0.0
 
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
 ;;
 
 let current_word_ref = ref empty_word
-let current_depth = ref 1
+let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
@@ -84,12 +84,12 @@ let is_valid_args () =
     print_endline
       "[ERROR in arguments] : The source file needs to be specified. (--help for more \
        informations)";
-  if 0.0 >= !shift_ref
+  if 0.0 > !shift_ref
   then
     print_endline
-      "[ERROR in arguments] : The shift have to be above or equals to 1. (--help for \
-       more informations)";
-  "" <> !src_file_ref && 0.0 < !shift_ref
+      "[ERROR in arguments] : The shifting value has to be positive. (--help for more \
+       informations)";
+  "" <> !src_file_ref && 0.0 <= !shift_ref
 ;;
 
 let print_current_state () =
@@ -104,7 +104,9 @@ let init_graph () =
   set_line_width 1
 ;;
 
-(* Save the actual graph content into an png at [dest_file_ref]. *)
+(** Save the actual graph content into an png at [dest_file_ref].
+  TODO: need to unpacked [color] to get the rgb corresponding values.
+ *)
 let save_image () =
   let height = size_y () in
   let width = size_x () in
@@ -139,7 +141,6 @@ let reset_initial_position () =
 
 (* Finds the right scaling ratio to fit the entire draw in the window.
    TODO: Isn't clean, indeed
-    - starting pos isn't modified so the draw doesn't fit the maximum window size.
     - margin left aren't working all times...
    *)
 let calc_scaling_coef () =
@@ -154,17 +155,19 @@ let calc_scaling_coef () =
     reset_draw_boundary ();
     reset_initial_position ();
     scale_coef_ref := !scale_coef_ref *. 0.8;
-    interpret_word !systems_ref.interp !current_word_ref false
+    interpret_word !systems_ref.interp !current_word_ref false false
   done
 ;;
 
 (* Resets init pos and apply system's interpretations to the current word. *)
 let interpret_current_word () =
   clear_graph ();
-  interpret_word !systems_ref.interp !current_word_ref false;
+  interpret_word !systems_ref.interp !current_word_ref false false;
   calc_scaling_coef ();
   reset_initial_position ();
-  interpret_word !systems_ref.interp !current_word_ref true
+  reset_current_depth ();
+  reset_color ();
+  interpret_word !systems_ref.interp !current_word_ref !color_is_set_ref true
 ;;
 
 let reset_current_word () = current_word_ref := !systems_ref.axiom
@@ -175,7 +178,7 @@ let calculate_depth n =
   then (
     reset_current_word ();
     reset_scale_coef ();
-    for i = 0 to n do
+    for i = 0 to n - 1 do
       update_current_word i
     done;
     interpret_current_word ();
@@ -185,12 +188,14 @@ let calculate_depth n =
 
 let calculate_next_depth () =
   current_depth := !current_depth + 1;
+  reset_scale_coef ();
   update_current_word !current_depth;
   interpret_current_word ();
   synchronize ()
 ;;
 
 let rec user_action () =
+  if !verbose_ref then Printf.printf "current_depth = %d\n" !current_depth;
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
@@ -221,7 +226,7 @@ let main () =
       set_shifting !shift_ref;
       (* Creates a graph. *)
       init_graph ();
-      calculate_next_depth ();
+      interpret_current_word ();
       (* Wait the user input *)
       user_action ()
     with
