@@ -104,7 +104,9 @@ let init_graph () =
   set_line_width 1
 ;;
 
-(* Save the actual graph content into an png at [dest_file_ref]. *)
+(** Save the actual graph content into an png at [dest_file_ref].
+  TODO: need to unpacked [color] to get the rgb corresponding values.
+ *)
 let save_image () =
   let height = size_y () in
   let width = size_x () in
