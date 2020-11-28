@@ -26,20 +26,16 @@ let initial_position = { x = 0.; y = 0.; a = 0 }
 let storage = Stack.create ()
 let current_position = ref initial_position
 let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
-let shift = ref 1
+let shift = ref 1.0
+let set_shifting shift_value = shift := shift_value
 
-let set_shifting value = 
-  if value > 0 then
-    shift := value
+let get_shift () =
+  let shift_value = Random.float !shift in
+  Printf.printf "shift_value = %f\n" shift_value;
+  shift_value
 ;;
 
-let get_shift ()= 
-  let shift_value = Random.int !shift in
-  if (Random.bool()) then
-    shift_value
-  else  
-    (-shift_value)
-;;
+(* if Random.bool () then shift_value else -shift_value *)
 
 let reset_draw_boundary () =
   draw_boundary.top <- 0.;
@@ -56,7 +52,9 @@ let modify_initial_position initial_x initial_y initial_a =
 let convert_degree_to_radian angle = angle *. (Float.pi /. 180.)
 
 let update_current_position len a =
-  let angle = convert_degree_to_radian (float_of_int !current_position.a) in
+  let angle =
+    convert_degree_to_radian (float_of_int !current_position.a +. get_shift ())
+  in
   let new_x = !current_position.x +. (cos angle *. len) in
   let new_y = !current_position.y +. (sin angle *. len) in
   let new_a = !current_position.a + a in
@@ -94,9 +92,9 @@ let interpret_turn a = update_state 0. a
 
 let interpret_command command draw =
   match command with
-  | Line len -> interpret_line (float_of_int (len + (get_shift ())) *. !scale_coef_ref) draw
-  | Move len -> interpret_move (float_of_int (len + (get_shift ())) *. !scale_coef_ref)
-  | Turn a -> interpret_turn (a + get_shift ())
+  | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
+  | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)
+  | Turn a -> interpret_turn a
   | Store -> Stack.push !current_position storage
   | Restore ->
     if Stack.is_empty storage

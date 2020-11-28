@@ -14,7 +14,7 @@ let dest_file_ref = ref ""
 let init_xpos_ref = ref 0.5
 let init_ypos_ref = ref 0.10
 let margin = 15.
-let shift_ref = ref 1
+let shift_ref = ref 1.0
 
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
@@ -36,7 +36,7 @@ let set_verbose () = verbose_ref := true
 let set_max_step max_step = nb_step_ref := max_step
 let set_output_file dest_file = dest_file_ref := dest_file
 let set_input_file input_file = src_file_ref := input_file
-let set_shift_value value = shift_ref := value
+let set_shift_value value = shift_ref := float_of_int value
 
 let set_init_pos = function
   | "center" -> init_ypos_ref := 0.5
@@ -61,6 +61,9 @@ let set_init_pos = function
 
 let cmdline_options =
   [ "-c", Arg.Unit set_color, "\tRender with colors"
+  ; ( "-s"
+    , Arg.Int set_shift_value
+    , "\tValue for the aleatory shifting in the interpretation" )
   ; ( "-o"
     , Arg.String set_output_file
     , "\tThe output file where final image will be saved to" )
@@ -72,7 +75,6 @@ let cmdline_options =
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-n", Arg.Int set_max_step, ""
   ; "-f", Arg.String set_input_file, ""
-  ; "-s", Arg.Int set_shift_value, "\tValue for the aleatory shifting in the interpretation"
   ]
 ;;
 
@@ -90,12 +92,12 @@ let is_valid_args () =
     print_endline
       "[ERROR in arguments] : The source file needs to be specified. (--help for more \
        informations)";
-  if 0 >= !shift_ref
+  if 0.0 >= !shift_ref
   then
     print_endline
-      "[ERROR in arguments] : The shift have to be above or equals to 1. (--help for more \
-       informations)";
-  -1 <> !nb_step_ref && "" <> !src_file_ref && 0 < !shift_ref
+      "[ERROR in arguments] : The shift have to be above or equals to 1. (--help for \
+       more informations)";
+  -1 <> !nb_step_ref && "" <> !src_file_ref && 0.0 < !shift_ref
 ;;
 
 let print_current_state () =

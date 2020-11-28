@@ -42,5 +42,5 @@ val modify_initial_position : float -> float -> int -> unit
 *)
 val interpret_command : command -> bool -> unit
 
-(** [set_shifting] set the max value for the aleatory shifting for the interpretation *)
-val set_shifting : int -> unit
+(** [set_shifting shift_value] set the max value for the aleatory shifting for the interpretation *)
+val set_shifting : float -> unit
