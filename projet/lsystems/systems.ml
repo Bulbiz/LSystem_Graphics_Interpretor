@@ -21,18 +21,25 @@ exception Invalid_system of string
 
 (* Empty word representation. *)
 let empty_word = Seq []
+let current_depth = ref 100
+let reset_current_depth () = current_depth := 100
 
-
-let rec interpret_word interpreter word =
+let rec interpret_word interpreter word colored draw =
+  if colored then reset_color ();
   match word with
-  | Symb s -> List.iter Turtle.interpret_command (interpreter s)
-  | Branch w -> 
-    Turtle.interpret_command Store;
-    interpret_word interpreter w;
-    Turtle.interpret_command Restore
-  | Seq word_list -> List.iter (interpret_word interpreter) word_list
+  | Symb s ->
+    List.iter
+      (fun cmd -> interpret_command cmd !current_depth colored draw)
+      (interpreter s)
+  | Branch w ->
+    current_depth := !current_depth + 100;
+    interpret_command Store !current_depth colored draw;
+    interpret_word interpreter w colored draw;
+    Turtle.interpret_command Restore !current_depth colored draw;
+    current_depth := !current_depth - 100
+  | Seq word_list ->
+    List.iter (fun w -> interpret_word interpreter w colored draw) word_list
 ;;
-
 
 let default_interp = function
   | '[' -> [ Store ]
@@ -43,10 +50,7 @@ let default_interp = function
 
 let rec print_char_word = function
   | Symb s -> print_char s
-  | Seq l ->
-    print_string "|";
-    List.iter (fun w -> print_char_word w) l;
-    print_string "|"
+  | Seq l -> List.iter (fun w -> print_char_word w) l
   | Branch b ->
     print_string "[";
     print_char_word b;
