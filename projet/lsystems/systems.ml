@@ -281,7 +281,6 @@ let read_line ci : string option =
   | End_of_file -> None
 ;;
 
-(* NOTE: should be factorizable. *)
 let create_system_from_file (file_name : string) =
   (* Initializes references with default values. *)
   let axiom_word_ref = ref empty_word in
@@ -291,10 +290,6 @@ let create_system_from_file (file_name : string) =
   let current_parse_state_ref = ref Creating_axiom in
   (* Opens the wanted file. *)
   let ci = open_in file_name in
-  (* Inits ref used for errors messages. *)
-  let curr_nb_line_ref = ref 1 in
-  let rules_nb_line_ref = ref (-1) in
-  let interp_nb_line_ref = ref (-1) in
   let line_ref = ref (read_line ci) in
   let line_list_ref = ref [] in
   while None <> !line_ref && Done <> !current_parse_state_ref do
@@ -304,14 +299,9 @@ let create_system_from_file (file_name : string) =
       let curr_line = String.trim l in
       (* If it's an empty line *)
       if 0 = String.length curr_line
-      then (
+      then
         (* updates the current parse state *)
-        current_parse_state_ref := update_parse_state !current_parse_state_ref;
-        (* and the line numbers for errors msg. *)
-        if -1 = !rules_nb_line_ref
-        then rules_nb_line_ref := !curr_nb_line_ref + 1
-        else if -1 = !interp_nb_line_ref
-        then interp_nb_line_ref := !curr_nb_line_ref + 1)
+        current_parse_state_ref := update_parse_state !current_parse_state_ref
       else if '#' <> curr_line.[0]
       then (
         (* Else if it is not a commented line,
@@ -330,8 +320,7 @@ let create_system_from_file (file_name : string) =
           current_parse_state_ref := Reading_interp
         | _ -> ());
       (* Reads a new line.*)
-      line_ref := read_line ci;
-      curr_nb_line_ref := !curr_nb_line_ref + 1
+      line_ref := read_line ci
   done;
   (* All files lines were readed. *)
   close_in ci;
