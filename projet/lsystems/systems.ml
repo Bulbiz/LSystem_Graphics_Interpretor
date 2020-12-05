@@ -13,10 +13,6 @@ type 's system =
   ; interp : 's -> Turtle.command list
   }
 
-exception Invalid_word
-exception Invalid_rule
-exception Invalid_interp
-exception Invalid_command
 exception Invalid_system of string
 
 (* Empty word representation. *)
@@ -116,7 +112,10 @@ let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
          (* Enterring in a new branch. *)
          | '[' -> Branch empty_word
          (* Exiting of the current branch. *)
-         | ']' -> if 0 = !current_word_depth then raise Invalid_word else empty_word
+         | ']' ->
+           if 0 = !current_word_depth
+           then raise (Invalid_system "Too many closing brackets")
+           else empty_word
          (* Simple char symbol. *)
          | symb -> Symb symb);
   match symb with
@@ -131,7 +130,7 @@ let create_char_word_from_str str =
     (* If [str] contains only one char. *)
     match str.[0] with
     (* It's not a valid word. *)
-    | '[' | ']' -> raise Invalid_word
+    | '[' | ']' -> raise (Invalid_system ("Invalid word '" ^ str ^ "'"))
     (* Returns the associated symbol. *)
     | c -> Symb c)
   else (
@@ -140,7 +139,9 @@ let create_char_word_from_str str =
     let word_ref = ref empty_word in
     String.iter (fun symb -> word_append_char_from word_ref symb) str;
     (* If a branch isn't closed. *)
-    if !current_word_depth <> 0 then raise Invalid_word else !word_ref)
+    if !current_word_depth <> 0
+    then raise (Invalid_system ("Unclosed branch in '" ^ str ^ "'"))
+    else !word_ref)
 ;;
 
 (* A valid string rule is of the form : <char>' '<word> *)
@@ -180,7 +181,7 @@ let create_char_rules_from_str_list str_list =
       if is_a_valid_str_rule str
          (* For each valid str in [str_list] append its corresponding rules. *)
       then rules_ref := create_new_char_rules !rules_ref str
-      else raise Invalid_rule)
+      else raise (Invalid_system ("Invalid rule '" ^ str ^ "'")))
     str_list;
   !rules_ref
 ;;
@@ -216,7 +217,7 @@ let create_command_from_str str =
   | 'L' -> Line value
   | 'M' -> Move value
   | 'T' -> Turn value
-  | _ -> raise Invalid_command
+  | c -> raise (Invalid_system ("Unknown command '" ^ String.make 1 c ^ "'"))
 ;;
 
 (** @return a new interpretation with ...
@@ -234,7 +235,7 @@ let create_new_char_interp (interp : char -> command list) (str : string)
       (* Try to add a new char command if the command is valid. *)
       try command_list := !command_list @ [ create_command_from_str str ] with
       (* NOTE: maybe it should be refactor with options. *)
-      | Failure _ | Invalid_argument _ | Invalid_command -> raise Invalid_interp)
+      | Failure msg | Invalid_system msg -> raise (Invalid_system msg))
     commands_str_list;
   (* Returns the new interpretation. *)
   function
@@ -250,7 +251,7 @@ let create_char_interp_from_str_list (str_list : string list) =
     (fun str ->
       if is_a_valid_str_interp str
       then interp_ref := create_new_char_interp !interp_ref str
-      else raise Invalid_interp)
+      else raise (Invalid_system ("Invalid interpretation '" ^ str ^ "'")))
     str_list;
   (* Returns the interpretation. *)
   !interp_ref
@@ -277,37 +278,6 @@ let read_line ci : string option =
     Some x
   with
   | End_of_file -> None
-;;
-
-let exceptions_to_string = function
-  | Invalid_word -> "is an invalid word."
-  | Invalid_rule -> "There is (at least) one invalid rewritting rule."
-  | Invalid_interp -> "There is (at least) one invalid interpretation."
-  | _ -> "There is an unknow error."
-;;
-
-let create_invalid_system_exception
-    (e : exn)
-    (file_name : string)
-    (nb_line : int)
-    (msg : string option)
-  =
-  let msg =
-    match msg with
-    | Some s -> s
-    | None -> ""
-  in
-  let e_msg =
-    "[ERROR in '"
-    ^ file_name
-    ^ "' at line "
-    ^ string_of_int nb_line
-    ^ "] :"
-    ^ msg
-    ^ " "
-    ^ exceptions_to_string e
-  in
-  Invalid_system e_msg
 ;;
 
 (* NOTE: should be factorizable. *)
@@ -346,15 +316,7 @@ let create_system_from_file (file_name : string) =
         (* Else if it is not a commented line,
            updates references according to the current parse state. *)
         match !current_parse_state_ref with
-        | Creating_axiom ->
-          (try axiom_word_ref := create_char_word_from_str curr_line with
-          | e ->
-            raise
-              (create_invalid_system_exception
-                 e
-                 file_name
-                 !curr_nb_line_ref
-                 (Some (" '" ^ curr_line ^ "'"))))
+        | Creating_axiom -> axiom_word_ref := create_char_word_from_str curr_line
         (* During the [Reading_rules] and [Reading_interp],
            just appends the current line to [line_list_ref]. *)
         | Reading_rules | Reading_interp ->
@@ -362,16 +324,7 @@ let create_system_from_file (file_name : string) =
         (* During the [Creating_rules],
            creates the char rules according the [line_list_ref] and reset [line_list_ref]. *)
         | Creating_rules ->
-          (try char_rules_ref := create_char_rules_from_str_list !line_list_ref with
-          | Invalid_word ->
-            raise
-              (create_invalid_system_exception
-                 Invalid_word
-                 file_name
-                 !rules_nb_line_ref
-                 (Some " In rules there"))
-          | e ->
-            raise (create_invalid_system_exception e file_name !rules_nb_line_ref None));
+          char_rules_ref := create_char_rules_from_str_list !line_list_ref;
           line_list_ref := [ curr_line ];
           current_parse_state_ref := Reading_interp
         | _ -> ());
@@ -382,8 +335,7 @@ let create_system_from_file (file_name : string) =
   (* All files lines were readed. *)
   close_in ci;
   (* Creates char interpretations. *)
-  (try char_interp_ref := create_char_interp_from_str_list !line_list_ref with
-  | e -> raise (create_invalid_system_exception e file_name !interp_nb_line_ref None));
+  char_interp_ref := create_char_interp_from_str_list !line_list_ref;
   (* Returns the char system. *)
   { axiom = !axiom_word_ref; rules = !char_rules_ref; interp = !char_interp_ref }
 ;;

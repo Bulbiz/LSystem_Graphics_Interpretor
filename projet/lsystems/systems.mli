@@ -12,10 +12,6 @@ type 's system =
   ; interp : 's -> Turtle.command list
   }
 
-exception Invalid_word
-exception Invalid_rule
-exception Invalid_interp
-exception Invalid_command
 exception Invalid_system of string
 
 (* Empty word representation. *)
