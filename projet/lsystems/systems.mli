@@ -12,10 +12,6 @@ type 's system =
   ; interp : 's -> Turtle.command list
   }
 
-exception Invalid_word
-exception Invalid_rule
-exception Invalid_interp
-exception Invalid_command
 exception Invalid_system of string
 
 (* Empty word representation. *)
@@ -49,22 +45,21 @@ val word_append : 's word -> 's word -> 's word
 (** [create_char_word_from_str str]
     @return the [char word] corresponding to [str].
 
-    @raise Invalid_word on errors. *)
+    @raise Invalid_system on errors. *)
 val create_char_word_from_str : string -> char word
 
 (** Creates a [char rewrite_rules] according to a given string list.
 
-    @raise Invalid_word if a word is not valid
-    @raise Invalid_rule if a rule is not valid.
+    @note If a symbol have more than one rule, the last one is used.
 
-    If a symbol have more than one rule, the last one is used.
+    @raise Invalid_system if a word or a rule is not valid.
 *)
 val create_char_rules_from_str_list : string list -> char -> char word
 
 (** [create_command_from_str str]
     @return the corresponding Turtle.command from [str].
 
-    @raise Invalid_command if [str.[0]] doesn't correspond to an command initial.
+    @raise Invalid_system if [str.[0]] doesn't correspond to a command.
     @raise Invalid_argument('index out of bounds') if [str] len < 2.
     @raise Failure('int_of_string') if the value isn't a number.
 *)
@@ -76,14 +71,14 @@ val create_command_from_str : string -> Turtle.command
     @raise Invalid_word if a word is not valid
     @raise Invalid_interp if a rule is not valid.
 
-    If a symbol have more than one interpretation, the last one is used.
+    @note If a symbol have more than one interpretation, the last one is used.
 *)
 val create_char_interp_from_str_list : string list -> char -> Turtle.command list
 
 (** [create_char_system_from_file file_name]
     @return the char system corresponding to a given file.
 
-    @raise an [Invalid_system msg] if the reprenstation of the system is invalid.
+    @raise Invalid_system if the reprenstation of the system is invalid.
 *)
 val create_system_from_file : string -> char system
 

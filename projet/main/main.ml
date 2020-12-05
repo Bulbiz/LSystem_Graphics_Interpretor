@@ -94,6 +94,7 @@ let is_valid_args () =
 
 let print_current_state () =
   printf "[INFO] : Color       = '%b'\n" !color_is_set_ref;
+  printf "[INFO] : Shifting    = '%f'\n" !shift_ref;
   printf "[INFO] : Src file    = '%s'\n" !src_file_ref;
   printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref
 ;;
@@ -230,8 +231,7 @@ let main () =
       (* Wait the user input *)
       user_action ()
     with
-    | Invalid_system msg -> print_endline msg
-    | Sys_error msg -> print_endline ("[ERROR] " ^ msg))
+    | Sys_error msg | Invalid_system msg -> print_endline ("[ERROR] : " ^ msg))
 ;;
 
 let () = if not !Sys.interactive then main ()
