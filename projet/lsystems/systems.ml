@@ -114,7 +114,7 @@ let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
          (* Exiting of the current branch. *)
          | ']' ->
            if 0 = !current_word_depth
-           then raise (Invalid_system "Too many closing brackets")
+           then raise (Invalid_system "Invalid word '")
            else empty_word
          (* Simple char symbol. *)
          | symb -> Symb symb);
@@ -137,7 +137,8 @@ let create_char_word_from_str str =
     current_word_depth := 0;
     (* Uses a [char word ref] in order able to modify its value through [List.iter]. *)
     let word_ref = ref empty_word in
-    String.iter (fun symb -> word_append_char_from word_ref symb) str;
+    (try String.iter (fun symb -> word_append_char_from word_ref symb) str with
+    | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'")));
     (* If a branch isn't closed. *)
     if !current_word_depth <> 0
     then raise (Invalid_system ("Unclosed branch in '" ^ str ^ "'"))
@@ -234,8 +235,8 @@ let create_new_char_interp (interp : char -> command list) (str : string)
     (fun str ->
       (* Try to add a new char command if the command is valid. *)
       try command_list := !command_list @ [ create_command_from_str str ] with
-      (* NOTE: maybe it should be refactor with options. *)
-      | Failure msg | Invalid_system msg -> raise (Invalid_system msg))
+      | Failure _ -> raise (Invalid_system ("Invalid command '" ^ str ^ "'"))
+      | Invalid_system msg -> raise (Invalid_system msg))
     commands_str_list;
   (* Returns the new interpretation. *)
   function

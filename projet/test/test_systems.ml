@@ -23,23 +23,26 @@ let systems_suite =
          assert_equal
            (Seq [ Branch (Seq [ Symb 'A'; Symb 'B' ]) ])
            (create_char_word_from_str "[AB]"))
-       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
-           ']' as argument."
-         >:: fun _ -> assert_raises Invalid_word (fun () -> create_char_word_from_str "]")
-         )
-       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
-           '[' as argument."
-         >:: fun _ -> assert_raises Invalid_word (fun () -> create_char_word_from_str "[")
-         )
-       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
-           too many closing brackets."
+       ; ("Systems.create_char_word_from_str should raise an Invalid_system exception \
+           with ']' as argument."
          >:: fun _ ->
-         assert_raises Invalid_word (fun () -> create_char_word_from_str "[AB]A[VC]][A]")
-         )
-       ; ("Systems.create_char_word_from_str should raise an Invalid_word exception with \
-           enclosed branches."
+         assert_raises (Invalid_system "Invalid word ']'") (fun () ->
+             create_char_word_from_str "]"))
+       ; ("Systems.create_char_word_from_str should raise an Invalid_system exception \
+           with '[' as argument."
          >:: fun _ ->
-         assert_raises Invalid_word (fun () -> create_char_word_from_str "[AB]A[VC[A]"))
+         assert_raises (Invalid_system "Invalid word '['") (fun () ->
+             create_char_word_from_str "["))
+       ; ("Systems.create_char_word_from_str should raise an Invalid_system exception \
+           with too many closing brackets."
+         >:: fun _ ->
+         assert_raises (Invalid_system "Invalid word '[AB]A[VC]][A]'") (fun () ->
+             create_char_word_from_str "[AB]A[VC]][A]"))
+       ; ("Systems.create_char_word_from_str should raise an Invalid_system exception \
+           with enclosed branches."
+         >:: fun _ ->
+         assert_raises (Invalid_system "Unclosed branch in '[AB]A[VC[A]'") (fun () ->
+             create_char_word_from_str "[AB]A[VC[A]"))
        ; ("Systems.create_char_word_from_str with a normal branched string word."
          >:: fun _ ->
          let expected_word =
@@ -131,25 +134,22 @@ let systems_suite =
        ; ("Systems.create_char_rules_from_str_list should raises an exception with an \
            empty string."
          >:: fun _ ->
-         assert_raises Invalid_rule (fun () -> create_char_rules_from_str_list [ "" ]))
+         assert_raises (Invalid_system "Invalid rule ''") (fun () ->
+             create_char_rules_from_str_list [ "" ]))
        ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
            string that not contains the rewrited word."
          >:: fun _ ->
-         assert_raises Invalid_rule (fun () -> create_char_rules_from_str_list [ "C " ]))
+         assert_raises (Invalid_system "Invalid rule 'C '") (fun () ->
+             create_char_rules_from_str_list [ "C " ]))
        ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
            string that not begin with a single char."
          >:: fun _ ->
-         assert_raises Invalid_rule (fun () ->
+         assert_raises (Invalid_system "Invalid rule 'CDFD SFAFA'") (fun () ->
              create_char_rules_from_str_list [ "CDFD SFAFA" ]))
        ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
            string that contains a not valid word."
          >:: fun _ ->
-         assert_raises Invalid_word (fun () ->
-             create_char_rules_from_str_list [ "C [asdf][" ]))
-       ; ("Systems.create_char_rules_from_str_list should raises an exception with a \
-           string that contains a not valid word."
-         >:: fun _ ->
-         assert_raises Invalid_word (fun () ->
+         assert_raises (Invalid_system "Unclosed branch in '[asdf]['") (fun () ->
              create_char_rules_from_str_list [ "C [asdf][" ]))
          (*
 
@@ -165,7 +165,8 @@ let systems_suite =
        ; ("Systems.create_command_from_str should reaise an Invalid_command with a \
            string starting with an invalid command init."
          >:: fun _ ->
-         assert_raises Invalid_command (fun () -> create_command_from_str "C4"))
+         assert_raises (Invalid_system "Unknown command 'C'") (fun () ->
+             create_command_from_str "C4"))
        ; ("Systems.create_command_from_str should reaise an Invalid_argument 'index out \
            of bounds' with a string with no value."
          >:: fun _ ->
@@ -258,24 +259,24 @@ let systems_suite =
            [ 'A'; 'C'; '+'; '-'; '['; ']' ]
            expected_interp
            actual_interp)
-       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a \
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_system with a \
            string starting with an invalid command init."
          >:: fun _ ->
-         assert_raises Invalid_interp (fun () ->
+         assert_raises (Invalid_system "Invalid interpretation ' L5'") (fun () ->
              create_char_interp_from_str_list [ "A L5 T-30"; " L5" ]))
-       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a a \
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_system with a a \
            string has invalid value."
          >:: fun _ ->
-         assert_raises Invalid_interp (fun () ->
+         assert_raises (Invalid_system "Invalid command 'T-s0'") (fun () ->
              create_char_interp_from_str_list [ "A L5 T-s0"; "B L5" ]))
-       ; ("Systems.create_char_interp_from_str_list should raise Invalid_interp with a a \
+       ; ("Systems.create_char_interp_from_str_list should raise Invalid_system with a a \
            string has no value."
          >:: fun _ ->
-         assert_raises Invalid_interp (fun () ->
+         assert_raises (Invalid_system "Invalid interpretation 'A '") (fun () ->
              create_char_interp_from_str_list [ "A "; "B L5" ]))
-         (*
+         (*(*  (**)*)
 
-            Systems.create_char_system_from_file tests related.
+       (*     Systems.create_char_system_from_file tests related.*)
 
         *)
        ; ("Systems.create_system_from_file with br3.sys should create a valid \
@@ -371,47 +372,27 @@ let systems_suite =
        ; ("Systems.create_system_from_file with invalid-axiom.sys should raise an \
            Invalid_word exception."
          >:: fun _ ->
-         assert_raises
-           (Invalid_system
-              "[ERROR in '../../../test/resources/invalid-axiom.sys' at line 3] : \
-               'A++A[A' is an invalid word.")
-           (fun () -> create_system_from_file "../../../test/resources/invalid-axiom.sys")
-         )
+         assert_raises (Invalid_system "Unclosed branch in 'A++A[A'") (fun () ->
+             create_system_from_file "../../../test/resources/invalid-axiom.sys"))
        ; ("Systems.create_system_from_file with invalid-rules.sys should raise an \
            Invalid_rule exception."
          >:: fun _ ->
-         assert_raises
-           (Invalid_system
-              "[ERROR in '../../../test/resources/invalid-rules.sys' at line 5] : There \
-               is (at least) one invalid rewritting rule.")
-           (fun () -> create_system_from_file "../../../test/resources/invalid-rules.sys")
-         )
+         assert_raises (Invalid_system "Invalid rule 'A-A++A-A'") (fun () ->
+             create_system_from_file "../../../test/resources/invalid-rules.sys"))
        ; ("Systems.create_system_from_file with invalid-rules-2.sys should raise an \
            Invalid_word exception."
          >:: fun _ ->
-         assert_raises
-           (Invalid_system
-              "[ERROR in '../../../test/resources/invalid-rules-2.sys' at line 5] : In \
-               rules there is an invalid word.")
-           (fun () ->
+         assert_raises (Invalid_system "Invalid word 'A-A]+A-A'") (fun () ->
              create_system_from_file "../../../test/resources/invalid-rules-2.sys"))
        ; ("Systems.create_system_from_file with invalid-interp.sys should raise an \
            Invalid_interp exception."
          >:: fun _ ->
-         assert_raises
-           (Invalid_system
-              "[ERROR in '../../../test/resources/invalid-interp.sys' at line 9] : There \
-               is (at least) one invalid interpretation.")
-           (fun () ->
+         assert_raises (Invalid_system "Invalid interpretation 'T60'") (fun () ->
              create_system_from_file "../../../test/resources/invalid-interp.sys"))
        ; ("Systems.create_system_from_file with invalid-command.sys should raise an \
            Invalid_interp exception."
          >:: fun _ ->
-         assert_raises
-           (Invalid_system
-              "[ERROR in '../../../test/resources/invalid-command.sys' at line 9] : \
-               There is (at least) one invalid interpretation.")
-           (fun () ->
+         assert_raises (Invalid_system "Invalid command 'T@'") (fun () ->
              create_system_from_file "../../../test/resources/invalid-command.sys"))
        ; (*
 
