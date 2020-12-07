@@ -93,10 +93,10 @@ let is_valid_args () =
 ;;
 
 let print_current_state () =
-  printf "[INFO] : Color       = '%b'\n" !color_is_set_ref;
-  printf "[INFO] : Shifting    = '%f'\n" !shift_ref;
-  printf "[INFO] : Src file    = '%s'\n" !src_file_ref;
-  printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref
+  printf "[INFO] - Color       = '%b'\n" !color_is_set_ref;
+  printf "[INFO] - Shifting    = '%f'\n" !shift_ref;
+  printf "[INFO] - Src file    = '%s'\n" !src_file_ref;
+  printf "[INFO] - Dest file   = '%s'\n" !dest_file_ref
 ;;
 
 let init_graph () =
@@ -109,7 +109,7 @@ let init_graph () =
 let update_current_word current_step_nb =
   if !verbose_ref
   then (
-    printf "[INFO] : n = %d, current_word = '" current_step_nb;
+    printf "[INFO] - n = %d, current_word = '" current_step_nb;
     print_char_word !current_word_ref;
     print_endline "'");
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
@@ -178,7 +178,6 @@ let calculate_next_depth () =
 ;;
 
 let rec user_action () =
-  if !verbose_ref then Printf.printf "current_depth = %d\n" !current_depth;
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
@@ -188,7 +187,14 @@ let rec user_action () =
     calculate_depth (!current_depth - 1);
     user_action ()
   | 's' ->
-    if "" <> !dest_file_ref then Png.save_grey !dest_file_ref;
+    if "" <> !dest_file_ref
+    then (
+      Png.save_grey !dest_file_ref;
+      print_endline
+        ("[INFO] - PNG image saved at '"
+        ^ !dest_file_ref
+        ^ "' the iteration "
+        ^ string_of_int !current_depth));
     user_action ()
   | _ -> ()
 ;;
