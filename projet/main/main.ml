@@ -1,8 +1,8 @@
-open Printf
 open Graphics
+open Limage
 open Lsystems.Systems
 open Lsystems.Turtle
-open Save
+open Printf
 
 (** Parameters. *)
 
@@ -105,13 +105,6 @@ let init_graph () =
   set_line_width 1
 ;;
 
-(** Save the actual graph content into an png at [dest_file_ref].
-  TODO: need to unpacked [color] to get the rgb corresponding values.
- *)
-let save_image () =
-  save !verbose_ref !dest_file_ref
-;;
-
 (* Applies system's rules to the current word and returns it. *)
 let update_current_word current_step_nb =
   if !verbose_ref
@@ -195,7 +188,7 @@ let rec user_action () =
     calculate_depth (!current_depth - 1);
     user_action ()
   | 's' ->
-    if "" <> !dest_file_ref then save_image ();
+    if "" <> !dest_file_ref then Png.save_grey !dest_file_ref;
     user_action ()
   | _ -> ()
 ;;

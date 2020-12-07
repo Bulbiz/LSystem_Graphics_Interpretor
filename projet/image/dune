@@ -1,5 +1,4 @@
 (library
-  (name save)
+  (name limage)
   (modules (:standard))
   (libraries bimage bimage-unix))
-
