@@ -122,10 +122,7 @@ let reset_initial_position () =
     90
 ;;
 
-(* Finds the right scaling ratio to fit the entire draw in the window.
-   TODO: Isn't clean, indeed
-    - margin left aren't working all times...
-   *)
+(* Finds the right scaling ratio to fit the entire draw in the window. *)
 let calc_scaling_coef () =
   let max_height = float_of_int (size_x ()) -. margin in
   let max_width = float_of_int (size_y ()) -. margin in
@@ -191,7 +188,7 @@ let rec user_action () =
     then (
       Png.save_grey !dest_file_ref;
       print_endline
-        ("[INFO] - PNG image saved at '"
+        ("[INFO] - Saving PNG image at '"
         ^ !dest_file_ref
         ^ "' the iteration "
         ^ string_of_int !current_depth));
