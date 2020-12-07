@@ -1,8 +1,8 @@
-open Printf
-open Bimage
 open Graphics
+open Limage
 open Lsystems.Systems
 open Lsystems.Turtle
+open Printf
 
 (** Parameters. *)
 
@@ -93,10 +93,10 @@ let is_valid_args () =
 ;;
 
 let print_current_state () =
-  printf "[INFO] : Color       = '%b'\n" !color_is_set_ref;
-  printf "[INFO] : Shifting    = '%f'\n" !shift_ref;
-  printf "[INFO] : Src file    = '%s'\n" !src_file_ref;
-  printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref
+  printf "[INFO] - Color       = '%b'\n" !color_is_set_ref;
+  printf "[INFO] - Shifting    = '%f'\n" !shift_ref;
+  printf "[INFO] - Src file    = '%s'\n" !src_file_ref;
+  printf "[INFO] - Dest file   = '%s'\n" !dest_file_ref
 ;;
 
 let init_graph () =
@@ -105,29 +105,11 @@ let init_graph () =
   set_line_width 1
 ;;
 
-(** Save the actual graph content into an png at [dest_file_ref].
-  TODO: need to unpacked [color] to get the rgb corresponding values.
- *)
-let save_image () =
-  let height = size_y () in
-  let width = size_x () in
-  (* Gets the corresponding 3D matrix. *)
-  let img_matrix = get_image 0 0 width height |> dump_image in
-  (* Creates an empty image. *)
-  let img = Image.create u8 gray width height in
-  (* Fills the image with the content of [img_matrix]. *)
-  Image.for_each (fun x y _ -> Image.set img x y 0 img_matrix.(y).(x)) img;
-  (* Save the current [img] to the [dest_file_ref]. *)
-  Bimage_unix.Magick.write !dest_file_ref img;
-  (* TODO: find a way to be printed before wating for the next event. *)
-  if !verbose_ref then printf "[INFO] : Image saved to '%s'\n" !dest_file_ref
-;;
-
 (* Applies system's rules to the current word and returns it. *)
 let update_current_word current_step_nb =
   if !verbose_ref
   then (
-    printf "[INFO] : n = %d, current_word = '" current_step_nb;
+    printf "[INFO] - n = %d, current_word = '" current_step_nb;
     print_char_word !current_word_ref;
     print_endline "'");
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
@@ -140,10 +122,7 @@ let reset_initial_position () =
     90
 ;;
 
-(* Finds the right scaling ratio to fit the entire draw in the window.
-   TODO: Isn't clean, indeed
-    - margin left aren't working all times...
-   *)
+(* Finds the right scaling ratio to fit the entire draw in the window. *)
 let calc_scaling_coef () =
   let max_height = float_of_int (size_x ()) -. margin in
   let max_width = float_of_int (size_y ()) -. margin in
@@ -196,7 +175,6 @@ let calculate_next_depth () =
 ;;
 
 let rec user_action () =
-  if !verbose_ref then Printf.printf "current_depth = %d\n" !current_depth;
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
@@ -206,7 +184,14 @@ let rec user_action () =
     calculate_depth (!current_depth - 1);
     user_action ()
   | 's' ->
-    if "" <> !dest_file_ref then save_image ();
+    if "" <> !dest_file_ref
+    then (
+      Png.save_grey !dest_file_ref;
+      print_endline
+        ("[INFO] - Saving PNG image at '"
+        ^ !dest_file_ref
+        ^ "' the iteration "
+        ^ string_of_int !current_depth));
     user_action ()
   | _ -> ()
 ;;
