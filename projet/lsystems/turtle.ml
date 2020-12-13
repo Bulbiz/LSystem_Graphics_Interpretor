@@ -34,7 +34,8 @@ let current_position = ref initial_position
 let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
-let current_color = { r = 10; g = 30; b = 30 }
+let current_color = { r = 10; g = 10; b = 10 }
+let color_ref = ref "red" 
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -100,12 +101,43 @@ let interpret_move len =
 
 let interpret_turn a = update_state 0. a
 
+let set_color_interpretation color =
+  color_ref := color
+;;
+
+let set_red_gradiant depth = 
+  current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  set_color (rgb (255 - current_color.r) current_color.g current_color.b)
+;;
+
+let set_green_gradiant depth = 
+  current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  set_color (rgb current_color.r (255 - current_color.g) current_color.b)
+;;
+
+let set_blue_gradiant depth = 
+  current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  set_color (rgb current_color.r current_color.g (255 - current_color.b))
+;;
+
+let set_gray_gradiant depth = 
+  current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  set_color (rgb (255 - current_color.r) (255 - current_color.g) (255 - current_color.b))
+;;
+
+let set_gradiant depth =
+  match !color_ref with
+  |"red" -> set_red_gradiant depth
+  |"green" -> set_green_gradiant depth
+  |"blue" -> set_blue_gradiant depth
+  |_ -> set_gray_gradiant depth
+;;
+
 let interpret_command command depth colored draw =
   if colored
-  then (
-    current_color.r
-      <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-    set_color (rgb (255 - current_color.r) current_color.g current_color.b));
+  then (set_gradiant depth);
   match command with
   | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
   | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)
