@@ -35,7 +35,7 @@ let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
 let current_color = { r = 10; g = 10; b = 10 }
-let color_ref = ref "red" 
+let color_ref = ref "" 
 
 let get_shift () =
   let shift_value = Random.float !shift in
