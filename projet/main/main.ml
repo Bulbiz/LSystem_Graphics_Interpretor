@@ -59,7 +59,7 @@ let set_init_pos = function
 
 let cmdline_options =
   [ "-c", Arg.Unit set_color, "\tRender with colors"
-  ; "--color", Arg.String set_color_interpretation, "Color choose between [red,blue,green]"
+  ; "--color=", Arg.String set_color_interpretation, "Color choose between [red,blue,green]"
   ; ( "-s"
     , Arg.Int set_shift_value
     , "\tValue for the aleatory shifting in the interpretation" )
