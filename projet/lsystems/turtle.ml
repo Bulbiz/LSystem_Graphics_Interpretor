@@ -30,8 +30,11 @@ type color_value =
 
 type color_enum  = 
   |Red
+  |Green
   |Blue 
-  |Green 
+  |Magenta
+  |Cyan
+  |Yellow
   |Gray 
 
 let color_enum_to_value color = 
@@ -39,6 +42,9 @@ let color_enum_to_value color =
   |Red -> Color (true,false,false)
   |Green -> Color(false,true,false)
   |Blue -> Color (false,false,true)
+  |Magenta -> Color (true,false,true)
+  |Cyan -> Color (false, true, true)
+  |Yellow -> Color (true,true, false)
   |Gray -> Color (true,true,true)
 
 let scale_coef_ref = ref 35.
@@ -121,6 +127,9 @@ let set_color_interpretation color =
   |"red" -> color_ref := Red
   |"blue" -> color_ref := Blue
   |"green" -> color_ref := Green
+  |"magenta" -> color_ref := Magenta
+  |"cyan" -> color_ref := Cyan
+  |"yellow" -> color_ref := Yellow
   |_ -> color_ref := Gray
 ;;
 
@@ -146,6 +155,9 @@ let set_gradiant depth =
   |Red -> set_color_gradiant depth (color_enum_to_value Red)
   |Green -> set_color_gradiant depth (color_enum_to_value Green)
   |Blue -> set_color_gradiant depth (color_enum_to_value Blue)
+  |Magenta -> set_color_gradiant depth (color_enum_to_value Magenta)
+  |Cyan -> set_color_gradiant depth (color_enum_to_value Cyan)
+  |Yellow -> set_color_gradiant depth (color_enum_to_value Yellow)
   |Gray -> set_color_gradiant depth (color_enum_to_value Gray)
 ;;
 
