@@ -25,8 +25,21 @@ type color_rgb =
   ; mutable g : int
   ; mutable b : int
   }
+type color_value =
+  |Color of (bool * bool * bool)
 
-type color_enum = Red | Blue | Green | Gray
+type color_enum  = 
+  |Red
+  |Blue 
+  |Green 
+  |Gray 
+
+let convert_color_enum_to_value color = 
+  match color with
+  |Red -> Color (true,false,false)
+  |Green -> Color(false,true,false)
+  |Blue -> Color (false,false,true)
+  |Gray -> Color (true,true,true)
 
 let scale_coef_ref = ref 35.
 let default_command = Turn 0
@@ -110,47 +123,29 @@ let set_color_interpretation color =
   |"green" -> color_ref := Green
   |_ -> color_ref := Gray
 ;;
-(*
-let set_red_gradiant depth = 
-  current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  set_color (rgb (255 - current_color.r) current_color.g current_color.b)
-;;
 
-let set_green_gradiant depth = 
-  current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  set_color (rgb current_color.r (255 - current_color.g) current_color.b)
-;;
+let set_color_gradiant depth color = 
+  match color with
+  |Color (red,green,blue) ->
+  begin 
+    if (red) then current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+    if (green) then current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+    if (blue) then current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
 
-let set_blue_gradiant depth = 
-  current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  set_color (rgb current_color.r current_color.g (255 - current_color.b))
-;;
+    let red_set_color = if (red) then 255 - current_color.r else current_color.r in
+    let green_set_color = if (green) then 255 - current_color.g else current_color.g in
+    let blue_set_color = if (blue) then 255 - current_color.b else current_color.b in
 
-let set_gray_gradiant depth = 
-  current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  set_color (rgb (255 - current_color.r) (255 - current_color.g) (255 - current_color.b))
-;;
-*)
-let set_color_gradiant depth (red:bool) (green:bool) (blue:bool) = 
-  if (red) then current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  if (green) then current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-  if (blue) then current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
-
-  let red_set_color = if (red) then 255 - current_color.r else current_color.r in
-  let green_set_color = if (green) then 255 - current_color.g else current_color.g in
-  let blue_set_color = if (blue) then 255 - current_color.b else current_color.b in
-
-  set_color (rgb red_set_color green_set_color blue_set_color)
+    set_color (rgb red_set_color green_set_color blue_set_color)
+  end
 ;;
 
 let set_gradiant depth =
   match !color_ref with
-  |Red -> set_color_gradiant depth true false false(*set_red_gradiant depth*)
-  |Green -> set_color_gradiant depth false true false(*set_green_gradiant depth*)
-  |Blue -> set_color_gradiant depth false false true(*set_blue_gradiant depth*)
-  |Gray -> set_color_gradiant depth true true true(*set_gray_gradiant depth*)
+  |Red -> set_color_gradiant depth (convert_color_enum_to_value Red)
+  |Green -> set_color_gradiant depth (convert_color_enum_to_value Green)
+  |Blue -> set_color_gradiant depth (convert_color_enum_to_value Blue)
+  |Gray -> set_color_gradiant depth (convert_color_enum_to_value Gray)
 ;;
 
 let interpret_command command depth colored draw =
