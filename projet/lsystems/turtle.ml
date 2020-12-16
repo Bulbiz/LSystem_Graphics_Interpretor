@@ -26,6 +26,8 @@ type color_rgb =
   ; mutable b : int
   }
 
+type color_enum = Red | Blue | Green | Gray
+
 let scale_coef_ref = ref 35.
 let default_command = Turn 0
 let initial_position = { x = 0.; y = 0.; a = 0 }
@@ -35,7 +37,7 @@ let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
 let current_color = { r = 10; g = 10; b = 10 }
-let color_ref = ref "" 
+let color_ref = ref Gray 
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -102,7 +104,11 @@ let interpret_move len =
 let interpret_turn a = update_state 0. a
 
 let set_color_interpretation color =
-  color_ref := color
+  match color with
+  |"red" -> color_ref := Red
+  |"blue" -> color_ref := Blue
+  |"green" -> color_ref := Green
+  |_ -> color_ref := Gray
 ;;
 
 let set_red_gradiant depth = 
@@ -129,9 +135,9 @@ let set_gray_gradiant depth =
 
 let set_gradiant depth =
   match !color_ref with
-  |"red" -> set_red_gradiant depth
-  |"green" -> set_green_gradiant depth
-  |"blue" -> set_blue_gradiant depth
+  |Red -> set_red_gradiant depth
+  |Green -> set_green_gradiant depth
+  |Blue -> set_blue_gradiant depth
   |_ -> set_gray_gradiant depth
 ;;
 
