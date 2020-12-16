@@ -137,14 +137,16 @@ let set_color_gradiant depth color =
   match color with
   |Color (red,green,blue) ->
   begin 
-    let gradiant_coefficient = (depth / (int_of_float !scale_coef_ref + 50)) mod 255 in 
+    let max_value = 255 in
+    let gradiant_shift = 50 in
+    let gradiant_coefficient = (depth / (int_of_float !scale_coef_ref + gradiant_shift)) mod max_value in 
     if (red) then current_color.r <- current_color.r * gradiant_coefficient;
     if (green) then current_color.g <- current_color.g * gradiant_coefficient;
     if (blue) then current_color.b <- current_color.b * gradiant_coefficient;
 
-    let red_set_color = if (red) then 255 - current_color.r else current_color.r in
-    let green_set_color = if (green) then 255 - current_color.g else current_color.g in
-    let blue_set_color = if (blue) then 255 - current_color.b else current_color.b in
+    let red_set_color = if (red) then max_value - current_color.r else current_color.r in
+    let green_set_color = if (green) then max_value - current_color.g else current_color.g in
+    let blue_set_color = if (blue) then max_value - current_color.b else current_color.b in
 
     set_color (rgb red_set_color green_set_color blue_set_color)
   end
