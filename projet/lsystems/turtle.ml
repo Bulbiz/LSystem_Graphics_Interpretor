@@ -34,7 +34,7 @@ type color_enum  =
   |Green 
   |Gray 
 
-let convert_color_enum_to_value color = 
+let color_enum_to_value color = 
   match color with
   |Red -> Color (true,false,false)
   |Green -> Color(false,true,false)
@@ -143,10 +143,10 @@ let set_color_gradiant depth color =
 
 let set_gradiant depth =
   match !color_ref with
-  |Red -> set_color_gradiant depth (convert_color_enum_to_value Red)
-  |Green -> set_color_gradiant depth (convert_color_enum_to_value Green)
-  |Blue -> set_color_gradiant depth (convert_color_enum_to_value Blue)
-  |Gray -> set_color_gradiant depth (convert_color_enum_to_value Gray)
+  |Red -> set_color_gradiant depth (color_enum_to_value Red)
+  |Green -> set_color_gradiant depth (color_enum_to_value Green)
+  |Blue -> set_color_gradiant depth (color_enum_to_value Blue)
+  |Gray -> set_color_gradiant depth (color_enum_to_value Gray)
 ;;
 
 let interpret_command command depth colored draw =
