@@ -110,7 +110,7 @@ let set_color_interpretation color =
   |"green" -> color_ref := Green
   |_ -> color_ref := Gray
 ;;
-
+(*
 let set_red_gradiant depth = 
   current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
   set_color (rgb (255 - current_color.r) current_color.g current_color.b)
@@ -132,13 +132,25 @@ let set_gray_gradiant depth =
   current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
   set_color (rgb (255 - current_color.r) (255 - current_color.g) (255 - current_color.b))
 ;;
+*)
+let set_color_gradiant depth (red:bool) (green:bool) (blue:bool) = 
+  if (red) then current_color.r <- current_color.r * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  if (green) then current_color.g <- current_color.g * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+  if (blue) then current_color.b <- current_color.b * (depth / (int_of_float !scale_coef_ref + 50)) mod 255;
+
+  let red_set_color = if (red) then 255 - current_color.r else current_color.r in
+  let green_set_color = if (green) then 255 - current_color.g else current_color.g in
+  let blue_set_color = if (blue) then 255 - current_color.b else current_color.b in
+
+  set_color (rgb red_set_color green_set_color blue_set_color)
+;;
 
 let set_gradiant depth =
   match !color_ref with
-  |Red -> set_red_gradiant depth
-  |Green -> set_green_gradiant depth
-  |Blue -> set_blue_gradiant depth
-  |_ -> set_gray_gradiant depth
+  |Red -> set_color_gradiant depth true false false(*set_red_gradiant depth*)
+  |Green -> set_color_gradiant depth false true false(*set_green_gradiant depth*)
+  |Blue -> set_color_gradiant depth false false true(*set_blue_gradiant depth*)
+  |Gray -> set_color_gradiant depth true true true(*set_gray_gradiant depth*)
 ;;
 
 let interpret_command command depth colored draw =
