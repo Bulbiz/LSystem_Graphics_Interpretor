@@ -26,6 +26,7 @@ type color_rgb =
   ; mutable b : int
   }
 
+
 (** Type for the color value,the order is (red,green,blue)*)
 type color_value =
   |Color of bool * bool * bool
@@ -40,6 +41,7 @@ let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
 let current_color = { r = 10; g = 10; b = 10 }
 let color_ref = ref (Color (true,true,true))
+
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -124,15 +126,15 @@ let update_color depth =
   begin 
     let max_value = 255 in
     let gradiant_shift = 50 in
-    let gradiant_coefficient = (depth / (int_of_float !scale_coef_ref + gradiant_shift)) mod max_value in 
-    if (red) then current_color.r <- current_color.r * gradiant_coefficient;
-    if (green) then current_color.g <- current_color.g * gradiant_coefficient;
-    if (blue) then current_color.b <- current_color.b * gradiant_coefficient;
-
-    let red_set_color = if (red) then max_value - current_color.r else current_color.r in
-    let green_set_color = if (green) then max_value - current_color.g else current_color.g in
-    let blue_set_color = if (blue) then max_value - current_color.b else current_color.b in
-
+    let gradiant_coefficient =
+      depth / (int_of_float !scale_coef_ref + gradiant_shift) mod max_value
+    in
+    if red then current_color.r <- current_color.r * gradiant_coefficient;
+    if green then current_color.g <- current_color.g * gradiant_coefficient;
+    if blue then current_color.b <- current_color.b * gradiant_coefficient;
+    let red_set_color = if red then max_value - current_color.r else current_color.r in
+    let green_set_color = if green then max_value - current_color.g else current_color.g in
+    let blue_set_color = if blue then max_value - current_color.b else current_color.b in
     set_color (rgb red_set_color green_set_color blue_set_color)
   end
 ;;
