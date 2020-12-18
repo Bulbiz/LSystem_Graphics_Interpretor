@@ -26,7 +26,6 @@ type color_rgb =
   ; mutable b : int
   }
 
-
 (** Type for the color value,the order is (red,green,blue)*)
 type color_value =
   |Color of bool * bool * bool
