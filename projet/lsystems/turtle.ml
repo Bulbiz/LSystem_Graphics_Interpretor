@@ -125,13 +125,13 @@ let update_color depth =
   |Color (red,green,blue) ->
   begin 
     let max_value = 255 in
-    let gradiant_shift = 50 in
-    let gradiant_coefficient =
-      depth / (int_of_float !scale_coef_ref + gradiant_shift) mod max_value
+    let gradient_shift = 50 in
+    let gradient_coefficient =
+      depth / (int_of_float !scale_coef_ref + gradient_shift) mod max_value
     in
-    if red then current_color.r <- current_color.r * gradiant_coefficient;
-    if green then current_color.g <- current_color.g * gradiant_coefficient;
-    if blue then current_color.b <- current_color.b * gradiant_coefficient;
+    if red then current_color.r <- current_color.r * gradient_coefficient;
+    if green then current_color.g <- current_color.g * gradient_coefficient;
+    if blue then current_color.b <- current_color.b * gradient_coefficient;
     let red_set_color = if red then max_value - current_color.r else current_color.r in
     let green_set_color = if green then max_value - current_color.g else current_color.g in
     let blue_set_color = if blue then max_value - current_color.b else current_color.b in
