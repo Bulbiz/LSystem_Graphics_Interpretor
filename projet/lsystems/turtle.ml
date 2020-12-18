@@ -25,27 +25,10 @@ type color_rgb =
   ; mutable g : int
   ; mutable b : int
   }
+
+(** Type for the color value,the order is (red,green,blue)*)
 type color_value =
-  |Color of (bool * bool * bool)
-
-type color_enum  = 
-  |Red
-  |Green
-  |Blue 
-  |Magenta
-  |Cyan
-  |Yellow
-  |Gray 
-
-let color_enum_to_value color = 
-  match color with
-  |Red -> Color (true,false,false)
-  |Green -> Color(false,true,false)
-  |Blue -> Color (false,false,true)
-  |Magenta -> Color (true,false,true)
-  |Cyan -> Color (false, true, true)
-  |Yellow -> Color (true,true, false)
-  |Gray -> Color (true,true,true)
+  |Color of bool * bool * bool
 
 let scale_coef_ref = ref 35.
 let default_command = Turn 0
@@ -56,7 +39,7 @@ let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
 let current_color = { r = 10; g = 10; b = 10 }
-let color_ref = ref Gray 
+let color_ref = ref (Color (true,true,true))
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -122,19 +105,21 @@ let interpret_move len =
 
 let interpret_turn a = update_state 0. a
 
+(* Set the color_ref from the string it receive *)
 let set_color_interpretation color =
   match color with
-  |"red" -> color_ref := Red
-  |"blue" -> color_ref := Blue
-  |"green" -> color_ref := Green
-  |"magenta" -> color_ref := Magenta
-  |"cyan" -> color_ref := Cyan
-  |"yellow" -> color_ref := Yellow
-  |_ -> color_ref := Gray
+  |"red" -> color_ref := Color (true,false,false)
+  |"blue" -> color_ref := Color (false,false,true)
+  |"green" -> color_ref := Color (false,true,false)
+  |"magenta" -> color_ref := Color (true,false,true)
+  |"cyan" -> color_ref := Color (false, true, true)
+  |"yellow" -> color_ref := Color (true,true, false)
+  |_ -> color_ref := Color (true,true,true)
 ;;
 
-let update_color depth color = 
-  match color with
+(* update the current color for the interpretation *)
+let update_color depth = 
+  match !color_ref with
   |Color (red,green,blue) ->
   begin 
     let max_value = 255 in
@@ -152,20 +137,9 @@ let update_color depth color =
   end
 ;;
 
-let set_gradiant depth =
-  match !color_ref with
-  |Red -> update_color depth (color_enum_to_value Red)
-  |Green -> update_color depth (color_enum_to_value Green)
-  |Blue -> update_color depth (color_enum_to_value Blue)
-  |Magenta -> update_color depth (color_enum_to_value Magenta)
-  |Cyan -> update_color depth (color_enum_to_value Cyan)
-  |Yellow -> update_color depth (color_enum_to_value Yellow)
-  |Gray -> update_color depth (color_enum_to_value Gray)
-;;
-
 let interpret_command command depth colored draw =
   if colored
-  then (set_gradiant depth);
+  then (update_color depth);
   match command with
   | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
   | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)
