@@ -25,27 +25,28 @@ type color_rgb =
   ; mutable g : int
   ; mutable b : int
   }
-type color_value =
-  |Color of (bool * bool * bool)
 
-type color_enum  = 
-  |Red
-  |Green
-  |Blue 
-  |Magenta
-  |Cyan
-  |Yellow
-  |Gray 
+type color_value = Color of (bool * bool * bool)
 
-let color_enum_to_value color = 
+type color_enum =
+  | Red
+  | Green
+  | Blue
+  | Magenta
+  | Cyan
+  | Yellow
+  | Gray
+
+let color_enum_to_value color =
   match color with
-  |Red -> Color (true,false,false)
-  |Green -> Color(false,true,false)
-  |Blue -> Color (false,false,true)
-  |Magenta -> Color (true,false,true)
-  |Cyan -> Color (false, true, true)
-  |Yellow -> Color (true,true, false)
-  |Gray -> Color (true,true,true)
+  | Red -> Color (true, false, false)
+  | Green -> Color (false, true, false)
+  | Blue -> Color (false, false, true)
+  | Magenta -> Color (true, false, true)
+  | Cyan -> Color (false, true, true)
+  | Yellow -> Color (true, true, false)
+  | Gray -> Color (true, true, true)
+;;
 
 let scale_coef_ref = ref 35.
 let default_command = Turn 0
@@ -56,7 +57,7 @@ let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
 let current_color = { r = 10; g = 10; b = 10 }
-let color_ref = ref Gray 
+let color_ref = ref Gray
 
 let get_shift () =
   let shift_value = Random.float !shift in
@@ -124,48 +125,47 @@ let interpret_turn a = update_state 0. a
 
 let set_color_interpretation color =
   match color with
-  |"red" -> color_ref := Red
-  |"blue" -> color_ref := Blue
-  |"green" -> color_ref := Green
-  |"magenta" -> color_ref := Magenta
-  |"cyan" -> color_ref := Cyan
-  |"yellow" -> color_ref := Yellow
-  |_ -> color_ref := Gray
+  | "red" -> color_ref := Red
+  | "blue" -> color_ref := Blue
+  | "green" -> color_ref := Green
+  | "magenta" -> color_ref := Magenta
+  | "cyan" -> color_ref := Cyan
+  | "yellow" -> color_ref := Yellow
+  | _ -> color_ref := Gray
 ;;
 
-let set_color_gradiant depth color = 
+let set_color_gradiant depth color =
   match color with
-  |Color (red,green,blue) ->
-  begin 
+  | Color (red, green, blue) ->
     let max_value = 255 in
     let gradiant_shift = 50 in
-    let gradiant_coefficient = (depth / (int_of_float !scale_coef_ref + gradiant_shift)) mod max_value in 
-    if (red) then current_color.r <- current_color.r * gradiant_coefficient;
-    if (green) then current_color.g <- current_color.g * gradiant_coefficient;
-    if (blue) then current_color.b <- current_color.b * gradiant_coefficient;
-
-    let red_set_color = if (red) then max_value - current_color.r else current_color.r in
-    let green_set_color = if (green) then max_value - current_color.g else current_color.g in
-    let blue_set_color = if (blue) then max_value - current_color.b else current_color.b in
-
+    let gradiant_coefficient =
+      depth / (int_of_float !scale_coef_ref + gradiant_shift) mod max_value
+    in
+    if red then current_color.r <- current_color.r * gradiant_coefficient;
+    if green then current_color.g <- current_color.g * gradiant_coefficient;
+    if blue then current_color.b <- current_color.b * gradiant_coefficient;
+    let red_set_color = if red then max_value - current_color.r else current_color.r in
+    let green_set_color =
+      if green then max_value - current_color.g else current_color.g
+    in
+    let blue_set_color = if blue then max_value - current_color.b else current_color.b in
     set_color (rgb red_set_color green_set_color blue_set_color)
-  end
 ;;
 
 let set_gradiant depth =
   match !color_ref with
-  |Red -> set_color_gradiant depth (color_enum_to_value Red)
-  |Green -> set_color_gradiant depth (color_enum_to_value Green)
-  |Blue -> set_color_gradiant depth (color_enum_to_value Blue)
-  |Magenta -> set_color_gradiant depth (color_enum_to_value Magenta)
-  |Cyan -> set_color_gradiant depth (color_enum_to_value Cyan)
-  |Yellow -> set_color_gradiant depth (color_enum_to_value Yellow)
-  |Gray -> set_color_gradiant depth (color_enum_to_value Gray)
+  | Red -> set_color_gradiant depth (color_enum_to_value Red)
+  | Green -> set_color_gradiant depth (color_enum_to_value Green)
+  | Blue -> set_color_gradiant depth (color_enum_to_value Blue)
+  | Magenta -> set_color_gradiant depth (color_enum_to_value Magenta)
+  | Cyan -> set_color_gradiant depth (color_enum_to_value Cyan)
+  | Yellow -> set_color_gradiant depth (color_enum_to_value Yellow)
+  | Gray -> set_color_gradiant depth (color_enum_to_value Gray)
 ;;
 
 let interpret_command command depth colored draw =
-  if colored
-  then (set_gradiant depth);
+  if colored then set_gradiant depth;
   match command with
   | Line len -> interpret_line (float_of_int len *. !scale_coef_ref) draw
   | Move len -> interpret_move (float_of_int len *. !scale_coef_ref)
