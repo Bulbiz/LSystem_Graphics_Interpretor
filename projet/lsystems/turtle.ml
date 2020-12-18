@@ -133,7 +133,7 @@ let set_color_interpretation color =
   |_ -> color_ref := Gray
 ;;
 
-let set_color_gradiant depth color = 
+let update_color depth color = 
   match color with
   |Color (red,green,blue) ->
   begin 
@@ -154,13 +154,13 @@ let set_color_gradiant depth color =
 
 let set_gradiant depth =
   match !color_ref with
-  |Red -> set_color_gradiant depth (color_enum_to_value Red)
-  |Green -> set_color_gradiant depth (color_enum_to_value Green)
-  |Blue -> set_color_gradiant depth (color_enum_to_value Blue)
-  |Magenta -> set_color_gradiant depth (color_enum_to_value Magenta)
-  |Cyan -> set_color_gradiant depth (color_enum_to_value Cyan)
-  |Yellow -> set_color_gradiant depth (color_enum_to_value Yellow)
-  |Gray -> set_color_gradiant depth (color_enum_to_value Gray)
+  |Red -> update_color depth (color_enum_to_value Red)
+  |Green -> update_color depth (color_enum_to_value Green)
+  |Blue -> update_color depth (color_enum_to_value Blue)
+  |Magenta -> update_color depth (color_enum_to_value Magenta)
+  |Cyan -> update_color depth (color_enum_to_value Cyan)
+  |Yellow -> update_color depth (color_enum_to_value Yellow)
+  |Gray -> update_color depth (color_enum_to_value Gray)
 ;;
 
 let interpret_command command depth colored draw =
