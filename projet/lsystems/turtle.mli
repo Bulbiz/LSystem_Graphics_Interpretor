@@ -46,3 +46,6 @@ val interpret_command : command -> int -> bool -> bool -> unit
 val set_shifting : float -> unit
 
 val reset_color : unit -> unit
+
+(** [set_color_interpretation] set the color for the Lsystem interpretation *)
+val set_color_interpretation : string -> unit
