@@ -82,19 +82,20 @@ let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (dep
     else (
       (* Not in the last 'opened' branch. *)
       let nb_branches = get_nb_branches_in word_list in
-      let curr_branch = ref 0 in
-      (* Finds the last 'opened' branch recursively. *)
-      Seq
-        (List.map
-           (function
-             | Branch b ->
-               curr_branch := !curr_branch + 1;
-               if !curr_branch = nb_branches
-                  (* Last branch of the current word Seq found. *)
-               then Branch (word_append_according_depth b w2 (depth + 1))
-               else Branch b (* Not the last branch. *)
-             | word -> word)
-           word_list))
+      let rec transform_to_seq list current_branch = 
+        match list with
+        |[] -> []
+        |Branch b :: res ->
+          if current_branch = nb_branches then( 
+            Branch (word_append_according_depth b w2 (depth + 1)) :: 
+              transform_to_seq res (current_branch + 1)
+          )else(
+            Branch b :: transform_to_seq res (current_branch + 1)
+          ) 
+        |word :: res -> word :: transform_to_seq res (current_branch) 
+      in
+
+      Seq(transform_to_seq word_list 1))
 ;;
 
 let word_append (w1 : 's word) (w2 : 's word) =
