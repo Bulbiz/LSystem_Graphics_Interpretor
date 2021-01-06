@@ -155,14 +155,18 @@ let interpret_current_word () =
 let reset_current_word () = current_word_ref := !systems_ref.axiom
 let reset_scale_coef () = scale_coef_ref := 35.
 
+let rec execute_n_time f i n =
+  f i;
+  if (i < n) then
+    execute_n_time f (i+1) n
+;;
+
 let calculate_depth n =
   if n >= 0
   then (
     reset_current_word ();
     reset_scale_coef ();
-    for i = 0 to n - 1 do
-      update_current_word i
-    done;
+    execute_n_time update_current_word 0 (n-1);
     interpret_current_word ();
     synchronize ();
     current_depth := n)
