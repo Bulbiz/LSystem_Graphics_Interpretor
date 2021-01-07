@@ -182,17 +182,17 @@ let create_new_char_rules (other_rules : char rewrite_rules) (str : string) =
 ;;
 
 let create_char_rules_from_str_list str_list =
-  (* Uses a ref in order to iterate and modified through the [str_list].
-    Initializes it with the basic rule. *)
-  let rules_ref = ref (fun s -> Symb s) in
-  List.iter
-    (fun str ->
-      if is_a_valid_str_rule str
-         (* For each valid str in [str_list] append its corresponding rules. *)
-      then rules_ref := create_new_char_rules !rules_ref str
-      else raise (Invalid_system ("Invalid rule '" ^ str ^ "'")))
-    str_list;
-  !rules_ref
+  let rec create_char_rules_reccursive rules list = 
+    match list with
+    |[] -> rules
+    |str :: res -> 
+      if is_a_valid_str_rule str then
+        let new_rules = create_new_char_rules rules str in
+        create_char_rules_reccursive new_rules res
+      else
+        raise (Invalid_system ("Invalid rule '" ^ str ^ "'"))
+  in
+  create_char_rules_reccursive (fun s -> Symb s) str_list
 ;;
 
 (* A valid string interpretation is of the form : <char>' '<cmd>[' '<cmd>]. *)
