@@ -142,12 +142,12 @@ let create_char_word_from_str str =
     current_word_depth := 0;
     try
       let explode_str = List.init (String.length str) (String.get str) in
-      let word_ref = word_append_char_from empty_word explode_str in
+      let word = word_append_char_from empty_word explode_str in
       (* If a branch isn't closed. *)
       if !current_word_depth <> 0 then 
         raise (Invalid_system ("Unclosed branch in '"))
       else 
-        word_ref
+        word
     with 
     | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'"))
   )
