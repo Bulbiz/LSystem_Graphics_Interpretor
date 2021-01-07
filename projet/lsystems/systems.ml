@@ -102,11 +102,9 @@ let word_append (w1 : 's word) (w2 : 's word) =
   if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
 ;;
 
-let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
-  word_ref
-    := word_append
-         !word_ref
-         (match symb with
+let rec word_append_char_from (word : char word) (list : char list) : char word =
+  let char_to_word symb =
+    match symb with
          (* Enterring in a new branch. *)
          | '[' -> Branch empty_word
          (* Exiting of the current branch. *)
@@ -115,11 +113,20 @@ let word_append_char_from (word_ref : char word ref) (symb : char) : unit =
            then raise (Invalid_system "Invalid word '")
            else empty_word
          (* Simple char symbol. *)
-         | symb -> Symb symb);
-  match symb with
-  | '[' -> current_word_depth := !current_word_depth + 1
-  | ']' -> current_word_depth := !current_word_depth - 1
-  | _ -> ()
+         | symb -> Symb symb
+  in
+  match list with
+  | [] -> word
+  | symb :: res -> 
+    let appended_word = word_append word (char_to_word symb) in
+    match symb with
+    | '[' -> 
+      current_word_depth := !current_word_depth + 1;
+      word_append_char_from appended_word res
+    | ']' -> 
+      current_word_depth := !current_word_depth - 1;
+      word_append_char_from appended_word res
+    | _ -> word_append_char_from appended_word res
 ;;
 
 let create_char_word_from_str str =
@@ -134,13 +141,17 @@ let create_char_word_from_str str =
   else (
     current_word_depth := 0;
     (* Uses a [char word ref] in order able to modify its value through [List.iter]. *)
-    let word_ref = ref empty_word in
-    (try String.iter (fun symb -> word_append_char_from word_ref symb) str with
-    | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'")));
-    (* If a branch isn't closed. *)
-    if !current_word_depth <> 0
-    then raise (Invalid_system ("Unclosed branch in '" ^ str ^ "'"))
-    else !word_ref)
+    try
+      let explode_str = List.init (String.length str) (String.get str) in
+      let word_ref = word_append_char_from empty_word explode_str in
+      (* If a branch isn't closed. *)
+      if !current_word_depth <> 0 then 
+        raise (Invalid_system ("Unclosed branch in '"))
+      else 
+        word_ref
+    with 
+    | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'"))
+  )
 ;;
 
 (* A valid string rule is of the form : <char>' '<word> *)
