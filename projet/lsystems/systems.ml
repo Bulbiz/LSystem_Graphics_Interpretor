@@ -232,23 +232,25 @@ let create_command_from_str str =
 (** @return a new interpretation with ...
     @raise Invalid_interp for an invalid input string.
 *)
-let create_new_char_interp (interp : char -> command list) (str : string)
-    : char -> command list
-  =
-  let command_list = ref [] in
+let create_new_char_interp (interp : char -> command list) (str : string) : char -> command list =
+  let rec create_new_char_interp_reccursive command_list list = 
+    match list with
+    |[] -> command_list
+    |str :: res ->
+      try 
+        let new_command_list = command_list @ [ create_command_from_str str ] in
+        create_new_char_interp_reccursive new_command_list res
+      with
+        | Failure _ -> raise (Invalid_system ("Invalid command '" ^ str ^ "'"))
+        | Invalid_system msg -> raise (Invalid_system msg)
+  in
+  
   (* [commands_str] = str[2:] (removing the first char and space.)*)
   let commands_str = String.sub str 2 (String.length str - 2) in
   let commands_str_list = String.split_on_char ' ' commands_str in
-  List.iter
-    (fun str ->
-      (* Try to add a new char command if the command is valid. *)
-      try command_list := !command_list @ [ create_command_from_str str ] with
-      | Failure _ -> raise (Invalid_system ("Invalid command '" ^ str ^ "'"))
-      | Invalid_system msg -> raise (Invalid_system msg))
-    commands_str_list;
-  (* Returns the new interpretation. *)
+  let command_list = create_new_char_interp_reccursive [] commands_str_list in
   function
-  | s when s = str.[0] -> !command_list
+  | s when s = str.[0] -> command_list
   | s -> interp s
 ;;
 
