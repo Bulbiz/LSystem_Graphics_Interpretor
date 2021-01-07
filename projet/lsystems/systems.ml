@@ -253,18 +253,19 @@ let create_new_char_interp (interp : char -> command list) (str : string)
 ;;
 
 let create_char_interp_from_str_list (str_list : string list) =
-  (* Uses a ref in order to iterate and modified through the [str_list].
-    Initializes it with the default case. *)
-  let interp_ref = ref default_interp in
-  List.iter
-    (fun str ->
-      if is_a_valid_str_interp str
-      then interp_ref := create_new_char_interp !interp_ref str
-      else raise (Invalid_system ("Invalid interpretation '" ^ str ^ "'")))
-    str_list;
-  (* Returns the interpretation. *)
-  !interp_ref
+  let rec create_char_interp_reccursive interp list = 
+    match list with
+    |[] -> interp
+    | str :: res -> 
+      if is_a_valid_str_interp str then 
+        let new_interp = create_new_char_interp interp str in
+        create_char_interp_reccursive new_interp res
+      else 
+        raise (Invalid_system ("Invalid interpretation '" ^ str ^ "'"))
+  in
+  create_char_interp_reccursive default_interp str_list
 ;;
+
 
 type parse_state =
   | Creating_axiom
