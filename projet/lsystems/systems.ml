@@ -63,8 +63,9 @@ let rec apply_rules rules current_state =
 let get_nb_branches_in (word_list : 's word list) : int =
   (* Filter the list to obtains a list of all the Branch in word_list*)
   let filtered_list = List.filter (function
-      |Branch _ -> true
-      |_ -> false) word_list in
+    |Branch _ -> true
+    |_ -> false) 
+    word_list in
   List.length filtered_list
 ;;
 
