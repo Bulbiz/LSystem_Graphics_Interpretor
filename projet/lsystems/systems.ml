@@ -140,7 +140,6 @@ let create_char_word_from_str str =
     | c -> Symb c)
   else (
     current_word_depth := 0;
-    (* Uses a [char word ref] in order able to modify its value through [List.iter]. *)
     try
       let explode_str = List.init (String.length str) (String.get str) in
       let word_ref = word_append_char_from empty_word explode_str in
