@@ -19,30 +19,21 @@ exception Invalid_system of string
 (** Empty word representation. *)
 let empty_word = Seq []
 
-(** Models the current brach depth, used for the [Turtle] color. *)
-let current_depth = ref 100
-
-(** Reset the current depth. *)
-let reset_current_depth () = current_depth := 100
-
-(** [interpret_word interpreter word draw] interprets the word for graphical view
-    and if [draw = true] draw lines else just moves.
+(** [interpret_word interpreter word colored draw curr_depth]
+  interprets the word for graphical view and if [draw = true] draw lines otherwise just moves.
 *)
-let rec interpret_word interpreter word colored draw =
+let rec interpret_word interpreter word colored draw curr_depth =
   if colored then reset_color ();
   match word with
   | Symb s ->
-    List.iter
-      (fun cmd -> interpret_command cmd !current_depth colored draw)
-      (interpreter s)
+    List.iter (fun cmd -> interpret_command cmd curr_depth colored draw) (interpreter s)
   | Branch w ->
-    current_depth := !current_depth + 100;
-    interpret_command Store !current_depth colored draw;
-    interpret_word interpreter w colored draw;
-    Turtle.interpret_command Restore !current_depth colored draw;
-    current_depth := !current_depth - 100
+    let curr_depth = curr_depth + 100 in
+    interpret_command Store curr_depth colored draw;
+    interpret_word interpreter w colored draw curr_depth;
+    Turtle.interpret_command Restore curr_depth colored draw
   | Seq word_list ->
-    List.iter (fun w -> interpret_word interpreter w colored draw) word_list
+    List.iter (fun w -> interpret_word interpreter w colored draw curr_depth) word_list
 ;;
 
 (** Models interpretation default values. *)
@@ -74,47 +65,46 @@ let rec apply_rules rules current_state =
 ;;
 
 (** Calculates the nb of branches in a list of word. *)
-let get_nb_branches_in (word_list : 's word list) : int =
-  (* Filter the list to obtains a list of all the Branch in word_list*)
-  let filtered_list = List.filter (function
-    |Branch _ -> true
-    |_ -> false) 
-    word_list in
-  List.length filtered_list
+let get_nb_branches_in word_list =
+  (* Filter the list to obtains a list of all the Branch in word_list. *)
+  List.filter
+    (function
+      | Branch _ -> true
+      | _ -> false)
+    word_list
+  |> List.length
 ;;
 
-(** Is the current word depth used for creating word from string. *)
-let current_word_depth = ref 0
+(*(1** Is the current word depth used for creating word from string. *1) *)
+(*let current_word_depth = ref 0 *)
 
-let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (depth : int) =
+let rec word_append_according_depth current_word current_word_depth w2 depth =
   match current_word with
   (* The current word contains only one [Symb] *)
   | Symb s -> Seq [ Symb s; w2 ]
   | Branch b -> Branch b (* Case never reached. *)
   | Seq word_list ->
-    if !current_word_depth = depth
+    if current_word_depth = depth
     then (* In the last 'opened' branch. *)
       Seq (List.append word_list [ w2 ])
     else (
       (* Not in the last 'opened' branch. *)
       let nb_branches = get_nb_branches_in word_list in
-      let rec transform_to_seq list current_branch = 
+      let rec transform_to_seq list current_branch =
         match list with
-        |[] -> []
-        |Branch b :: res ->
-          if current_branch = nb_branches then( 
-            Branch (word_append_according_depth b w2 (depth + 1)) :: 
-              transform_to_seq res (current_branch + 1)
-          )else(
-            Branch b :: transform_to_seq res (current_branch + 1)
-          ) 
-        |word :: res -> word :: transform_to_seq res (current_branch) 
+        | [] -> []
+        | Branch b :: res ->
+          if current_branch = nb_branches
+          then
+            Branch (word_append_according_depth b current_word_depth w2 (depth + 1))
+            :: transform_to_seq res (current_branch + 1)
+          else Branch b :: transform_to_seq res (current_branch + 1)
+        | word :: res -> word :: transform_to_seq res current_branch
       in
-
-      Seq(transform_to_seq word_list 1))
+      Seq (transform_to_seq word_list 1))
 ;;
 
-(** [word_append current_word w2] appends [w2] to [current_word] according this rules :
+(** [word_append current_word current_word_depth w2] appends [w2] to [current_word] according this rules :
       If [current_word] is a Symb,
         then creates a [Seq] with [current_word] followed by [w2].
       Else if [current_word] contains at least one 'opened' branch,
@@ -124,41 +114,39 @@ let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (dep
 
     A branch is 'opened' if '[' has been read and not ']'.
 *)
-let word_append (w1 : 's word) (w2 : 's word) =
-  if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
+let word_append current_word current_word_depth w2 =
+  if empty_word <> w2
+  then word_append_according_depth current_word current_word_depth w2 0
+  else current_word
 ;;
 
-let rec word_append_char_from (word : char word) (list : char list) : char word =
+let rec word_append_char_from word word_list current_word_depth =
   let char_to_word symb =
     match symb with
-         (* Enterring in a new branch. *)
-         | '[' -> Branch empty_word
-         (* Exiting of the current branch. *)
-         | ']' ->
-           if 0 = !current_word_depth
-           then raise (Invalid_system "Invalid word '")
-           else empty_word
-         (* Simple char symbol. *)
-         | symb -> Symb symb
+    (* Enterring in a new branch. *)
+    | '[' -> Branch empty_word
+    (* Exiting of the current branch. *)
+    | ']' ->
+      if 0 = current_word_depth
+      then raise (Invalid_system "Invalid word '")
+      else empty_word
+    (* Simple char symbol. *)
+    | symb -> Symb symb
   in
-  match list with
-  | [] -> word
-  | symb :: res -> 
-    let appended_word = word_append word (char_to_word symb) in
-    match symb with
-    | '[' -> 
-      current_word_depth := !current_word_depth + 1;
-      word_append_char_from appended_word res
-    | ']' -> 
-      current_word_depth := !current_word_depth - 1;
-      word_append_char_from appended_word res
-    | _ -> word_append_char_from appended_word res
+  match word_list with
+  | [] -> word, current_word_depth
+  | symb :: res ->
+    let appended_word = word_append word current_word_depth (char_to_word symb) in
+    (match symb with
+    | '[' -> word_append_char_from appended_word res (current_word_depth + 1)
+    | ']' -> word_append_char_from appended_word res (current_word_depth - 1)
+    | _ -> word_append_char_from appended_word res current_word_depth)
 ;;
 
 (** [create_char_word_from_str str]
     @return the [char word] corresponding to [str].
-
-    @raise Invalid_system on errors. *)
+    @raise Invalid_system on errors.
+    *)
 let create_char_word_from_str str =
   if 1 = String.length str
   then (
@@ -169,18 +157,15 @@ let create_char_word_from_str str =
     (* Returns the associated symbol. *)
     | c -> Symb c)
   else (
-    current_word_depth := 0;
     try
       let explode_str = List.init (String.length str) (String.get str) in
-      let word = word_append_char_from empty_word explode_str in
+      let word, current_word_depth = word_append_char_from empty_word explode_str 0 in
       (* If a branch isn't closed. *)
-      if !current_word_depth <> 0 then 
-        raise (Invalid_system ("Unclosed branch in '"))
-      else 
-        word
-    with 
-    | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'"))
-  )
+      if current_word_depth <> 0
+      then raise (Invalid_system "Unclosed branch in '")
+      else word
+    with
+    | Invalid_system msg -> raise (Invalid_system (msg ^ str ^ "'")))
 ;;
 
 (* A valid string rule is of the form : <char>' '<word> *)
@@ -214,19 +199,18 @@ let create_new_char_rules (other_rules : char rewrite_rules) (str : string) =
 (** Creates a [char rewrite_rules] according to a given string list.
 
     @note If a symbol have more than one rule, the last one is used.
-
     @raise Invalid_system if a word or a rule is not valid.
 *)
 let create_char_rules_from_str_list str_list =
-  let rec create_char_rules_reccursive rules list = 
+  let rec create_char_rules_reccursive rules list =
     match list with
-    |[] -> rules
-    |str :: res -> 
-      if is_a_valid_str_rule str then
+    | [] -> rules
+    | str :: res ->
+      if is_a_valid_str_rule str
+      then (
         let new_rules = create_new_char_rules rules str in
-        create_char_rules_reccursive new_rules res
-      else
-        raise (Invalid_system ("Invalid rule '" ^ str ^ "'"))
+        create_char_rules_reccursive new_rules res)
+      else raise (Invalid_system ("Invalid rule '" ^ str ^ "'"))
   in
   create_char_rules_reccursive (fun s -> Symb s) str_list
 ;;
@@ -275,19 +259,18 @@ let create_command_from_str str =
 (** @return a new interpretation with ...
     @raise Invalid_interp for an invalid input string.
 *)
-let create_new_char_interp (interp : char -> command list) (str : string) : char -> command list =
-  let rec create_new_char_interp_reccursive command_list list = 
+let create_new_char_interp interp str =
+  let rec create_new_char_interp_reccursive command_list list =
     match list with
-    |[] -> command_list
-    |str :: res ->
-      try 
-        let new_command_list = command_list @ [ create_command_from_str str ] in
-        create_new_char_interp_reccursive new_command_list res
-      with
-        | Failure _ -> raise (Invalid_system ("Invalid command '" ^ str ^ "'"))
-        | Invalid_system msg -> raise (Invalid_system msg)
+    | [] -> command_list
+    | str :: res ->
+      (try
+         let new_command_list = command_list @ [ create_command_from_str str ] in
+         create_new_char_interp_reccursive new_command_list res
+       with
+      | Failure _ -> raise (Invalid_system ("Invalid command '" ^ str ^ "'"))
+      | Invalid_system msg -> raise (Invalid_system msg))
   in
-  
   (* [commands_str] = str[2:] (removing the first char and space.)*)
   let commands_str = String.sub str 2 (String.length str - 2) in
   let commands_str_list = String.split_on_char ' ' commands_str in
@@ -306,19 +289,18 @@ let create_new_char_interp (interp : char -> command list) (str : string) : char
     @note If a symbol have more than one interpretation, the last one is used.
 *)
 let create_char_interp_from_str_list (str_list : string list) =
-  let rec create_char_interp_reccursive interp list = 
+  let rec create_char_interp_reccursive interp list =
     match list with
-    |[] -> interp
-    | str :: res -> 
-      if is_a_valid_str_interp str then 
+    | [] -> interp
+    | str :: res ->
+      if is_a_valid_str_interp str
+      then (
         let new_interp = create_new_char_interp interp str in
-        create_char_interp_reccursive new_interp res
-      else 
-        raise (Invalid_system ("Invalid interpretation '" ^ str ^ "'"))
+        create_char_interp_reccursive new_interp res)
+      else raise (Invalid_system ("Invalid interpretation '" ^ str ^ "'"))
   in
   create_char_interp_reccursive default_interp str_list
 ;;
-
 
 type parse_state =
   | Creating_axiom

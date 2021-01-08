@@ -4,8 +4,8 @@ open Lsystems.Systems
 open Lsystems.Turtle
 open Printf
 
-(** Parameters. 
- * These parameter are ref because they have to initialised 
+(** Parameters.
+ * These parameter are ref because they have to initialised
  * (by Arg.parse) and are used with a global visibility.
  *)
 
@@ -164,19 +164,19 @@ let calc_scaling_coef () =
     reset_draw_boundary ();
     reset_initial_position ();
     scale_coef_ref := !scale_coef_ref *. 0.8;
-    interpret_word !systems_ref.interp !current_word_ref false false
+    interpret_word !systems_ref.interp !current_word_ref false false 0
   done
 ;;
 
 (* Resets init pos and apply system's interpretations to the current word. *)
 let interpret_current_word () =
   clear_graph ();
-  interpret_word !systems_ref.interp !current_word_ref false false;
+  interpret_word !systems_ref.interp !current_word_ref false false 0;
   calc_scaling_coef ();
   reset_initial_position ();
-  reset_current_depth ();
+  (* reset_current_depth (); *)
   reset_color ();
-  interpret_word !systems_ref.interp !current_word_ref !color_is_set_ref true
+  interpret_word !systems_ref.interp !current_word_ref !color_is_set_ref true 0
 ;;
 
 let reset_current_word () = current_word_ref := !systems_ref.axiom
@@ -184,8 +184,7 @@ let reset_scale_coef () = scale_coef_ref := 35.
 
 let rec execute_n_time f i n =
   f i;
-  if (i < n) then
-    execute_n_time f (i+1) n
+  if i < n then execute_n_time f (i + 1) n
 ;;
 
 let calculate_depth n =
@@ -193,7 +192,7 @@ let calculate_depth n =
   then (
     reset_current_word ();
     reset_scale_coef ();
-    execute_n_time update_current_word 0 (n-1);
+    execute_n_time update_current_word 0 (n - 1);
     interpret_current_word ();
     synchronize ();
     current_depth := n)
