@@ -1,82 +1,107 @@
 # Rapport
 
-## Identifiants 
+## Sommaire
 
-nom: Rolley
-prénom: Emile
-identifiant Git Lab: @EmileRolley
-numéro étudiant: 71802612
+* [Identifiants](#identifiants)
+* [Fonctionnalités](#fonctionnalités)
+  * [Fonctionnalités implémentées](#fonctionnalités-implémentées)
+  * [Fonctionnalités manquantes](#fonctionnalités-manquantes)
+* [Compilation et exécution](#compilation-et-exécution)
+  * [Compilation](#compilation)
+    * [Prérequis à installer](#prérequis-à-installer)
+    * [Docker](#docker)
+      * [Comment l'utiliser](#comment-lutiliser)
+    * [`Make`](#make)
+  * [Exécution](#exécution)
+    * [Usage](#usage)
+      * [`--help`](#--help)
+    * [Options](#options)
+      * [`-f`](#-f)
+      * [`-s`](#-s)
+      * [`-o`](#-o)
+      * [`--line-width`](#--line-width)
+      * [`--color`](#--color)
+      * [`--start-pos`](#--start-pos)
+      * [`--verbose`](#--verbose)
+    * [_Keymap_](#keymap)
+  * [Les fichiers _.sys_](#les-fichiers-_sys)
+    * [Exemple de fichier valide](#exemple-de-fichier-valide)
+  * [Exemples](#exemples)
+    * [Interprétation monochrome](#interprétation-monochrome)
+    * [`--start-pos=center`](#--start-poscenter)
+    * [`--line-width=3`](#--line-width3)
+    * [`-s 15`](#-s-15)
+    * [Dégradé rouge](#dégradé-rouge)
+    * [Sauvegarde d'image](#sauvegarde-dimage)
+* [Découpage modulaire](#découpage-modulaire)
+  * [`Lsystems`](#lsystems)
+  * [`Limage`](#limage)
+  * [`Main`](#main)
+  * [Test unitaires](#test-unitaires)
+* [Organisation du travail](#organisation-du-travail)
+  * [Méthode *Scrum*](#méthode-scrum)
+  * [Répartition des tâches](#répartition-des-tâches)
+    * [Au début du projet](#au-début-du-projet)
+    * [Au milieu](#au-milieu)
+    * [A la fin](#a-la-fin)
 
-nom: Phol Asa
-prénom: Rémy
-identifiant Git Lab: @pholasa
-numéro étudiant: 71803190
+## Identifiants
+
+| Nom      | Prénom | GitLab ID                                                                     | Numéro étudiant |
+|----------|--------|-------------------------------------------------------------------------------|-----------------|
+| Rolley   | Emile  | [@EmileRolley](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley) | 71802612        |
+| Phol Asa | Rémy   | [@pholasa](https://gaufre.informatique.univ-paris-diderot.fr/pholasa)         | 71803190        |
 
 ## Fonctionnalités
 
-Le projet est capable de :
-	- dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
-	- revoir le dessin précédent du L-Système en appuyant sur une touche (`p | h | k`)
-	- specifier un fichier .sys pour pouvoir le dessiner
-	- redimensionner automatiquement le dessin
-	- choisir la position où commencer le dessin
-	- d'ajouter un dégradé de couleurs au dessin
-	- d'ajouter une variation aléatoire au dessin 
-	- de sauvegarder le dessin en couleur en une image png
+### Fonctionnalités implémentées
 
-## Compilation et exécution 
+Le programme permet de :
 
-### Dépendances
+- dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
+- revoir le dessin précédent du L-Système en appuyant sur une touche (`p | h | k`)
+- charger un L-Système depuis un fichier `sys` (`-f`)
+- redimensionner l'échelle pour garder le dessin à l'intérieur de la fenêtre
+- choisir la position de départ de la `tortue` (`--start-pos`)
+- afficher le dessin avec un dégradé de couleur (`--color`)
+- afficher le dessin avec une épaisseur de trait différentes (`--line-width`)
+- ajouter une variation sur la valeur des angles lors de l'interprétation (`-s`)
+- de sauvegarder le contenu de la fenêtre en une image `PNG` couleur (`-o`)
 
-Bibliothèques externes utilisées :
+### Fonctionnalités manquantes
 
-- [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
-- [bimage](https://github.com/zshipko/ocaml-bimage) 
-- [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/) pour la sauvegarde des images.
-	
-# Sommaire
+Nous n'avons pas implémenté la partie `2.4` du sujet permettant d'optimiser la
+complexité en espace de notre programme. Ne l'ayant implémentée dès le départ
+nous avons préférez nous concentré sur l'implémentation des autres extensions.
 
-[![pipeline status](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/badges/master/pipeline.svg)](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/commits/master)
-- [Compilation](#compilation)
-  - [Prérequis](#prérequis-à-installer)
-  - [Docker](#docker)
-  - [Make](#make)
-  - [Lancement](#lancement)
-- [Usage](#usage)
-  - [`--help`](#--help)
-  - [Options](#options)
-  - [_Keymap_](#keymap)
-- [Fichiers systèmes](#les-fichiers-.sys)
-  - [Exemples de fichier](#exemples-de-fichier-valid)
-- [Exemples](#exemples)
-  - [Sans option](#interprétation-monochrome)
-  - [`--start-pos=center`](#--start-pos=center)
-  - [`--line-width=3`](#--line-width=3)
-  - [`-s 15`](#-s-15)
-  - [Avec couleur](#dégradé-rouge)
-  - [Sauvegarde d'image](#sauvegarde)
+De plus le redimensionnement ainsi que le calcul du dégradé sont des approximations
+et non des calculs exacts.
 
-## Compilation
-### Prérequis à installer
+## Compilation et exécution
+
+### Compilation
+
+#### Prérequis à installer
 
 Voir [INSTALL.md](../INSTALL.md)
 
-- ocaml évidemment
-- dune et make sont fortement conseillés
-- bibliothèque graphics si elle ne vient pas déjà avec ocaml
-- [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
-(`opam install ounit2`)
-- [bimage](https://github.com/zshipko/ocaml-bimage) et [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/)
-pour la sauvegarde des images.
+- [OCaml](https://ocaml.org)
+- [dune](https://github.com/ocaml/dune) et
+[Make](https://www.gnu.org/software/make/) pour la compilation.
+- Librairies :
+  - [Graphics](https://github.com/ocaml/graphics) pour la `GUI`.
+  - [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires (`opam install ounit2`).
+  - [bimage](https://github.com/zshipko/ocaml-bimage) et [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/)
+pour la sauvegarde des images (`opam install bimage bimage-unix`).
 
-### Docker
+#### Docker
 
 Pour ne pas avoir à installer toutes les dépendances il est possible d'utiliser
-l'image `Docker`
+l'image `Docker` :
 
-[emilerolley/opam2-dune](https://hub.docker.com/r/emilerolley/opam2-dune)
+  [emilerolley/opam2-dune](https://hub.docker.com/r/emilerolley/opam2-dune)
 
-#### Comment l'utiliser
+##### Comment l'utiliser
 
 Pour récupérer l'image, utiliser :
 
@@ -84,30 +109,32 @@ Pour récupérer l'image, utiliser :
 > docker pull emilerolley/opam2-dune:latest
 ```
 
-Pour pouvoir ouvrir la fenêtre de la lib `graphics`, utiliser :
+Pour pouvoir lancer un conteneur et être capable d'ouvrir la fenêtre `Graphics`,
+utiliser :
 
 ```shell
 > docker run --rm -ti --net=host -e DISPLAY emilerolley/opam2-dune
 ```
 
-### Make
+#### `Make`
 
 Liste des commandes `Make` disponible :
 
-- `make` compile l'exécutable *./_build/default/main/main.exe*.
+- `make` compile l'exécutable *./_build/default/main/main.exe* après avoir
+compilé et exécuté les tests unitaires.
 
 - `make test` compile et exécute les tests unitaires.
 
 - `make clean` efface le répertoire provisoire `_build`
     produit par `dune` lors de ses compilations.
 
-### Lancement
+### Exécution
 
 Pour lancer l'exécutable, `./run arg1 arg2 ...`.
 
-## Usage
+#### Usage
 
-### `--help`
+##### `--help`
 
 L'option `--help`, permet d'afficher la page d'aide.
 
@@ -134,37 +161,35 @@ Options:
   --help       Display this list of options
 ```
 
-### Options
+#### Options
 
-#### `-f`
+##### `-f`
 
 L'option `-f` est nécessaire et permet de spécifier le fichier *.sys* décrivant
 le L-Système voulant être visualisé (voir la section [Les fichiers _.sys_](#les-fichiers-.sys)
 pour plus de détails).
 
-#### `-s`
+##### `-s`
 
 L'option `-s` permet de définir un **entier positif** qui corresponds à la
 variation potentielle de l'interprétation de la valeur des angles.
 Plus la valeur est grande plus la variation sera grande.
 
-#### `-o`
+##### `-o`
 
 L'option `-o` permet de préciser le chemin vers le fichier dans lequel pourra être
 sauvegardée la représentation.
 
 > Format disponible : `PNG`.
->
-> Les couleurs ne sont pas encore disponible.
 
-#### `--line-width`
+##### `--line-width`
 
 L'option `--line-width` permet de définir l'épaisseur du trait (la valeur doit
 être un entier positif).
 
 > Par défaut, `--line-width=1`.
 
-#### `--color`
+##### `--color`
 
 L'option `--color` permet de visualiser le L-Système avec un dégradé monochrome.
 
@@ -179,13 +204,13 @@ Liste des couleurs disponibles :
 
 > Si l'option n'est pas précisée la couleur utilisée sera grise.
 
-#### `--start-pos`
+##### `--start-pos`
 
 L'option `--start-pos` permet de définir la position de départ de l'interprétation.
 
 > Par défaut, `--start-pos=bottom`.
 
-#### `--verbose`
+##### `--verbose`
 
 L'option `--verbose` permet d'afficher des informations supplémentaires lors
 de l'exécution du programme.
@@ -206,7 +231,7 @@ Exemple de messages :
 +A-A++A-A-A-A++A-A++A-A++A-A-A-A++A-A++A-A++A-A-A-A++A-A'
 ```
 
-### _Keymap_
+#### _Keymap_
 
 Lorsque l'interprétation est lancée, il est possible de :
 
@@ -218,7 +243,7 @@ Lorsque l'interprétation est lancée, il est possible de :
 > La fenêtre de visualisation peut être fermée à tout moment, simplement, en appuyant
 > sur n'importe quelle touche autre que `a l j p h k s`.
 
-## Les fichiers _.sys_
+### Les fichiers _.sys_
 
 Un fichier _SYS_ est divisé en trois parties, chacunes séparées par une ligne
 vide.
@@ -232,7 +257,7 @@ Voici quelques contraintes :
 > **Remarque** : Si une un symbole possède plusieurs règles de réécriture ou
 > d'interprétations ce sera la dernière qui sera utilisée.
 
-### Exemple de fichier valide
+#### Exemple de fichier valide
 
 ```markdown
 # Axiome
@@ -250,9 +275,9 @@ A L30 T60
 
 > Le répertoire _./examples_ contient plusieurs exemples de fichiers système.
 
-## Exemples
+### Exemples
 
-### Interprétation monochrome
+#### Interprétation monochrome
 
 ```shell
 > ./run -f examples/br5.sys
@@ -260,7 +285,7 @@ A L30 T60
 
 ![exemple1](img/ex1.png)
 
-### `--start-pos=center`
+#### `--start-pos=center`
 
 ```shell
 > ./run -f examples/dragon.sys --start-pos=center
@@ -268,7 +293,7 @@ A L30 T60
 
 ![exemple2](img/ex2.png)
 
-### `--line-width=3`
+#### `--line-width=3`
 
 ```shell
 > ./run -f examples/dragon.sys --start-pos=center --line-width=3
@@ -276,8 +301,7 @@ A L30 T60
 
 ![exemple6](img/ex6.png)
 
-
-### `-s 15`
+#### `-s 15`
 
 ```shell
 > ./run -f examples/htree.sys -s 15
@@ -285,7 +309,7 @@ A L30 T60
 
 ![exemple3](img/ex3.png)
 
-### Dégradé rouge
+#### Dégradé rouge
 
 ```shell
 > ./run -f examples/br2.sys --color=red
@@ -293,7 +317,7 @@ A L30 T60
 
 ![exemple4](img/ex4.png)
 
-### Sauvegarde
+#### Sauvegarde d'image
 
 ```shell
 > ./run -f examples/snow.sys -o img/snow.png --start-pos=bottom-right
@@ -302,58 +326,106 @@ A L30 T60
 
 ![exemple5](img/snow.png)
 
-####### IV. Découpage modulaire :
+## Découpage modulaire
 
-png.ml: 
-	Ce module a pour but de transformer et sauvegarder l'interprétation graphique du 
-	L-Système en une image png. Elle utilise les bibliothèques externe bimage et bimage-unix 
-	pour faire cela.
+### `Lsystems`
 
-test_systems.ml: 
-	Ce module permet de gérer les tests liées à la création des L-Système 
-	dans le projet. Elle utilise la bibliothèque OUnit2 pour les tests.
+La bibliothèque `lsystems` contient les modules se rapportant à la gestion
+des L-Systèmes.
 
-system.ml: 
-	Ce module permet de gérer tout les calculs fait sur les L-Systèmes de la création
-	du L-Système à partir d'un fichier .sys, au calcul des évolutions du L-Système.
+- `Lsystems.Systems` Ce module permet de gérer tous les calculs fait sur les
+L-Systèmes en particulier : initialisation de L-Système à partir d'un fichier `sys`, et
+calcul des itérations du L-Système.
+- `Lsystems.Turtle` Ce module à pour but de gérer l'interprétation graphique
+d'un L-Système en ajoutant éventuellement de la couleur ou alors des variations
+aléatoires au dessin.
 
-turtle.ml:
-	Ce module à pour but de gérer l'interprétation graphique d'un L-Système en ajoutant
-	éventuellement de la couleur ou alors des variations aléatoires au dessin.
-	
-main.ml:
-	Ce module permet de gérer les différentes options possible et de lancer
-	l'application.
+### `Limage`
 
-####### V. Organisation du travail :
+La bibliothèque `limage` contient les modules permettant de sauvegarder l'interprétation
+d'un L-Système dans une image.
 
-Au début du projet :
-	Rémy : 
-		- Calcul de l'évolution suivante du L-Système.
-		- La version basique de la Tortue.
-		- Interprètation graphique un L-Système donné.
-		
-	Emile : 
-		- Installer le CI/CD ainsi les tests unitaires du projet.
-		- Diviser le projet en plusieurs packages.
-		- Parser un fichier .sys en un L-Système utilisable par le projet.
-		- Redimensionner automatiquement une interprétations de L-Système.
-		- Première version du main avec la gestion des options
+- `Limage.Png` Ce module a pour but de transformer et sauvegarder
+l'interprétation graphique du L-Système en une image `PNG`.
+Pour cela, elle utilise les bibliothèques externe `bimage` et `bimage-unix`.
 
-Vers le milieu du projet :
-	Rémy :
-		- Variation aléatoire dans l'interprétation graphique.
-		- Possibilité d'avancer ou revenir en arrière dans l'évolution .
-	
-	Emile :
-		- Sauvegarde de l'interprétation courrante en une image png en noir et blanc.
-		- Couleur rouge avec dégradé pour l'interprétation de la Tortue.
-	
-Vers la fin du projet :
-	Rémy :
-		- Ajouter plusieurs couleurs à la Tortue à la place d'une seule
-		- Modifier certaines fonctions en un style réccursif
-	Emile : 
-		- Nettoyer le Parser
-		- Refactoriser certaines fonctions
-		- Ajout de la sauvegarde des interprétations en couleurs.
+### `Main`
+
+Le point d'entré du programme se trouve dans le fichier `main/main.ml` et fait le lien
+entre les différentes bibliothèques.
+
+### Test unitaires
+
+Nous avons voulu suivre la méthode de `TDD`, du moins pour l'implémentation du module
+`Lsystems.Systems`.
+Ces tests sont contenus dans le fichier `test/test_systems.ml`.
+Pour l'implémentation des tests nous avons utilisé la bibliothèque `OUnit2`.
+
+> Nous nous sommes limité à tester de façons *automatique* le module `Lsystems.Systems`,
+> en effet, les autres modules ne sont pas *simple* à automatiser en raison de l'utilisation
+> d'interface graphique notamment et facile à tester à *la main*.
+> De plus, le projet ne portant pas sur les tests unitaires nous avons préférez ne pas
+> perdre trop de temps dessus.
+
+## Organisation du travail
+
+### Méthode *Scrum*
+
+Nous avons voulu utiliser une version simplifiée de la méthode *Scrum* vu en L2
+pour nous organiser.
+Concrètement cela consiste en :
+
+- Des *sprints* d'une durée d'une semaine.
+- Une réunion à la fin de chaque *sprint* sur `Discord` durant laquelle nous
+faisons le point sur les *issues* implémentées par chacun durant le dernier
+*sprint* puis sur celles qui restent à faire avant de s'assigner nos *issues*
+pour le prochain *sprint* en fonction de leurs priorités.
+- Chaque *issue* corresponds à une fonctionnalité ou à un *patch* et est implémentée
+dans sa propre branche avant d'être *merge* dans la branche *develop*, si et seulement si,
+la *pipeline* est passée et que toutes les conversations de la *MR* correspondantes sont
+closes.
+- Lorsque l'état du programme dans la branche *develop* nous parait satisfaisant,
+la branche *master* est mise à jour avec *develop* et une nouvelle *release* est crée.
+
+### Répartition des tâches
+
+#### Au début du projet
+
+Rémy :
+
+* Implémentation du calcul des itérations du L-Système.
+-  Implémentation de la version basique de la Tortue.
+
+Emile :
+
+- Mise en place du `GitLab-CI` ainsi les tests unitaires du projet.
+- Division du projet en plusieurs bibliothèques.
+- Implémentation du *parsing* des fichiers `.sys`.
+- Implémentation de redimensionnement une interprétations de L-Système.
+- Implémentation de la première version du main avec la gestion des options
+
+#### Au milieu
+
+Rémy :
+
+- Implémentation des variations aléatoires dans l'interprétation des valeurs des angles.
+- Ajouts de la possibilité d'avancer ou revenir en arrière dans les itérations.
+
+Emile :
+
+- Sauvegarde de l'interprétation courante en une image `PNG` en noir et blanc.
+- Implémentation de la première version de l'option `--color`.
+- Rédaction de la documentation.
+
+
+#### A la fin
+
+Rémy :
+
+- Ajouts de plusieurs couleurs possibles.
+- Modification certaines fonctions en un style récursif.
+
+Emile :
+
+- Suppression des blocs de codes en style itératif.
+- Ajouts de la sauvegarde des interprétations en couleurs.
