@@ -5,8 +5,7 @@ open Lsystems.Turtle
 open Printf
 
 (** Parameters.
- * These parameter are ref because they have to initialised
- * (by Arg.parse) and are used with a global visibility.
+ * These variables are ref because they have to be initialised (by Arg.parse).
  *)
 
 let color_is_set_ref = ref false
@@ -23,9 +22,6 @@ let shift_ref = ref 0.0
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
 ;;
-
-(** Is the current depth (iteration). *)
-let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
@@ -171,12 +167,11 @@ let interpret_current_word word =
     (float_of_int (size_x ()) -. margin)
     (float_of_int (size_y ()) -. margin);
   reset_initial_position ();
-  (* reset_current_depth (); *)
   reset_color ();
   interpret_word !systems_ref.interp word !color_is_set_ref true 0
 ;;
 
-let reset_current_word () = !systems_ref.axiom
+let get_axiom () = !systems_ref.axiom
 let reset_scale_coef () = scale_coef_ref := 35.
 
 let rec update_word_n_time word n =
@@ -184,35 +179,37 @@ let rec update_word_n_time word n =
   if 0 < n then update_word_n_time word (n - 1) else word
 ;;
 
-let calculate_depth n =
+let calculate_to_iteration n =
   if n >= 0
   then (
-    let word = reset_current_word () in
+    let word = get_axiom () in
     reset_scale_coef ();
     let new_word = update_word_n_time word (n - 1) in
     interpret_current_word new_word;
-    synchronize ();
-    current_depth := n)
+    synchronize ())
 ;;
 
 (* Updates the [current_word_ref] one time before interpreting it. *)
-let calculate_next_depth word =
-  current_depth := !current_depth + 1;
+let calculate_next_iteration word nb_iteration =
+  let nb_iteration = nb_iteration + 1 in
   reset_scale_coef ();
-  let new_word = update_current_word word !current_depth in
+  let new_word = update_current_word word nb_iteration in
   interpret_current_word new_word;
   synchronize ();
-  new_word
+  new_word, nb_iteration
 ;;
 
 (* Binds keys to user actions. *)
-let rec user_action word =
+let rec user_action nb_iteration word =
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
-  | 'a' | 'l' | 'j' -> calculate_next_depth word |> user_action
+  | 'a' | 'l' | 'j' ->
+    let new_word, new_iteration = calculate_next_iteration word nb_iteration in
+    user_action new_iteration new_word
   | 'r' | 'h' | 'k' ->
-    calculate_depth (!current_depth - 1);
-    user_action word
+    let nb_iteration = nb_iteration - 1 in
+    calculate_to_iteration nb_iteration;
+    user_action nb_iteration word
   | 's' ->
     if "" <> !dest_file_ref
     then (
@@ -221,8 +218,8 @@ let rec user_action word =
         ("[INFO] - Saving PNG image at '"
         ^ !dest_file_ref
         ^ "' the iteration "
-        ^ string_of_int !current_depth));
-    user_action word
+        ^ string_of_int nb_iteration));
+    user_action nb_iteration word
   | _ -> word
 ;;
 
@@ -235,15 +232,13 @@ let main () =
     try
       systems_ref := create_system_from_file !src_file_ref;
       if !verbose_ref then print_endline "[INFO] : L-System created";
-      let current_word = reset_current_word () in
       (* Set up the random shifting *)
       Random.self_init ();
       set_shifting !shift_ref;
       (* Creates a graph. *)
       init_graph ();
-      interpret_current_word current_word;
       (* Wait the user input *)
-      let _ = user_action current_word in
+      let _ = user_action 0 (get_axiom ()) in
       ()
     with
     | Sys_error msg | Invalid_system msg -> print_endline ("[ERROR] : " ^ msg))
