@@ -127,7 +127,7 @@ let print_current_state () =
 let init_graph () =
   " " ^ string_of_int 700 ^ "x" ^ string_of_int 700 |> open_graph;
   Graphics.set_color (rgb 150 150 150);
-  set_line_width 1
+  set_line_width !line_width_ref
 ;;
 
 (* Applies system's rules to the current word and returns it. *)
@@ -215,7 +215,7 @@ let rec user_action () =
   | 's' ->
     if "" <> !dest_file_ref
     then (
-      Png.save_grey !dest_file_ref;
+      Png.save_to !dest_file_ref;
       print_endline
         ("[INFO] - Saving PNG image at '"
         ^ !dest_file_ref

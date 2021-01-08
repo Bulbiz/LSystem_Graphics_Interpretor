@@ -1,5 +1,4 @@
-(**
-   [save_grey dest_file] saves a black and white PNG file of the current
-   graph content into [dest_file].
+(** [save_to dest_file] saves to a PNG file
+    the current graph content into [dest_file].
   *)
-val save_grey : string -> unit
+val save_to : string -> unit
