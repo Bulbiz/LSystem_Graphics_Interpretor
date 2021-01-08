@@ -323,7 +323,7 @@ main.ml:
 
 ####### V. Organisation du travail :
 
-Au début du projet, les tâches ont été réparties de cette manière :
+Au début du projet :
 	Rémy : 
 		- Calcul de l'évolution suivante du L-Système.
 		- La version basique de la Tortue.
