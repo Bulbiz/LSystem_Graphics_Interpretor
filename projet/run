@@ -1,2 +1,2 @@
 #!/bin/sh
-dune exec -- ./main/main.exe $@
+./_build/default/main/main.exe $@

@@ -1,23 +1,18 @@
 .PHONY: all clean
 
-all: lsystems main run_test
+all: lsystems limage lmain runtest
 
 lsystems:
-	cd lsystems
-	dune build
+	cd lsystems && dune build
 
-main:
-	cd main
-	dune build main.exe
+limage:
+	cd limage && dune build
 
-run_test:
-	dune runtest
+lmain:
+	cd main && dune build main.exe
 
-byte: lsystems
-	cd main
-	dune build main.bc
+runtest:
+	cd test && dune runtest
 
 clean:
 	dune clean
-
-

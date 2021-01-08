@@ -4,10 +4,11 @@ open Lsystems.Systems
 open Lsystems.Turtle
 open Printf
 
-(** Parameters. *)
+(** Global references initialized from arguments options. *)
 
 let color_is_set_ref = ref false
 let verbose_ref = ref false
+let line_width_ref = ref 1
 let src_file_ref = ref ""
 let dest_file_ref = ref ""
 let init_xpos_ref = ref 0.5
@@ -15,28 +16,37 @@ let init_ypos_ref = ref 0.10
 let margin = 15.
 let shift_ref = ref 0.0
 
+(** Is the current loaded systems. *)
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
 ;;
 
+(** Is the current word references. *)
 let current_word_ref = ref empty_word
+
+(** Is the current depth (iteration). *)
 let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
-  "Usage: \n ./run.sh -f sys_file [ options ]\n\n"
+  "Usage: \n\t\t./run.sh -f sys_file [ options ]\n\n"
   ^ "Needed: \n"
-  ^ " -f    \tInput file where is described the L-System\n\n"
+  ^ "  -f\t\tInput file where the L-System is described\n\n"
   ^ "Options:"
 ;;
+
+(** Setters used from args. *)
 
 let set_verbose () = verbose_ref := true
 let set_output_file dest_file = dest_file_ref := dest_file
 let set_input_file input_file = src_file_ref := input_file
 let set_shift_value value = shift_ref := float_of_int value
-let set_color color = 
-  color_is_set_ref := true; 
+let set_line_width_ref line_width = line_width_ref := line_width
+
+let set_color color =
+  color_is_set_ref := true;
   set_color_interpretation color
+;;
 
 let set_init_pos = function
   | "center" -> init_ypos_ref := 0.5
@@ -63,14 +73,21 @@ let cmdline_options =
   [ "--color", Arg.String set_color, "Color, choose between [red,blue,green,magenta,cyan,yellow]"
   ; ( "-s"
     , Arg.Int set_shift_value
-    , "\tValue for the aleatory shifting in the interpretation" )
+    , "\t\tValue for the aleatory shifting in the interpretation" )
   ; ( "-o"
     , Arg.String set_output_file
-    , "\tThe output file where final image will be saved to" )
+    , "\t\tThe output file where final image will be saved to" )
+  ; ( "--line-width"
+    , Arg.Int set_line_width_ref
+    , "\t\tPositive integer used for initialized the line width" )
+  ; ( "--color"
+    , Arg.String set_color
+    , "\t\tRendering color accepted values :\n\
+       \t\t\tred, blue, green, magenta, cyan, yellow, (default: grey)\n" )
   ; ( "--start-pos"
     , Arg.String set_init_pos
-    , "\tThe starting position accepted values :\n\
-       \t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
+    , "\t\tThe starting position accepted values :\n\
+       \t\t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
        top-left, top-right (default: bottom)\n" )
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-f", Arg.String set_input_file, ""
@@ -79,7 +96,7 @@ let cmdline_options =
 
 let extra_arg_action s = failwith ("Invalid option : " ^ s)
 
-(* Verifies that all needed argument are provided. *)
+(* Verifies that all needed argument are provided and valid. *)
 let is_valid_args () =
   if "" = !src_file_ref
   then
@@ -91,9 +108,15 @@ let is_valid_args () =
     print_endline
       "[ERROR in arguments] : The shifting value has to be positive. (--help for more \
        informations)";
-  "" <> !src_file_ref && 0.0 <= !shift_ref
+  if 0 > !line_width_ref
+  then
+    print_endline
+      "[ERROR in arguments] : The line width value has to be positive. (--help for more \
+       informations)";
+  "" <> !src_file_ref && 0.0 <= !shift_ref && 0 <= !line_width_ref
 ;;
 
+(* Printed if the option [--verbose] is provided. *)
 let print_current_state () =
   printf "[INFO] - Color       = '%b'\n" !color_is_set_ref;
   printf "[INFO] - Shifting    = '%f'\n" !shift_ref;
@@ -101,6 +124,7 @@ let print_current_state () =
   printf "[INFO] - Dest file   = '%s'\n" !dest_file_ref
 ;;
 
+(* Inits the [Graphics] graph with its default values. *)
 let init_graph () =
   " " ^ string_of_int 700 ^ "x" ^ string_of_int 700 |> open_graph;
   Graphics.set_color (rgb 150 150 150);
@@ -117,6 +141,7 @@ let update_current_word current_step_nb =
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
 ;;
 
+(* Resets initial starting position. *)
 let reset_initial_position () =
   modify_initial_position
     (float_of_int (size_x ()) *. !init_xpos_ref)
@@ -155,6 +180,7 @@ let interpret_current_word () =
 let reset_current_word () = current_word_ref := !systems_ref.axiom
 let reset_scale_coef () = scale_coef_ref := 35.
 
+(* Updates the current L-System axiom [n] times before interpreting it. *)
 let calculate_depth n =
   if n >= 0
   then (
@@ -168,6 +194,7 @@ let calculate_depth n =
     current_depth := n)
 ;;
 
+(* Updates the [current_word_ref] one time before interpreting it. *)
 let calculate_next_depth () =
   current_depth := !current_depth + 1;
   reset_scale_coef ();
@@ -176,6 +203,7 @@ let calculate_next_depth () =
   synchronize ()
 ;;
 
+(* Binds keys to user actions. *)
 let rec user_action () =
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
