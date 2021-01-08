@@ -1,4 +1,6 @@
-####### I. Identifiants :
+# Rapport
+
+## Identifiants 
 
 nom: Rolley
 prénom: Emile
@@ -10,7 +12,7 @@ prénom: Rémy
 identifiant Git Lab: @pholasa
 numéro étudiant: 71803190
 
-####### II. Fonctionnalités :
+## Fonctionnalités
 
 Le projet est capable de :
 	- dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
@@ -22,17 +24,19 @@ Le projet est capable de :
 	- d'ajouter une variation aléatoire au dessin 
 	- de sauvegarder le dessin en couleur en une image png
 
-####### III. Compilation et exécution :
+## Compilation et exécution 
 
-# Bibliothèque externes ajoutés 
-	-[OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
-	-[bimage](https://github.com/zshipko/ocaml-bimage) 
-	-[bimage-unix](https://opam.ocaml.org/packages/bimage-unix/) pour la sauvegarde des images.
+### Dépendances
+
+Bibliothèques externes utilisées :
+
+- [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires.
+- [bimage](https://github.com/zshipko/ocaml-bimage) 
+- [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/) pour la sauvegarde des images.
 	
 # Sommaire
 
 [![pipeline status](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/badges/master/pipeline.svg)](https://gaufre.informatique.univ-paris-diderot.fr/EmileRolley/pf5/commits/master)
-
 - [Compilation](#compilation)
   - [Prérequis](#prérequis-à-installer)
   - [Docker](#docker)
