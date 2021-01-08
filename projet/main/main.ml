@@ -4,7 +4,10 @@ open Lsystems.Systems
 open Lsystems.Turtle
 open Printf
 
-(** Parameters. *)
+(** Parameters. 
+ * These parameter are ref because they have to initialised 
+ * (by Arg.parse) and are used with a global visibility.
+ *)
 
 let color_is_set_ref = ref false
 let verbose_ref = ref false
