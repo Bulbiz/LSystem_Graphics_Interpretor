@@ -85,4 +85,5 @@ val create_system_from_file : string -> char system
 (** Prints a [char word]. *)
 val print_char_word : char word -> unit
 
+(** Reset the current depth. *)
 val reset_current_depth : unit -> unit

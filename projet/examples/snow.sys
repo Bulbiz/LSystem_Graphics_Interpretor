@@ -1,0 +1,11 @@
+### Flocon de Von Koch. Figure 3 du sujet
+## Axiome:
+A++A++A
+
+## Regles:
+A A-A++A-A
+
+## Interpretations
+A L15 L15
++ T60
+- T-60

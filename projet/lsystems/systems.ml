@@ -1,5 +1,6 @@
 open Turtle
 
+(** Words, rewrite systems, and rewriting *)
 type 's word =
   | Symb of 's
   | Seq of 's word list
@@ -15,11 +16,18 @@ type 's system =
 
 exception Invalid_system of string
 
-(* Empty word representation. *)
+(** Empty word representation. *)
 let empty_word = Seq []
+
+(** Models the current brach depth, used for the [Turtle] color. *)
 let current_depth = ref 100
+
+(** Reset the current depth. *)
 let reset_current_depth () = current_depth := 100
 
+(** [interpret_word interpreter word draw] interprets the word for graphical view
+    and if [draw = true] draw lines else just moves.
+*)
 let rec interpret_word interpreter word colored draw =
   if colored then reset_color ();
   match word with
@@ -37,6 +45,7 @@ let rec interpret_word interpreter word colored draw =
     List.iter (fun w -> interpret_word interpreter w colored draw) word_list
 ;;
 
+(** Models interpretation default values. *)
 let default_interp = function
   | '[' -> [ Store ]
   | ']' -> [ Restore ]
@@ -44,6 +53,7 @@ let default_interp = function
   | _ -> [ Turn 0 ]
 ;;
 
+(** Prints a [char word], used for logging. *)
 let rec print_char_word = function
   | Symb s -> print_char s
   | Seq l -> List.iter (fun w -> print_char_word w) l
@@ -53,6 +63,9 @@ let rec print_char_word = function
     print_string "]"
 ;;
 
+(** [apply_rules rules current_state] applies [rules] for each [current_state] symbols.
+    @return the resulting state.
+    *)
 let rec apply_rules rules current_state =
   match current_state with
   | Symb s -> rules s
@@ -60,6 +73,7 @@ let rec apply_rules rules current_state =
   | Seq word_list -> Seq (List.map (apply_rules rules) word_list)
 ;;
 
+(** Calculates the nb of branches in a list of word. *)
 let get_nb_branches_in (word_list : 's word list) : int =
   (* Filter the list to obtains a list of all the Branch in word_list*)
   let filtered_list = List.filter (function
@@ -69,6 +83,7 @@ let get_nb_branches_in (word_list : 's word list) : int =
   List.length filtered_list
 ;;
 
+(** Is the current word depth used for creating word from string. *)
 let current_word_depth = ref 0
 
 let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (depth : int) =
@@ -99,6 +114,16 @@ let rec word_append_according_depth (current_word : 's word) (w2 : 's word) (dep
       Seq(transform_to_seq word_list 1))
 ;;
 
+(** [word_append current_word w2] appends [w2] to [current_word] according this rules :
+      If [current_word] is a Symb,
+        then creates a [Seq] with [current_word] followed by [w2].
+      Else if [current_word] contains at least one 'opened' branch,
+        then appends recursively [w2] to its last 'opened' branch
+      Else,
+        appends [w2] to the [current_word Seq list].
+
+    A branch is 'opened' if '[' has been read and not ']'.
+*)
 let word_append (w1 : 's word) (w2 : 's word) =
   if empty_word <> w2 then word_append_according_depth w1 w2 0 else w1
 ;;
@@ -130,6 +155,10 @@ let rec word_append_char_from (word : char word) (list : char list) : char word 
     | _ -> word_append_char_from appended_word res
 ;;
 
+(** [create_char_word_from_str str]
+    @return the [char word] corresponding to [str].
+
+    @raise Invalid_system on errors. *)
 let create_char_word_from_str str =
   if 1 = String.length str
   then (
@@ -182,6 +211,12 @@ let create_new_char_rules (other_rules : char rewrite_rules) (str : string) =
   | s -> other_rules s
 ;;
 
+(** Creates a [char rewrite_rules] according to a given string list.
+
+    @note If a symbol have more than one rule, the last one is used.
+
+    @raise Invalid_system if a word or a rule is not valid.
+*)
 let create_char_rules_from_str_list str_list =
   let rec create_char_rules_reccursive rules list = 
     match list with
@@ -210,6 +245,13 @@ let is_a_valid_str_interp str =
       1 = String.length hd && List.for_all (fun s -> 1 < String.length s) tlist)
 ;;
 
+(** [create_command_from_str str]
+    @return the corresponding Turtle.command from [str].
+
+    @raise Invalid_system if [str.[0]] doesn't correspond to a command.
+    @raise Invalid_argument('index out of bounds') if [str] len < 2.
+    @raise Failure('int_of_string') if the value isn't a number.
+*)
 let create_command_from_str str =
   let first_char = str.[0] in
   (* Get str[1:] *)
@@ -255,6 +297,14 @@ let create_new_char_interp (interp : char -> command list) (str : string) : char
   | s -> interp s
 ;;
 
+(** [create_char_interp_from_str_list str_list]
+    @return a char interpretation of the string list.
+
+    @raise Invalid_word if a word is not valid
+    @raise Invalid_interp if a rule is not valid.
+
+    @note If a symbol have more than one interpretation, the last one is used.
+*)
 let create_char_interp_from_str_list (str_list : string list) =
   let rec create_char_interp_reccursive interp list = 
     match list with
