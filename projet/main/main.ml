@@ -4,7 +4,9 @@ open Lsystems.Systems
 open Lsystems.Turtle
 open Printf
 
-(** Global references initialized from arguments options. *)
+(** Parameters.
+ * These variables are ref because they have to be initialised (by Arg.parse).
+ *)
 
 let color_is_set_ref = ref false
 let verbose_ref = ref false
@@ -20,12 +22,6 @@ let shift_ref = ref 0.0
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
 ;;
-
-(** Is the current word references. *)
-let current_word_ref = ref empty_word
-
-(** Is the current depth (iteration). *)
-let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
@@ -131,13 +127,13 @@ let init_graph () =
 ;;
 
 (* Applies system's rules to the current word and returns it. *)
-let update_current_word current_step_nb =
+let update_current_word word current_step_nb =
   if !verbose_ref
   then (
     printf "[INFO] - n = %d, current_word = '" current_step_nb;
-    print_char_word !current_word_ref;
+    print_char_word word;
     print_endline "'");
-  current_word_ref := apply_rules !systems_ref.rules !current_word_ref
+  apply_rules !systems_ref.rules word
 ;;
 
 (* Resets initial starting position. *)
@@ -149,69 +145,71 @@ let reset_initial_position () =
 ;;
 
 (* Finds the right scaling ratio to fit the entire draw in the window. *)
-let calc_scaling_coef () =
-  let max_height = float_of_int (size_x ()) -. margin in
-  let max_width = float_of_int (size_y ()) -. margin in
-  while
-    draw_boundary.top > max_height
-    || draw_boundary.bottom < margin
-    || draw_boundary.right > max_width
-    || draw_boundary.left < margin
-  do
+let rec calc_scaling_coef word max_width max_height =
+  if draw_boundary.top > max_height
+     || draw_boundary.bottom < margin
+     || draw_boundary.right > max_width
+     || draw_boundary.left < margin
+  then (
     reset_draw_boundary ();
     reset_initial_position ();
     scale_coef_ref := !scale_coef_ref *. 0.8;
-    interpret_word !systems_ref.interp !current_word_ref false false
-  done
+    interpret_word !systems_ref.interp word false false 0;
+    calc_scaling_coef word max_width max_height)
 ;;
 
 (* Resets init pos and apply system's interpretations to the current word. *)
-let interpret_current_word () =
+let interpret_current_word word =
   clear_graph ();
-  interpret_word !systems_ref.interp !current_word_ref false false;
-  calc_scaling_coef ();
+  interpret_word !systems_ref.interp word false false 0;
+  calc_scaling_coef
+    word
+    (float_of_int (size_x ()) -. margin)
+    (float_of_int (size_y ()) -. margin);
   reset_initial_position ();
-  reset_current_depth ();
   reset_color ();
-  interpret_word !systems_ref.interp !current_word_ref !color_is_set_ref true
+  interpret_word !systems_ref.interp word !color_is_set_ref true 0
 ;;
 
-let reset_current_word () = current_word_ref := !systems_ref.axiom
+let get_axiom () = !systems_ref.axiom
 let reset_scale_coef () = scale_coef_ref := 35.
 
-(* Updates the current L-System axiom [n] times before interpreting it. *)
-let calculate_depth n =
+let rec update_word_n_time word n =
+  let word = update_current_word word n in
+  if 0 < n then update_word_n_time word (n - 1) else word
+;;
+
+let calculate_to_iteration n =
   if n >= 0
   then (
-    reset_current_word ();
+    let word = get_axiom () in
     reset_scale_coef ();
-    for i = 0 to n - 1 do
-      update_current_word i
-    done;
-    interpret_current_word ();
-    synchronize ();
-    current_depth := n)
+    let new_word = update_word_n_time word (n - 1) in
+    interpret_current_word new_word;
+    synchronize ())
 ;;
 
 (* Updates the [current_word_ref] one time before interpreting it. *)
-let calculate_next_depth () =
-  current_depth := !current_depth + 1;
+let calculate_next_iteration word nb_iteration =
+  let nb_iteration = nb_iteration + 1 in
   reset_scale_coef ();
-  update_current_word !current_depth;
-  interpret_current_word ();
-  synchronize ()
+  let new_word = update_current_word word nb_iteration in
+  interpret_current_word new_word;
+  synchronize ();
+  new_word, nb_iteration
 ;;
 
 (* Binds keys to user actions. *)
-let rec user_action () =
+let rec user_action nb_iteration word =
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
-    calculate_next_depth ();
-    user_action ()
+    let new_word, new_iteration = calculate_next_iteration word nb_iteration in
+    user_action new_iteration new_word
   | 'r' | 'h' | 'k' ->
-    calculate_depth (!current_depth - 1);
-    user_action ()
+    let nb_iteration = nb_iteration - 1 in
+    calculate_to_iteration nb_iteration;
+    user_action nb_iteration word
   | 's' ->
     if "" <> !dest_file_ref
     then (
@@ -220,9 +218,9 @@ let rec user_action () =
         ("[INFO] - Saving PNG image at '"
         ^ !dest_file_ref
         ^ "' the iteration "
-        ^ string_of_int !current_depth));
-    user_action ()
-  | _ -> ()
+        ^ string_of_int nb_iteration));
+    user_action nb_iteration word
+  | _ -> word
 ;;
 
 let main () =
@@ -234,16 +232,14 @@ let main () =
     try
       systems_ref := create_system_from_file !src_file_ref;
       if !verbose_ref then print_endline "[INFO] : L-System created";
-      current_word_ref := !systems_ref.axiom;
-      reset_current_word ();
       (* Set up the random shifting *)
       Random.self_init ();
       set_shifting !shift_ref;
       (* Creates a graph. *)
       init_graph ();
-      interpret_current_word ();
       (* Wait the user input *)
-      user_action ()
+      let _ = user_action 0 (get_axiom ()) in
+      ()
     with
     | Sys_error msg | Invalid_system msg -> print_endline ("[ERROR] : " ^ msg))
 ;;

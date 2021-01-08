@@ -20,17 +20,17 @@ val empty_word : 's word
 (** Models interpretation default values. *)
 val default_interp : char -> Turtle.command list
 
-(** [interpret_word interpreter word draw] interprets the word for graphical view
-    and if [draw = true] draw lines else just moves.
+(** [interpret_word interpreter word colored draw curr_depth]
+  interprets the word for graphical view and if [draw = true] draw lines otherwise just moves.
 *)
-val interpret_word : ('s -> Turtle.command list) -> 's word -> bool -> bool -> unit
+val interpret_word : ('s -> Turtle.command list) -> 's word -> bool -> bool -> int -> unit
 
 (** [apply_rules rules current_state] applies [rules] for each [current_state] symbols.
     @return the resulting state.
 *)
 val apply_rules : 's rewrite_rules -> 's word -> 's word
 
-(** [word_append current_word w2] appends [w2] to [current_word] according this rules :
+(** [word_append current_word current_word_depth w2] appends [w2] to [current_word] according this rules :
       If [current_word] is a Symb,
         then creates a [Seq] with [current_word] followed by [w2].
       Else if [current_word] contains at least one 'opened' branch,
@@ -40,7 +40,7 @@ val apply_rules : 's rewrite_rules -> 's word -> 's word
 
     A branch is 'opened' if '[' has been read and not ']'.
 *)
-val word_append : 's word -> 's word -> 's word
+val word_append : 's word -> int -> 's word -> 's word
 
 (** [create_char_word_from_str str]
     @return the [char word] corresponding to [str].
@@ -85,5 +85,5 @@ val create_system_from_file : string -> char system
 (** Prints a [char word]. *)
 val print_char_word : char word -> unit
 
-(** Reset the current depth. *)
-val reset_current_depth : unit -> unit
+(*(1** Reset the current depth. *1) *)
+(*val reset_current_depth : unit -> unit *)
