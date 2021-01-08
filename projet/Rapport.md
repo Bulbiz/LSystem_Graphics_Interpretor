@@ -20,7 +20,7 @@ Le projet est capable de :
 	- choisir la position où commencer le dessin
 	- d'ajouter un dégradé de couleurs au dessin
 	- d'ajouter une variation aléatoire au dessin 
-	- de sauvegarder le dessin en une image png
+	- de sauvegarder le dessin en couleur en une image png
 
 ####### III. Compilation et exécution :
 
