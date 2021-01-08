@@ -317,7 +317,7 @@ let update_parse_state = function
   | Done -> Done
 ;;
 
-let read_line ci : string option =
+let read_line ci =
   try
     let x = input_line ci in
     Some x
@@ -325,7 +325,11 @@ let read_line ci : string option =
   | End_of_file -> None
 ;;
 
-let create_system_from_file (file_name : string) =
+(* @note for IO we can not avoid side effects, however, although having limited
+   them only in this function it seems too complicated and should be refactored but
+   we are running out of time..
+   *)
+let create_system_from_file file_name =
   (* Initializes references with default values. *)
   let axiom_word_ref = ref empty_word in
   let char_rules_ref = ref (fun s -> Symb s) in
