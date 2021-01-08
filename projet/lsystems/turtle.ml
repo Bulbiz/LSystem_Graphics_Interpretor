@@ -35,16 +35,17 @@ type color_value = Color of bool * bool * bool
 
 (** Globals references. *)
 
+(* This are references because they need to be initialized by the main. *)
 let scale_coef_ref = ref 35.
-let default_command = Turn 0
-let initial_position = { x = 0.; y = 0.; a = 0 }
-let positions_stack = Stack.create ()
-let current_position = ref initial_position
-let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
 let shift = ref 1.0
 let set_shifting shift_value = shift := shift_value
-let current_color = { r = 10; g = 10; b = 10 }
 let color_ref = ref (Color (true, true, true))
+let initial_position = { x = 0.; y = 0.; a = 0 }
+let current_position = ref initial_position
+let positions_stack = Stack.create ()
+let draw_boundary = { top = 0.; right = 0.; bottom = 0.; left = 0. }
+let current_color = { r = 10; g = 10; b = 10 }
+let default_command = Turn 0
 
 (** [get_shift] returns a random float value according the [shift] value. *)
 let get_shift () =
