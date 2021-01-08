@@ -70,24 +70,23 @@ let set_init_pos = function
 ;;
 
 let cmdline_options =
-  [ "--color", Arg.String set_color, "Color, choose between [red,blue,green,magenta,cyan,yellow]"
-  ; ( "-s"
+  [ ( "-s"
     , Arg.Int set_shift_value
-    , "\t\tValue for the aleatory shifting in the interpretation" )
+    , "\tValue for the aleatory shifting in the interpretation" )
   ; ( "-o"
     , Arg.String set_output_file
-    , "\t\tThe output file where final image will be saved to" )
+    , "\tThe output file where final image will be saved to" )
   ; ( "--line-width"
     , Arg.Int set_line_width_ref
-    , "\t\tPositive integer used for initialized the line width" )
+    , "\tPositive integer used for initialized the line width" )
   ; ( "--color"
     , Arg.String set_color
-    , "\t\tRendering color accepted values :\n\
-       \t\t\tred, blue, green, magenta, cyan, yellow, (default: grey)\n" )
+    , "\tRendering color accepted values :\n\
+       \t\t  red, blue, green, magenta, cyan, yellow, (default: grey)" )
   ; ( "--start-pos"
     , Arg.String set_init_pos
-    , "\t\tThe starting position accepted values :\n\
-       \t\t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
+    , "\tStarting position accepted values :\n\
+       \t\t  center, bottom, top, center-left, center-right, bottom-left, bottom-right, \
        top-left, top-right (default: bottom)\n" )
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-f", Arg.String set_input_file, ""
