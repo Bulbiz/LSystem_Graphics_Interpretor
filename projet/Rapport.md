@@ -1,4 +1,4 @@
-I. Identifiants :
+# I. Identifiants :
 nom: Rolley
 prénom: Emile
 identifiant Git Lab: @EmileRolley
@@ -9,7 +9,7 @@ prénom: Rémy
 identifiant Git Lab: @pholasa
 numéro étudiant: 71803190
 
-II. Fonctionnalités :
+# II. Fonctionnalités :
 Le projet est capable de :
 	- dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
 	- revoir le dessin précédent du L-Système en appuyant sur une touche (`p | h | k`)
@@ -20,7 +20,7 @@ Le projet est capable de :
 	- d'ajouter une variation aléatoire au dessin 
 	- de sauvegarder le dessin en une image png
 
-III. Compilation et exécution :
+# III. Compilation et exécution :
 Pour avoir plus de détails sur la compilation et l'exécution du projet,
 nous vous invitons à regarder le fichier README.md.
 
@@ -29,7 +29,7 @@ Bibliothèque externes ajoutés :
 	-[bimage](https://github.com/zshipko/ocaml-bimage) 
 	-[bimage-unix](https://opam.ocaml.org/packages/bimage-unix/) pour la sauvegarde des images.
 
-IV. Découpage modulaire :
+# IV. Découpage modulaire :
 
 png.ml: 
 	Ce module a pour but de transformer et sauvegarder l'interprétation graphique du 
