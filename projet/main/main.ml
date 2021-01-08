@@ -1,13 +1,14 @@
-open Printf
-open Bimage
 open Graphics
+open Limage
 open Lsystems.Systems
 open Lsystems.Turtle
+open Printf
 
-(** Parameters. *)
+(** Global references initialized from arguments options. *)
 
 let color_is_set_ref = ref false
 let verbose_ref = ref false
+let line_width_ref = ref 1
 let src_file_ref = ref ""
 let dest_file_ref = ref ""
 let init_xpos_ref = ref 0.5
@@ -15,26 +16,37 @@ let init_ypos_ref = ref 0.10
 let margin = 15.
 let shift_ref = ref 0.0
 
+(** Is the current loaded systems. *)
 let systems_ref =
   ref { axiom = empty_word; rules = (fun _ -> empty_word); interp = default_interp }
 ;;
 
+(** Is the current word references. *)
 let current_word_ref = ref empty_word
+
+(** Is the current depth (iteration). *)
 let current_depth = ref 0
 
 (* Usages message. *)
 let usage_msg =
-  "Usage: \n ./run.sh -f sys_file [ options ]\n\n"
+  "Usage: \n\t\t./run.sh -f sys_file [ options ]\n\n"
   ^ "Needed: \n"
-  ^ " -f    \tInput file where is described the L-System\n\n"
+  ^ "  -f\t\tInput file where the L-System is described\n\n"
   ^ "Options:"
 ;;
 
-let set_color () = color_is_set_ref := true
+(** Setters used from args. *)
+
 let set_verbose () = verbose_ref := true
 let set_output_file dest_file = dest_file_ref := dest_file
 let set_input_file input_file = src_file_ref := input_file
 let set_shift_value value = shift_ref := float_of_int value
+let set_line_width_ref line_width = line_width_ref := line_width
+
+let set_color color =
+  color_is_set_ref := true;
+  set_color_interpretation color
+;;
 
 let set_init_pos = function
   | "center" -> init_ypos_ref := 0.5
@@ -58,17 +70,23 @@ let set_init_pos = function
 ;;
 
 let cmdline_options =
-  [ "-c", Arg.Unit set_color, "\tRender with colors"
-  ; ( "-s"
+  [ ( "-s"
     , Arg.Int set_shift_value
-    , "\tValue for the aleatory shifting in the interpretation" )
+    , "\t\tValue for the aleatory shifting in the interpretation" )
   ; ( "-o"
     , Arg.String set_output_file
-    , "\tThe output file where final image will be saved to" )
+    , "\t\tThe output file where final image will be saved to" )
+  ; ( "--line-width"
+    , Arg.Int set_line_width_ref
+    , "\t\tPositive integer used for initialized the line width" )
+  ; ( "--color"
+    , Arg.String set_color
+    , "\t\tRendering color accepted values :\n\
+       \t\t\tred, blue, green, magenta, cyan, yellow, (default: grey)\n" )
   ; ( "--start-pos"
     , Arg.String set_init_pos
-    , "\tThe starting position accepted values :\n\
-       \t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
+    , "\t\tThe starting position accepted values :\n\
+       \t\t\tcenter, bottom, top, center-left, center-right, bottom-left, bottom-right, \
        top-left, top-right (default: bottom)\n" )
   ; "--verbose", Arg.Unit set_verbose, ""
   ; "-f", Arg.String set_input_file, ""
@@ -77,7 +95,7 @@ let cmdline_options =
 
 let extra_arg_action s = failwith ("Invalid option : " ^ s)
 
-(* Verifies that all needed argument are provided. *)
+(* Verifies that all needed argument are provided and valid. *)
 let is_valid_args () =
   if "" = !src_file_ref
   then
@@ -89,49 +107,40 @@ let is_valid_args () =
     print_endline
       "[ERROR in arguments] : The shifting value has to be positive. (--help for more \
        informations)";
-  "" <> !src_file_ref && 0.0 <= !shift_ref
+  if 0 > !line_width_ref
+  then
+    print_endline
+      "[ERROR in arguments] : The line width value has to be positive. (--help for more \
+       informations)";
+  "" <> !src_file_ref && 0.0 <= !shift_ref && 0 <= !line_width_ref
 ;;
 
+(* Printed if the option [--verbose] is provided. *)
 let print_current_state () =
-  printf "[INFO] : Color       = '%b'\n" !color_is_set_ref;
-  printf "[INFO] : Src file    = '%s'\n" !src_file_ref;
-  printf "[INFO] : Dest file   = '%s'\n" !dest_file_ref
+  printf "[INFO] - Color       = '%b'\n" !color_is_set_ref;
+  printf "[INFO] - Shifting    = '%f'\n" !shift_ref;
+  printf "[INFO] - Src file    = '%s'\n" !src_file_ref;
+  printf "[INFO] - Dest file   = '%s'\n" !dest_file_ref
 ;;
 
+(* Inits the [Graphics] graph with its default values. *)
 let init_graph () =
   " " ^ string_of_int 700 ^ "x" ^ string_of_int 700 |> open_graph;
   Graphics.set_color (rgb 150 150 150);
-  set_line_width 1
+  set_line_width !line_width_ref
 ;;
 
-(** Save the actual graph content into an png at [dest_file_ref].
-  TODO: need to unpacked [color] to get the rgb corresponding values.
- *)
-let save_image () =
-  let height = size_y () in
-  let width = size_x () in
-  (* Gets the corresponding 3D matrix. *)
-  let img_matrix = get_image 0 0 width height |> dump_image in
-  (* Creates an empty image. *)
-  let img = Image.create u8 gray width height in
-  (* Fills the image with the content of [img_matrix]. *)
-  Image.for_each (fun x y _ -> Image.set img x y 0 img_matrix.(y).(x)) img;
-  (* Save the current [img] to the [dest_file_ref]. *)
-  Bimage_unix.Magick.write !dest_file_ref img;
-  (* TODO: find a way to be printed before wating for the next event. *)
-  if !verbose_ref then printf "[INFO] : Image saved to '%s'\n" !dest_file_ref
-;;
-
-(* Applies system's rules to the current word and returns it. *)
+(* Updates the [current_word_ref] by applying system's rules to it. *)
 let update_current_word current_step_nb =
   if !verbose_ref
   then (
-    printf "[INFO] : n = %d, current_word = '" current_step_nb;
+    printf "[INFO] - n = %d, current_word = '" current_step_nb;
     print_char_word !current_word_ref;
     print_endline "'");
   current_word_ref := apply_rules !systems_ref.rules !current_word_ref
 ;;
 
+(* Resets initial starting position. *)
 let reset_initial_position () =
   modify_initial_position
     (float_of_int (size_x ()) *. !init_xpos_ref)
@@ -139,10 +148,7 @@ let reset_initial_position () =
     90
 ;;
 
-(* Finds the right scaling ratio to fit the entire draw in the window.
-   TODO: Isn't clean, indeed
-    - margin left aren't working all times...
-   *)
+(* Finds the right scaling ratio to fit the entire draw in the window. *)
 let calc_scaling_coef () =
   let max_height = float_of_int (size_x ()) -. margin in
   let max_width = float_of_int (size_y ()) -. margin in
@@ -173,6 +179,7 @@ let interpret_current_word () =
 let reset_current_word () = current_word_ref := !systems_ref.axiom
 let reset_scale_coef () = scale_coef_ref := 35.
 
+(* Updates the current L-System axiom [n] times before interpreting it. *)
 let calculate_depth n =
   if n >= 0
   then (
@@ -186,6 +193,7 @@ let calculate_depth n =
     current_depth := n)
 ;;
 
+(* Updates the [current_word_ref] one time before interpreting it. *)
 let calculate_next_depth () =
   current_depth := !current_depth + 1;
   reset_scale_coef ();
@@ -194,8 +202,8 @@ let calculate_next_depth () =
   synchronize ()
 ;;
 
+(* Binds keys to user actions. *)
 let rec user_action () =
-  if !verbose_ref then Printf.printf "current_depth = %d\n" !current_depth;
   let user_input = Graphics.wait_next_event [ Graphics.Key_pressed ] in
   match user_input.key with
   | 'a' | 'l' | 'j' ->
@@ -205,7 +213,14 @@ let rec user_action () =
     calculate_depth (!current_depth - 1);
     user_action ()
   | 's' ->
-    if "" <> !dest_file_ref then save_image ();
+    if "" <> !dest_file_ref
+    then (
+      Png.save_grey !dest_file_ref;
+      print_endline
+        ("[INFO] - Saving PNG image at '"
+        ^ !dest_file_ref
+        ^ "' the iteration "
+        ^ string_of_int !current_depth));
     user_action ()
   | _ -> ()
 ;;
@@ -230,8 +245,7 @@ let main () =
       (* Wait the user input *)
       user_action ()
     with
-    | Invalid_system msg -> print_endline msg
-    | Sys_error msg -> print_endline ("[ERROR] " ^ msg))
+    | Sys_error msg | Invalid_system msg -> print_endline ("[ERROR] : " ^ msg))
 ;;
 
 let () = if not !Sys.interactive then main ()
