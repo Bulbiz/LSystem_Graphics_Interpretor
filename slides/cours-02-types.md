@@ -2,10 +2,10 @@
 Les types de données du premier ordre
 =====================================
 
-Transcription de https://sketch.sh/s/RjxDVUFPNMiZqKxDtzdezN
-Forked from https://sketch.sh/s/l3N96HVMsM3eGQQw9JQ6y8
+[Lien Sketch](https://sketch.sh/s/RjxDVUFPNMiZqKxDtzdezN)
 
 Auteur initial : Yann Régis-Gianas.
+Modifications par : Pierre Letouzey.
 
 Cette partie du cours vise à vous montrer comment OCaml représente les valeurs des types de données que vous connaissez déjà. Attention, ce document s'appuie sur OCaml 4.08.0. Quelques (rares) fonctionnalités ne sont pas présentes dans les versions plus anciennes d'OCaml.
 
@@ -334,6 +334,7 @@ Remarquez que le type de la fonction est lui aussi paramétrique : on dit que la
 ### Les types algébriques
 
 Comme vous le savez, certaines valeurs sont naturellement récursives. Deux exemples viennent rapidement en tête : les listes et les arbres. On peut les définir naturellement en introduisant un type somme récursif, aussi appelé **type algébrique**.
+
 ```ocaml
 type my_list_int =
 | Empty
@@ -351,7 +352,10 @@ type int_binary_tree =
 | Node of int_binary_tree * int * int_binary_tree
 
 let leaf x = Node (EmptyTree, x, EmptyTree)
+
 (*
+   L'arbre suivant :
+
               5
              / \
             3   4
@@ -361,6 +365,7 @@ let leaf x = Node (EmptyTree, x, EmptyTree)
 
    est représenté par :
 *)
+
 let beautiful_tree = Node (Node (leaf 1, 3, EmptyTree), 5, leaf 4)
 
 ```
@@ -441,9 +446,10 @@ Les listes impératives sont souvent présentées comme des *listes simplement c
 L'usage des listes impératives est souvent délicat dans les logiciels (penser à la suppression d'un *item* dans une *itemList* d'un widget). La raison fondamentale, c'est qu'une même cellule peut être partagée par plusieurs composants du programme en même temps *sans que l'on s'en rende compte*. Du coup, mettre à jour une cellule peut avoir des conséquences non locales, difficiles à prévoir si l'on a pas une vue complète et parfaite de l'ensemble du code source. Vous comprenez bien qu'il est impossible pour un développeur de connaître tout le code source d'un logiciel réaliste formé de centaines de milliers, voire millions de lignes de code. L'approche impérative passe difficilement à l'échelle!
 
 Pour approfondir cet argument, vous pouvez consulter :
-- https://softwareengineering.stackexchange.com/questions/133330/whats-wrong-with-mutability-and-can-it-be-desirable
-- https://blog.inf.ed.ac.uk/sapm/2014/03/06/enemy-of-the-state-or-why-oop-is-not-suited-to-large-scale-software/
-- https://doc.rust-lang.org/1.30.0/book/2018-edition/ch03-01-variables-and-mutability.html
+
+- <https://softwareengineering.stackexchange.com/questions/133330/whats-wrong-with-mutability-and-can-it-be-desirable>
+- <https://blog.inf.ed.ac.uk/sapm/2014/03/06/enemy-of-the-state-or-why-oop-is-not-suited-to-large-scale-software/>
+- <https://doc.rust-lang.org/1.30.0/book/2018-edition/ch03-01-variables-and-mutability.html>
 
 2. L'élégance des solutions inductives
 

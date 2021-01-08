@@ -1,7 +1,7 @@
 Cas spéciaux en OCaml : options et exceptions
 ==============================================
 
-fetched from https://sketch.sh/s/LNYzzbJLVpKgRIEYW5l2pM
+[Lien Sketch](https://sketch.sh/s/LNYzzbJLVpKgRIEYW5l2pM)
 
 **Avertissement:** les exemples déclenchant des exceptions ont le mauvais goût de bloquer la suite de la séance Sketch. Ils sont donc en commentaires ci-dessous, mais n'hésitez pas à les essayer en les décommentant temporairement.
 
@@ -139,6 +139,7 @@ let rec assoc x = function
 ### Rattraper des exceptions
 
 C'est une nouvelle syntaxe : `try ... with ...`. Après le `try`, une expression quelconque, pouvant déclencher (ou non) une exception. Après le `with`, un filtrage par motifs (comme pour un `match`), avec :
+
    - un ou plusieurs motifs (patterns) du type `exn`.
    - pour chaque motif, une expression correspondante après `->`, devant être du même type que le milieu du `try`.
 
@@ -152,11 +153,13 @@ let _ = f 17 0
 ### Exécution de `try e with ...`
 
 Si l'évaluation de `e` donne une valeur `v` : la valeur du tout est `v`. Si par contre l'évaluation de `e` lève une exception `E` :
+
   - On essaie alors de filtrer `E` avec les motifs qui suivent le `with`.
   - Au premier motif qui s'applique, l'expression correspondante après `->` est évaluée (on dit que `E` est rattrapée).
   - Si aucun des motifs ne s'applique à `E` : l'exception n'est pas rattrapée.
 
 Un `try` peut donc tout à fait s'évaluer en la levée d'une exception :
+
   - soit car l'exception n'était pas concernée par le filtrage dans ce `try`
   - soit car le rattrapage a eu lieu mais l'expression déclenchée après le `->` peut aussi avoir levé une nouvelle exception.
 
@@ -247,7 +250,7 @@ Au fait, dans `hauteur_option`, il vaudrait mieux faire les appels récursifs l'
 
 ### Alors, option ou exception, que choisir ?
 
-Jusqu'à assez récemment, l'usage d'exceptions était fortement conseillé, et utilisé partout dans la bibliothèque standard OCaml (cf `List.assoc` ou d'autres fonctions de recherche comme `Hashtbl.find`). Il est vrai que manipuler des valeurs dans le type `option` peut s'avérer lourd et moins efficace (en particulier dans les fonctions récursives). Par contre le type indique alors clairement qu'une réponse défavorable est possible, pas de risque d'oublier de gérer ce cas. En revanche, les bugs provenant de programmes OCaml n'ayant pas rattrapé un `Not_found` ou autre sont des grands classiques (voir par exemple https://github.com/coq/coq/issues?q=is%3Aissue+Not_found ). Et dans ce cas, le typage OCaml n'aide pas. La tendance actuelle est donc au renouveau du type `option`, au moins dans les interfaces des bibliothèques : `List.assoc_opt` existe depuis OCaml 4.05, idem pour `Hashtbl.find_opt` et plusieurs autres. Le même conseil vaut pour vos programmes : une fonction privée à un module peut tout à fait être programmée via des exceptions, il sera facile de voir si ses usages locaux sont bien corrects. Par contre pour une fonction visible dans une interface de module, et donc utilisable au loin, favorisez si possible des types expressifs (et en particulier l'usage du type `option`).
+Jusqu'à assez récemment, l'usage d'exceptions était fortement conseillé, et utilisé partout dans la bibliothèque standard OCaml (cf `List.assoc` ou d'autres fonctions de recherche comme `Hashtbl.find`). Il est vrai que manipuler des valeurs dans le type `option` peut s'avérer lourd et moins efficace (en particulier dans les fonctions récursives). Par contre le type indique alors clairement qu'une réponse défavorable est possible, pas de risque d'oublier de gérer ce cas. En revanche, les bugs provenant de programmes OCaml n'ayant pas rattrapé un `Not_found` ou autre sont des grands classiques (voir par exemple <https://github.com/coq/coq/issues?q=is%3Aissue+Not_found>). Et dans ce cas, le typage OCaml n'aide pas. La tendance actuelle est donc au renouveau du type `option`, au moins dans les interfaces des bibliothèques : `List.assoc_opt` existe depuis OCaml 4.05, idem pour `Hashtbl.find_opt` et plusieurs autres. Le même conseil vaut pour vos programmes : une fonction privée à un module peut tout à fait être programmée via des exceptions, il sera facile de voir si ses usages locaux sont bien corrects. Par contre pour une fonction visible dans une interface de module, et donc utilisable au loin, favorisez si possible des types expressifs (et en particulier l'usage du type `option`).
 
 ### Comment localiser une exception qui "fuite" dans un programme ?
 
@@ -277,9 +280,10 @@ C'est un raccourci fort pratique pour la combinaison d'un `try` et d'un `match` 
 
 En fait c'est même plus complexe que cela car le véritable `try` se fait plutôt autour de `e`.
 
-Plus de détails 
-  - https://caml.inria.fr/pub/docs/manual-ocaml/patterns.html#sss:exception-match
-  - https://blog.janestreet.com/pattern-matching-and-exception-handling-unite
+Plus de détails: 
+
+  - <https://caml.inria.fr/pub/docs/manual-ocaml/patterns.html#sss:exception-match>
+  - <https://blog.janestreet.com/pattern-matching-and-exception-handling-unite>
 
 
 ### Assertions

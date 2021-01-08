@@ -1,13 +1,13 @@
 La récursivité terminale
 ==========================
 
-fetched from https://sketch.sh/s/6k9ft6DS3nA6xQjVNa4v1g
+[Lien Sketch](https://sketch.sh/s/6k9ft6DS3nA6xQjVNa4v1g)
 
-Pierre Letouzey, d'après Yann Régis-Gianas
+Pierre Letouzey, d'après Yann Régis-Gianas.
 
 Après avoir déjà évoquée parfois cette notion, voici le moment d'étudier précisément la *récursivité terminale* (*tail recursion* ou *tailrec* en anglais).
 
-Note : solution des exercices ici : https://sketch.sh/s/xqq4NfSAyoChnDhjTGemTS/
+Note : solution des exercices [ici](https://sketch.sh/s/xqq4NfSAyoChnDhjTGemTS)
 
 ## Un premier exemple : la factorielle
 
@@ -65,7 +65,7 @@ Mais ce genre de renversement est un effet habituel du passage au style par accu
 ```ocaml
 let fact_incr n =
   let rec loop k acc =
-     if k = n then acc
+     if k > n then acc
      else loop (k+1) (k*acc)
   in loop 1 1
    
@@ -187,7 +187,7 @@ let sum' xs = List.fold_left ( + ) 0 xs
 
 let success = sum' large_list
 ```
-Avec le compilateur OCaml principal (que ça soit en natif ou en bytecode), les fonctions récursives terminales sont ainsi optimisées, de même que les fonctions mutuelles récursives terminales. Lors d'une compilation d'OCaml vers javascript (comme ici pour Sketch.sh), l'optimisation des fonctions mutuelles récursives terminales n'est pas si évidente (les curieux pourront consulter https://ocsigen.org/js_of_ocaml/3.7.0/manual/tailcall ), mais cela ne devrait pas trop mal se passer en pratique.
+Avec le compilateur OCaml principal (que ça soit en natif ou en bytecode), les fonctions récursives terminales sont ainsi optimisées, de même que les fonctions mutuelles récursives terminales. Lors d'une compilation d'OCaml vers javascript (comme ici pour Sketch.sh), l'optimisation des fonctions mutuelles récursives terminales n'est pas si évidente (les curieux pourront consulter <https://ocsigen.org/js_of_ocaml/3.7.0/manual/tailcall>), mais cela ne devrait pas trop mal se passer en pratique.
 
 ## Peut-on toujours écrire en récursif terminal ? Le doit-on ?
 
@@ -203,7 +203,7 @@ Pour cela, il y a essentiellement deux techniques : l'une est assez simple à co
 
 ### Le style par passage d'accumulateur
 
-Retour à ̀`fact` :
+Retour à `fact` :
 ```ocaml
 let rec fact n =
   if n = 0 then 1
@@ -251,7 +251,7 @@ let rec height = function
 ### Le style par passage de continuation
 
 L'autre approche possible est le style par passage de continuation (CPS) déjà évoqué la semaine dernière.
-Plus complexe, et l'utilisation de fonctions d'ordre supérieur a aussi un certain coût (on reparlera par la suite de l'implémentation par des "clôtures"). Mais au moins ce style permet de systématiquement obtenir un code récursif terminal. A suivre en Master. N'hésitez pas à retourner dans le précédent sketch https://sketch.sh/s/tDqsDWq7jwLNCLPX3mzky7/ et vérifiez que l'exemple de factorielle donnée alors est bien récursif terminal.
+Plus complexe, et l'utilisation de fonctions d'ordre supérieur a aussi un certain coût (on reparlera par la suite de l'implémentation par des "clôtures"). Mais au moins ce style permet de systématiquement obtenir un code récursif terminal. A suivre en Master. N'hésitez pas à retourner dans le précédent [sketch](https://sketch.sh/s/tDqsDWq7jwLNCLPX3mzky7/) et vérifiez que l'exemple de factorielle donnée alors est bien récursif terminal.
 
 Exercice : Essayons maintenant d'écrire nos deux exemples sur les arbres binaires dans une forme CPS.
 

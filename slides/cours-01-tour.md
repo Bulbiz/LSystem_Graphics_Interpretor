@@ -1,10 +1,10 @@
 Un tour d'OCaml
 ===============
 
-Transcription de https://sketch.sh/s/H3xyXu6P3YdaHMqOVYXq6b
-Forked from https://sketch.sh/s/agM8OE0PPCmcU0oO9GPWBa
+[Lien Sketch](https://sketch.sh/s/H3xyXu6P3YdaHMqOVYXq6b)
 
 Auteur initial : Yann Régis-Gianas.
+Modifications par : Pierre Letouzey.
 
 Ce fichier est fait pour vous aider à mener vos premières expérimentations avec des programmes OCaml. 
 
