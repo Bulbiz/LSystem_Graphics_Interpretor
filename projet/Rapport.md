@@ -44,6 +44,7 @@
     * [Au début du projet](#au-début-du-projet)
     * [Au milieu](#au-milieu)
     * [A la fin](#a-la-fin)
+* [Remarque](#remarque)
 
 ## Identifiants
 
@@ -58,15 +59,15 @@
 
 Le programme permet de :
 
-- dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
-- revoir le dessin précédent du L-Système en appuyant sur une touche (`p | h | k`)
-- charger un L-Système depuis un fichier `sys` (`-f`)
-- redimensionner l'échelle pour garder le dessin à l'intérieur de la fenêtre
-- choisir la position de départ de la `tortue` (`--start-pos`)
-- afficher le dessin avec un dégradé de couleur (`--color`)
-- afficher le dessin avec une épaisseur de trait différentes (`--line-width`)
-- ajouter une variation sur la valeur des angles lors de l'interprétation (`-s`)
-- de sauvegarder le contenu de la fenêtre en une image `PNG` couleur (`-o`)
+* dessiner étape par étape un L-Système en appuyant sur une touche (`a | l | j`)
+* revoir le dessin précédent du L-Système en appuyant sur une touche (`p | h | k`)
+* charger un L-Système depuis un fichier `sys` (`-f`)
+* redimensionner l'échelle pour garder le dessin à l'intérieur de la fenêtre
+* choisir la position de départ de la `tortue` (`--start-pos`)
+* afficher le dessin avec un dégradé de couleur (`--color`)
+* afficher le dessin avec une épaisseur de trait différentes (`--line-width`)
+* ajouter une variation sur la valeur des angles lors de l'interprétation (`-s`)
+* de sauvegarder le contenu de la fenêtre en une image `PNG` couleur (`-o`)
 
 ### Fonctionnalités manquantes
 
@@ -85,13 +86,13 @@ et non des calculs exacts.
 
 Voir [INSTALL.md](../INSTALL.md)
 
-- [OCaml](https://ocaml.org)
-- [dune](https://github.com/ocaml/dune) et
+* [OCaml](https://ocaml.org)
+* [dune](https://github.com/ocaml/dune) et
 [Make](https://www.gnu.org/software/make/) pour la compilation.
-- Librairies :
-  - [Graphics](https://github.com/ocaml/graphics) pour la `GUI`.
-  - [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires (`opam install ounit2`).
-  - [bimage](https://github.com/zshipko/ocaml-bimage) et [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/)
+* Librairies :
+  * [Graphics](https://github.com/ocaml/graphics) pour la `GUI`.
+  * [OUnit2](https://github.com/gildor478/ounit) pour les tests unitaires (`opam install ounit2`).
+  * [bimage](https://github.com/zshipko/ocaml-bimage) et [bimage-unix](https://opam.ocaml.org/packages/bimage-unix/)
 pour la sauvegarde des images (`opam install bimage bimage-unix`).
 
 #### Docker
@@ -120,12 +121,12 @@ utiliser :
 
 Liste des commandes `Make` disponible :
 
-- `make` compile l'exécutable *./_build/default/main/main.exe* après avoir
+* `make` compile l'exécutable *./_build/default/main/main.exe* après avoir
 compilé et exécuté les tests unitaires.
 
-- `make test` compile et exécute les tests unitaires.
+* `make test` compile et exécute les tests unitaires.
 
-- `make clean` efface le répertoire provisoire `_build`
+* `make clean` efface le répertoire provisoire `_build`
     produit par `dune` lors de ses compilations.
 
 ### Exécution
@@ -195,12 +196,12 @@ L'option `--color` permet de visualiser le L-Système avec un dégradé monochro
 
 Liste des couleurs disponibles :
 
-- rouge (*red*)
-- bleu  (*blue*)
-- vert  (*green*)
-- jaune (*yellow*)
-- magenta (*magenta*)
-- bleu ciel (*cyan*)
+* rouge (*red*)
+* bleu  (*blue*)
+* vert  (*green*)
+* jaune (*yellow*)
+* magenta (*magenta*)
+* bleu ciel (*cyan*)
 
 > Si l'option n'est pas précisée la couleur utilisée sera grise.
 
@@ -235,9 +236,9 @@ Exemple de messages :
 
 Lorsque l'interprétation est lancée, il est possible de :
 
-- visualiser l'itération suivante avec `a | l | j`
-- visualiser l'itération précédant avec `p | h | k`
-- sauvegarder l'interprétation courante avec `s`
+* visualiser l'itération suivante avec `a | l | j`
+* visualiser l'itération précédant avec `p | h | k`
+* sauvegarder l'interprétation courante avec `s`
 (possible uniquement si l'option [`-o`](#-o) est précisée).
 
 > La fenêtre de visualisation peut être fermée à tout moment, simplement, en appuyant
@@ -250,9 +251,9 @@ vide.
 
 Voici quelques contraintes :
 
-- Les lignes commençant par `#` sont ignorées.
-- Une règle de réécriture est de la forme : `<Symbole> <Mot>`
-- Une interprétation est de la forme : `<Symbole> <Commande>[ <Commande>]`
+* Les lignes commençant par `#` sont ignorées.
+* Une règle de réécriture est de la forme : `<Symbole> <Mot>`
+* Une interprétation est de la forme : `<Symbole> <Commande>[ <Commande>]`
 
 > **Remarque** : Si une un symbole possède plusieurs règles de réécriture ou
 > d'interprétations ce sera la dernière qui sera utilisée.
@@ -333,10 +334,10 @@ A L30 T60
 La bibliothèque `lsystems` contient les modules se rapportant à la gestion
 des L-Systèmes.
 
-- `Lsystems.Systems` Ce module permet de gérer tous les calculs fait sur les
+* `Lsystems.Systems` Ce module permet de gérer tous les calculs fait sur les
 L-Systèmes en particulier : initialisation de L-Système à partir d'un fichier `sys`, et
 calcul des itérations du L-Système.
-- `Lsystems.Turtle` Ce module à pour but de gérer l'interprétation graphique
+* `Lsystems.Turtle` Ce module à pour but de gérer l'interprétation graphique
 d'un L-Système en ajoutant éventuellement de la couleur ou alors des variations
 aléatoires au dessin.
 
@@ -345,7 +346,7 @@ aléatoires au dessin.
 La bibliothèque `limage` contient les modules permettant de sauvegarder l'interprétation
 d'un L-Système dans une image.
 
-- `Limage.Png` Ce module a pour but de transformer et sauvegarder
+* `Limage.Png` Ce module a pour but de transformer et sauvegarder
 l'interprétation graphique du L-Système en une image `PNG`.
 Pour cela, elle utilise les bibliothèques externe `bimage` et `bimage-unix`.
 
@@ -375,16 +376,16 @@ Nous avons voulu utiliser une version simplifiée de la méthode *Scrum* vu en L
 pour nous organiser.
 Concrètement cela consiste en :
 
-- Des *sprints* d'une durée d'une semaine.
-- Une réunion à la fin de chaque *sprint* sur `Discord` durant laquelle nous
+* Des *sprints* d'une durée d'une semaine.
+* Une réunion à la fin de chaque *sprint* sur `Discord` durant laquelle nous
 faisons le point sur les *issues* implémentées par chacun durant le dernier
 *sprint* puis sur celles qui restent à faire avant de s'assigner nos *issues*
 pour le prochain *sprint* en fonction de leurs priorités.
-- Chaque *issue* corresponds à une fonctionnalité ou à un *patch* et est implémentée
+* Chaque *issue* corresponds à une fonctionnalité ou à un *patch* et est implémentée
 dans sa propre branche avant d'être *merge* dans la branche *develop*, si et seulement si,
 la *pipeline* est passée et que toutes les conversations de la *MR* correspondantes sont
 closes.
-- Lorsque l'état du programme dans la branche *develop* nous parait satisfaisant,
+* Lorsque l'état du programme dans la branche *develop* nous parait satisfaisant,
 la branche *master* est mise à jour avec *develop* et une nouvelle *release* est crée.
 
 ### Répartition des tâches
@@ -394,38 +395,48 @@ la branche *master* est mise à jour avec *develop* et une nouvelle *release* es
 Rémy :
 
 * Implémentation du calcul des itérations du L-Système.
--  Implémentation de la version basique de la Tortue.
+* Implémentation de la version basique de la Tortue.
 
 Emile :
 
-- Mise en place du `GitLab-CI` ainsi les tests unitaires du projet.
-- Division du projet en plusieurs bibliothèques.
-- Implémentation du *parsing* des fichiers `.sys`.
-- Implémentation de redimensionnement une interprétations de L-Système.
-- Implémentation de la première version du main avec la gestion des options
+* Mise en place du `GitLab-CI` ainsi les tests unitaires du projet.
+* Division du projet en plusieurs bibliothèques.
+* Implémentation du *parsing* des fichiers `.sys`.
+* Implémentation de redimensionnement une interprétations de L-Système.
+* Implémentation de la première version du main avec la gestion des options
 
 #### Au milieu
 
 Rémy :
 
-- Implémentation des variations aléatoires dans l'interprétation des valeurs des angles.
-- Ajouts de la possibilité d'avancer ou revenir en arrière dans les itérations.
+* Implémentation des variations aléatoires dans l'interprétation des valeurs des angles.
+* Ajouts de la possibilité d'avancer ou revenir en arrière dans les itérations.
 
 Emile :
 
-- Sauvegarde de l'interprétation courante en une image `PNG` en noir et blanc.
-- Implémentation de la première version de l'option `--color`.
-- Rédaction de la documentation.
-
+* Sauvegarde de l'interprétation courante en une image `PNG` en noir et blanc.
+* Implémentation de la première version de l'option `--color`.
+* Rédaction de la documentation.
 
 #### A la fin
 
 Rémy :
 
-- Ajouts de plusieurs couleurs possibles.
-- Modification certaines fonctions en un style récursif.
+* Ajouts de plusieurs couleurs possibles.
+* Modification certaines fonctions en un style récursif.
 
 Emile :
 
-- Suppression des blocs de codes en style itératif.
-- Ajouts de la sauvegarde des interprétations en couleurs.
+* Suppression des blocs de codes en style itératif.
+* Ajouts de la sauvegarde des interprétations en couleurs.
+
+### Remarque
+
+On s'est rendu compte trop tard que l'on avait utilisé des références inutiles
+(spécialement dans `Lsystems.Turtle`). Malheureusement, nous n'avons pas eu le
+temps de toutes les supprimer.
+Une façon *simple* de les supprimer aurait été d'ajouter dans les fonctions utilisant
+ces références, un nouvel argument *correspondant* à cette référence puis
+renvoyer la nouvelle valeur si la fonction en question la modifie.
+Mais en réalité, cette méthode alourdie considérablement le code.
+Il aurait donc fallu revoir l'architecture de notre projet pour que ce soit utile.
