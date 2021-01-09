@@ -9,6 +9,7 @@
 
 #directory "_build/default/";;
 #directory "_build/default/.lsystems.objs";;
+#directory "_build/default/.lsystems.objs/byte";;
 #load "lsystems.cma";;
 let () = print_string "Lsystems modules loaded.\n\n"
 open Lsystems

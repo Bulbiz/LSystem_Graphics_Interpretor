@@ -7,7 +7,7 @@ On utilisera ici la bibliothèque `graphics`.
 
 Elle est assez "datée", mais d'usage simple et encore largement disponible
 
-Sa documentation : https://ocaml.github.io/graphics/graphics/Graphics/index.html
+Sa documentation : <https://ocaml.github.io/graphics/graphics/Graphics/index.html>
 
 ## Disponibilité de `graphics`
 
@@ -25,7 +25,7 @@ Pour compiler un programme qui utilise le graphisme, le plus simple est d'utilis
 
 - `open Graphics` met toutes les fonctions (types, exceptions) de cette bibliothèque disponible (on n'a plus besoin de la notation pointée `Graphics.quelquechose`)
 
-- Ouverture de la fenêtre graphique (unique) :`open_graph " 800x600"`. Ajuster si besoin la largeur et la hauteur (en pixels).
+- Ouverture de la fenêtre graphique (unique) via `open_graph " 800x600"`. Ajuster si besoin la largeur et la hauteur (en pixels).
   Attention à l'espace devant la largeur : obligatoire en Unix mais à enlever sous Windows.
 
 - `close_graph : unit -> unit` ferme la fenêtre graphique.
@@ -42,7 +42,7 @@ close_graph ();;
 
 ## Coordonnées dans la fenêtre graphique
 
-![coordonnees](https://github.com/ocaml/graphics/blob/master/libgraph.png)
+![coordonnees](https://github.com/ocaml/graphics/raw/master/libgraph.png)
 
 L'origine `(0,0)` est en bas à gauche.
 

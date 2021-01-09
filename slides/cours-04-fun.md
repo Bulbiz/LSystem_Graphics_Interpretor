@@ -1,9 +1,11 @@
 Fonctions de première classe et programmation d'ordre supérieur
 ===============================================================
 
-Auteur initial : Yann Régis-Gianas
-Modifications par: Pierre Letouzey
+[Lien Sketch](https://sketch.sh/s/XjV2RE6tIUAJkvdfQ1rgFN),
+[lien Sketch](https://sketch.sh/s/tDqsDWq7jwLNCLPX3mzky7).
 
+Auteur initial : Yann Régis-Gianas.
+Modifications par : Pierre Letouzey.
 
 ## Des fonctions de première classe
 
@@ -34,6 +36,7 @@ fonction OCaml comme une autre, dite *préfixe*.
 ```
 
 Seule la comparaison de fonction est limitée :
+
  - Le test d'égalité `=` sur les fonctions peut s'écrire, mais échoue à l'exécution
  - la comparaison physique `==` marche mais est peu utile en pratique
  
@@ -53,6 +56,7 @@ Ici cet ordre supérieur va permettre d'être *modulaire* et *expressif*
 ## Modularité
 
 Un composant logiciel est modulaire s’il est:
+
  - *cohérent* : on peut résumer ce qu’il fait en une phrase simple.
  - *faiblement couplé* : il a un nombre limité de dépendances.
  
@@ -93,7 +97,8 @@ On y reviendra ci-dessous
 
 ### Trois constructions fondamentales
 
-Oublions pendant un court instant tout ce que nous avons appris jusqu'à maintenant sur OCaml, et supposons que nous avons uniquement en main les trois constructions suivantes : 
+Oublions pendant un court instant tout ce que nous avons appris jusqu'à maintenant sur OCaml, et supposons que nous avons uniquement en main les trois constructions suivantes :
+
   - l'usage d'une variable : `x`, `y,` ... ;
   - la construction d'une fonction : `fun x -> a` où `a` est une expression ;
   - l'application d'une fonction : `a b` où `a` et `b` sont des expressions.
@@ -175,6 +180,7 @@ to_int five;;
 ```
 
 Dans ce codage, un entier est représenté par une fonction qui prend en argument deux fonctions :
+
 - `z` représente le calcul que l'on souhaite faire si l'entier est zéro ;
 - `s` représente le calcul que l'on souhaite faire si l'entier est le successeur d'un autre entier.
 
@@ -198,6 +204,7 @@ let _ = is_sorted [1;5;6]
 ```
 
 Deux nouvelles possibilités des `match`, au passage :
+
 - On peut *regrouper* des motifs successifs comme `[]` et `[_]` en un seul cas
   si ces motifs déclenchent le même code (et qu'ils ont exactement les mêmes variables).
 - On peut aussi nommer des portions supplémentaires d'un motif via le mot-clé `as`.
@@ -472,7 +479,7 @@ concernant la programmation *récursive terminale* (dont nous parlerons la semai
 let rec fact_aux (continuation : int -> int) n =
   if n = 0 then continuation 1 else fact_aux (fun v -> continuation (v * n)) (n - 1)
   
-let fact n = fact_aux (fun x -> x)
+let fact n = fact_aux (fun x -> x) n
 ```
 
 Comment lire cette drôle de version de `fact`? 
@@ -485,7 +492,7 @@ Dans le cas récursif, on doit mettre à jour la continuation puisqu'après l'ap
 
 La fonction `fact` se contente de passer à `fact_aux` une continuation qui représente le fait de renvoyer immédiatement son argument.
 
-Pour mieux comprendre ce qui se passe, essayons de réprésenter une trace d'exécution pour le calcul `fact 2`:
+Pour mieux comprendre ce qui se passe, essayons de représenter une trace d'exécution pour le calcul `fact 2`:
 
 ```
 fact 2 =

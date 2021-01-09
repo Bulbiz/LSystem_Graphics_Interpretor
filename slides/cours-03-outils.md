@@ -10,9 +10,9 @@ complets.
 
 Pour l'instant, on a utilisé OCaml via des sites en ligne, et en mode "phrase par phrase".
 
-   - LearnOCaml et son instance ici http://pf5.ddns.net
-   - Accessible de partout, le "toplevel" http://try.ocamlpro.com
-   - Documents avec fragments exécutables de code : http://sketch.sh
+   - LearnOCaml et son instance ici <http://pf5.ddns.net>
+   - Accessible de partout, le "toplevel" <http://try.ocamlpro.com>
+   - Documents avec fragments exécutables de code : <http://sketch.sh>
 
 C'est très bien pour commencer, mais ces sites sont dépendants d'un
 fournisseur "bénévole", et ne sont donc pas pérennes.
@@ -83,7 +83,7 @@ Si emacs et tuareg sont bien installés :
 
    - OCaml structure ses programmes en modules.
    - La bibliothèque standard d’OCaml est assez minimaliste.
-   - Elle est documentée dans un manuel officiel, cf http://ocaml.org/
+   - Elle est documentée dans un manuel officiel, cf <http://ocaml.org/>
    - Des bibliothèques externes sont disponibles grâce à ocamlfind et dune.
    - Des outils de développement sont disponibles : ocamldebug, ocamldoc, ...
 
@@ -113,7 +113,8 @@ $ ocamlc -o hello sayHello.cmo hello.cmo
   # Pour lier les modules en un exécutable.
 ```
 
-Extensions
+Extensions:
+
   - .ml : fichier source OCaml
   - .mli : interface OCaml
   - .cmo : implémentation de module compilé en bytecode
@@ -144,7 +145,8 @@ $ ocamlopt -o hello sayHello.cmx hello.cmx
   # Pour lier les modules en un exécutable.
 ```
 
-Extensions
+Extensions:
+
   - .cmx : implémentation de module compilé en natif.
   - .cmi : interface de module compilé.
 
@@ -181,7 +183,7 @@ let main = say_it ()
     booléens, de compositions, de calculs arithmétiques, de
     conversions, d’entrées/sorties, ...
   
-    https://ocaml.org/releases/4.11/htmlman/core.html
+    <https://ocaml.org/releases/4.11/htmlman/core.html>
 
 
   - La bibliothèque standard fournit les utilitaires et les structures
@@ -191,13 +193,13 @@ let main = say_it ()
     arguments de la ligne de commande ; primitives cryptographiques
     ...
   
-    https://ocaml.org/releases/4.11/htmlman/stdlib.html
+    <https://ocaml.org/releases/4.11/htmlman/stdlib.html>
 
   - Cette bibliothèque standard est complétée par une bibliothèque pour la
     programmation système, nommé Unix. On y trouve les appels systèmes
     standards de POSIX. Ces appels sont en grande partie émulées sous Windows.
 
-    https://ocaml.org/releases/4.11/htmlman/libunix.html
+    <https://ocaml.org/releases/4.11/htmlman/libunix.html>
                
   - D’autres bibliothèques importantes sont inclues dans la distribution:
     - `Str` : pour utiliser des expressions régulières.
@@ -244,11 +246,13 @@ Sinon, l'outil `opam` permet également d'installer des "paquets" OCaml
 *par dessus* votre système.
 
 Ses atouts:
+
   - il n'est pas limité à linux
   - disponibilités plus rapide des versions d'OCaml et des paquets, y compris de paquets plus rares
   - possibilité d'avoir plusieurs versions d'OCaml simultanément (cf `opam switch`)
 
 Ses limites:
+
   - gourmand en espace disque
   - des installations et mises-à-jour encore assez "fragiles" (plantages de temps en temps)
   - besoin d'une configuration pour s'en servir, du style `eval $(opam env)`
@@ -283,7 +287,7 @@ pour notre exemple.
 Exécuter ensuite la commande : `dune build hello.exe` pour que dune
 calcule automatiquement les dépendances du projet et lance les bonnes
 commandes de compilation!  Nous utiliserons cet outil pour développer
-le projet.  Pour plus d’informations: http://dune.readthedocs.io
+le projet.  Pour plus d’informations: <http://dune.readthedocs.io>
 
 ## Autres éléments utiles pour le développement logiciel
 

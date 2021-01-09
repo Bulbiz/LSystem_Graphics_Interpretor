@@ -11,15 +11,11 @@ Voir [OBJECTIFS.md](OBJECTIFS.md)
 ## Organisation du cours
 
 - Le responsable du cours est Pierre Letouzey. 
-
-- Les chargés de travaux dirigés sont:
-  - Balthazar Bauer
-  - Giovanni Bernardi
-  - Adrien Guatto
-  - Pierre Letouzey
-  - Vincent Padovani
-
-- Le cours est évalué par un projet et par un examen final (à confirmer).
+- Les chargés de TD sont Balthazar Bauer, Giovanni Bernardi, Adrien Guatto, Pierre Letouzey et Vincent Padovani.
+- Le cours est évalué par un projet (30%) et par un examen final (70%).
+- **Dates** :
+  * Examen présentiel le **mardi 5/1 15h30-17h30**. Programme : tout sauf le cours 12. Documents papiers autorisés.
+  * Projet à finir d'ici au **lundi 11/1** au plus tard. Rendu via dépôt git sur `gaufre`, voir les consignes dans la section Projet.
 
 ## Inscrivez-vous !
 
@@ -32,7 +28,7 @@ Voir [OBJECTIFS.md](OBJECTIFS.md)
 Les amphis initialement prévus pour ce cours **sont suspendus** au vu des contraintes sanitaires actuelles.
 Ils sont remplacés par des enseignements en ligne :
   - Des documents pédagogiques à lire/visionner chaque semaine, voir plus bas.
-  - Des séances en ligne de questions/réponses sur ces documents : mercredi 11:30-12:30 et jeudi 12:45-13:45.
+  - Des séances en ligne de questions/réponses sur ces documents : **jeudi 11h-12h**.
   - Le lien BBB pour ces séances est https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw
   - Venez poser vos questions au moment que vous voulez (ou pouvez) dans ces créneaux.
   - Vous pouvez aussi me posez vos questions via la mailing-list (cf ci-dessous) ou via mon [email](http://www.irif.fr/~letouzey)
@@ -45,54 +41,66 @@ Beaucoup de contenus proviennent ou s'inspirent d'anciens enseignants de ce cour
 
 #### Cours 1 (semaine du 9/9) :
   - Un document d'[introduction au fonctionnel et à OCaml](slides/cours-01-yann.pdf) par Yann Régis-Gianas. 
-    Très riche, privilégier l'idée générale aux détails fins pour l'instant.
-  - Un premier [tour d'horizon](sketchs/cours1.md) d'OCaml et sa version dynamique d'origine : [sketch](https://sketch.sh/s/H3xyXu6P3YdaHMqOVYXq6b/).
-  - En cas de souci avec sketch, copier-coller les exemples de code dans un *toplevel* OCaml, par exemple https://try.ocamlpro.com
-  - Un fichier [FAQ](faq/faq1.md) issu des sessions de questions/réponses de cette semaine.
+  - Un tour d'horizon d'OCaml : [sketch](https://sketch.sh/s/H3xyXu6P3YdaHMqOVYXq6b/) dynamique et [markdown](slides/cours-01-tour.md) statique.
+  - Quelques [questions/réponses](faq/faq1.md).
 
 #### Cours 2 (semaine du 14/9) :
-  - Les [types de données](sketchs/cours2.md) usuels d'OCaml. Voir en particulier les *listes*, que nous utiliserons abondamment.
-  - Le [sketch](https://sketch.sh/s/RjxDVUFPNMiZqKxDtzdezN/) dynamique d'origine.
-  - Le code OCaml montré pendant les séances questions/réponses de cette semaine, avec quelques commentaires : [fichier OCaml](faq/faq2.ml) ou [sketch](https://sketch.sh/s/nhihzKwLxmobjB0TDbEeKk/). Captures vidéo par [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) ou en [webm](https://www.irif.fr/~letouzey/pf5/videos).
+  - Les **types de données** usuels d'OCaml : [sketch](https://sketch.sh/s/RjxDVUFPNMiZqKxDtzdezN/), [markdown](slides/cours-02-types.md).
+  - Questions/réponses : [sketch](https://sketch.sh/s/nhihzKwLxmobjB0TDbEeKk/), [fichier OCaml](faq/faq2.ml), vidéo [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) et [webm](https://www.irif.fr/~letouzey/pf5/videos)
 
 #### Cours 3 (semaine du 21/9) :
-  - [Outils](slides/cours-03-outils.md) pour utiliser OCaml sur sa machine et aller vers des programmes complets.
-  - Cette fois-ci, les séances visioconf ont plutôt été des démos de ces outils. Captures vidéo par [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) ou en [webm](https://www.irif.fr/~letouzey/pf5/videos).
+  - **Outils OCaml** (compilateurs, etc) : [markdown](slides/cours-03-outils.md) et démo vidéo [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) et [webm](https://www.irif.fr/~letouzey/pf5/videos).
 
 #### Cours 4 (semaine du 28/9)
-  - Un fichier [faq3.md](faq/faq3.md) avec quelques faux-amis du débutant OCaml. Attention aux erreurs classiques...
-  - Le cours sur les [fonctions](slides/cours-04-fun.md) de première classe et la programmation d'ordre supérieur.
-  - Les sketchs correspondants : [sketch4a](https://sketch.sh/s/XjV2RE6tIUAJkvdfQ1rgFN/) et [sketch4b](https://sketch.sh/s/tDqsDWq7jwLNCLPX3mzky7/)
-  - Sketchs des séances questions/réponses du [30/9](https://sketch.sh/s/iHoll1bLeBUb3LCn5Hw22U/) et du [1/10](https://sketch.sh/s/JFcq7Uv7yfl5BtcobMwcWe/). Captures vidéo par [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) ou en [webm](https://www.irif.fr/~letouzey/pf5/videos).
+  - **Fonctions de 1ère classe et programmation d'ordre supérieur** : [sketch4a](https://sketch.sh/s/XjV2RE6tIUAJkvdfQ1rgFN/), [sketch4b](https://sketch.sh/s/tDqsDWq7jwLNCLPX3mzky7/), [markdown](slides/cours-04-fun.md).
+  - Questions/réponses du [30/9](https://sketch.sh/s/iHoll1bLeBUb3LCn5Hw22U/) et du [1/10](https://sketch.sh/s/JFcq7Uv7yfl5BtcobMwcWe/) et les [liens](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) [videos](https://www.irif.fr/~letouzey/pf5/videos) habituels.
+  - Une [FAQ](faq/faq3.md) de plus avec quelques faux-amis du débutant OCaml. Attention aux erreurs classiques...
 
 #### Cours 5 (semaine du 5/10)
-  - Le cours sur la [récursivité terminale](https://sketch.sh/s/6k9ft6DS3nA6xQjVNa4v1g/). Sa [version statique](slides/cours-05-tailrec.md).
-  - Sketchs des séances du [7/10](https://sketch.sh/s/PFfSXHi1Swq166PNO4W7lK/) et [8/10](https://sketch.sh/s/xqq4NfSAyoChnDhjTGemTS/) (exercices sur la récursivité terminale). Captures vidéo par [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) ou en [webm](https://www.irif.fr/~letouzey/pf5/videos).
+  - **Récursivité terminale** : [sketch](https://sketch.sh/s/6k9ft6DS3nA6xQjVNa4v1g/), [markdown](slides/cours-05-tailrec.md).
+  - Questions/réponses du [7/10](https://sketch.sh/s/PFfSXHi1Swq166PNO4W7lK/) et [8/10](https://sketch.sh/s/xqq4NfSAyoChnDhjTGemTS/) et [liens](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) [videos](https://www.irif.fr/~letouzey/pf5/videos).
 
 #### Cours 6 (semaine du 12/10)
-  - Cours sur le [type option et les exceptions](https://sketch.sh/s/LNYzzbJLVpKgRIEYW5l2pM/). Sa [version statique](slides/cours-06-exn.md).
-  - Sketchs des séances du [14/10](https://sketch.sh/s/pmgQm3hZcaHFMIEZuuNEZT/) et [15/10](https://sketch.sh/s/ntcctHLxV6FYVAXN4epFaL/). Captures vidéo par [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) ou en [webm](https://www.irif.fr/~letouzey/pf5/videos).
+  - **Type option et exceptions** : [sketch](https://sketch.sh/s/LNYzzbJLVpKgRIEYW5l2pM/), [markdown](slides/cours-06-exn.md).
+  - Questions/réponses du [14/10](https://sketch.sh/s/pmgQm3hZcaHFMIEZuuNEZT/) et [15/10](https://sketch.sh/s/ntcctHLxV6FYVAXN4epFaL/) et [liens](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-rcp-d5b-tvw) [videos](https://www.irif.fr/~letouzey/pf5/videos).
 
 #### Cours 7 (semaine du 19/10)
-  - Cours sur les [entrées/sorties](slides/cours-07a-io.md) et le [graphisme](slides/cours-07b-graphics.md). Le [pdf](slides/cours-07-io-graphics.pdf) donné à l'origine. Auteur initial de ce cours : R. Treinen.
+  - **Entrées/sorties et graphisme** : [markdown7a](slides/cours-07a-io.md), [markdown7b](slides/cours-07b-graphics.md), [pdf](slides/cours-07-io-graphics.pdf) d'origine. Auteur initial de ce cours : R. Treinen. Videos: endroit usuel.
+
+#### Cours 8 (semaine du 2/11)
+  - **Structures impératives** : [sketch](https://sketch.sh/s/odCwxaMbe7e5NxgNAboW9e/), [markdown](slides/cours-08-imperatif.md).
+  - Questions/réponses : [sketch](https://sketch.sh/s/eXCDqJMy5xpRRRVoSKbRuP/) du 5/11 (resté dans l'état brut). Vidéos: endroit usuel.
+
+#### Cours 9 (semaine du 9/11)
+  - **Etude de cas** : comment réaliser un [téléchargeur de Sketch.sh](https://github.com/letouzey/sketch-downloader/blob/master/getsketch.ml) grâce à OCaml. Code à regarder, plus d'explication dans la video du jeudi 12/11.
+  
+#### Cours 10 (semaine du 16/11)
+  - Retour sur **l'évaluation** d'un programme OCaml (à savoir sa *sémantique*) : [pdf](slides/2019/cours-06.pdf) 2019 plus quelques [remarques](slides/cours-10-eval.md) complémentaires (grosso modo vues pendant la séance du jeudi).
+  - Un petit [évaluateur d'OCaml en OCaml](slides/cours-10).
+
+#### Cours 11 (semaine du 23/11)
+  - Retour sur le **typage** en OCaml : [markdown](slides/cours-11-typage.md) de cours et [exemples](slides/cours-11-typage.ml) vus en séance.
+
+#### Cours 12 (semaine du 30/11)
+  - Quelques mots sur modules et signatures : [markdown](slides/cours-12-modules.md). Ceci ne sera pas au programme de l'examen, mais peut vous servir en projet.
+  - Quelques exercices pris dans les [annales d'examen](#anciens-examens) plus bas.
+
 
 ## Travaux pratiques (via Learn-OCaml)
 
-Pour l'instant les TP sont bien prévus sur place, dans le bâtiment Sophie Germain, à partir du **lundi 14/9**.
-Vu la capacité des salles de TP, une seconde salle (sans machines) pourra être utilisée
-en plus, **si vous disposez d'ordinateurs portables merci d'essayer de venir avec**.
+A compter du 2 novembre, passage à des TP à distance.
 
 Planning actuel:
 
 | Groupe   | Enseignant  | Creneau         | Salle        |
 |----------|-------------|-----------------|--------------|
-| Groupe 1 | P. Letouzey | Mar 16:00-18:00 | 2031 (+2036) |
-| Groupe 2 | G. Bernardi | Jeu 13:45-15:45 | 2003 (+2002) |
-| Groupe 3 | B. Bauer    | Lun 14:15-16:15 | 2032 (+2036) |
-| Groupe 4 | A. Guatto   | Lun 14:15-16:15 | 2003 (+2036) |
-| MathInfo | V. Padovani | Mar 13:45-15:45 | 2003 (+2001) |
+| Groupe 1 | P. Letouzey | Mar 13:30-15:30 | ~~2031 (+2036)~~ [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/pie-m7s-reo-mzs) |
+| Groupe 2 | G. Bernardi | Mar 10:00-12:00 | ~~2003 (+2002)~~ [Discord](https://discord.gg/qd4tjJhA) |
+| Groupe 3 | B. Bauer    | Lun 13:30-15:30 | ~~2032 (+2036)~~ [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/bau-j1j-vu2-2ne) [Discord](https://discord.gg/UEQFGRA3h6)|
+| Groupe 4 | A. Guatto   | Lun 14:00-16:00 | ~~2003 (+2036)~~ [Discord](https://discord.gg/5SR3TfvkbT) |
+| MathInfo | V. Padovani | Mar 13:45-15:45 | ~~2003 (+2001)~~ [BBB](https://bbb-front.math.univ-paris-diderot.fr/recherche/vin-3pn-fce-cgh) |
 
-Les TP se feront en utilisant http://pf5.ddns.net , une instance de la plateforme **Learn-OCaml** : 
+Les premiers TP utilisent http://pf5.ddns.net , une instance de la plateforme **Learn-OCaml** : 
 - A la première connexion, saisir un "nickname" qui commence par votre numéro de groupe puis votre nom de famille, par exemple 3Skywalker
 - Pour les MathInfo, mettre 5 comme numéro de groupe
 - Le secret est pf5
@@ -103,9 +111,16 @@ Les TP se feront en utilisant http://pf5.ddns.net , une instance de la plateform
 - Code fourni : [morpion.zip](tp/morpion.zip) (Version 2, évite de planter si une police de caractère manque).
 - Voir [INSTALL.md](INSTALL.md) pour les conseils d'installation d'OCaml sur sa machine.
 
+#### TP7 : Morpion partie 2
+
+- [Sujet du tp7](tp/tp7.pdf)
+- Code fourni : [morpion-partie-2.zip](tp/morpion-partie-2.zip)
+
 ## Projet
 
-Voir le sous-repertoire `projet` et en particulier le [sujet](projet/projet.pdf) et le [README.md](projet/README.md).
+**Nouveau** : les [CONSIGNES](projet/CONSIGNES.md) précises relatives au rendu et à l'évaluation sont disponibles (cela correspond au mail envoyé le 7 decembre).
+
+Voir le sous-repertoire [projet](projet) et en particulier le [sujet](projet/projet.pdf) et le [README.md](projet/README.md).
 Attention, il peut y avoir encore des changements et correctifs, à suivre.
 
 Quelques liens:
@@ -115,7 +130,9 @@ Quelques liens:
 ## Anciens examens
 
 - [examen 2018/2019](exams/examen1819.pdf) écrit par Michele Pagani.
-  Le [sketch](https://sketch.sh/s/dgfrHHkNzdUuf3VYTRO3Vy/) de correction.
+  Correction : [markdown](exams/exam1819.md), [sketch](https://sketch.sh/s/dgfrHHkNzdUuf3VYTRO3Vy/).
+
+- [examen 2019/2020](exams/examen1920.pdf) par Y. Regis-Gianas. Correction : [markdown](exams/exam1920.md).
 
 ## Références et bibliographie
 
